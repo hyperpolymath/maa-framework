@@ -6,53 +6,93 @@ on:
     branches: [main, master]
   workflow_dispatch:
 
-permissions: read-all
+# Prevent concurrent mirror operations to avoid race conditions
+concurrency:
+  group: mirror-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+env:
+  # SSH known hosts for security - prevents MITM attacks
+  # These are the official SSH host keys for each platform
+  GITLAB_HOST_KEY: "gitlab.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAfuCHKVTjquxvt6CM6tdG4SLp1Btn/nOeHHE5UOzRdf"
+  CODEBERG_HOST_KEY: "codeberg.org ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIVIC02vnjFyL+I4RHfvIGNtOgJMe769VTF1VR4EB3ZB"
+  BITBUCKET_HOST_KEY: "bitbucket.org ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIazEu89wgQZ4bqs3d63QSMzYVa0MuJ2e2gKTKqu+UUO"
 
 jobs:
   mirror-gitlab:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     if: vars.GITLAB_MIRROR_ENABLED == 'true'
     steps:
-      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
+      - name: Add GitLab to known hosts
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ env.GITLAB_HOST_KEY }}" >> ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           fetch-depth: 0
-      - uses: webfactory/ssh-agent@dc588b651fe13675774614f8e6a936a468676387 # v0.9.0
+
+      - uses: webfactory/ssh-agent@a6f90b1f127823b31d4d4a8d96047790581349bd # v0.9.1
         with:
           ssh-private-key: ${{ secrets.GITLAB_SSH_KEY }}
+
       - name: Mirror to GitLab
         run: |
-          git remote add gitlab git@gitlab.com:hyperpolymath/${GITHUB_REPOSITORY#*/}.git || true
+          git remote add gitlab "git@gitlab.com:${{ github.repository_owner }}/${GITHUB_REPOSITORY#*/}.git" || true
           git push gitlab --all --force
           git push gitlab --tags --force
 
   mirror-codeberg:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     if: vars.CODEBERG_MIRROR_ENABLED == 'true'
     steps:
-      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
+      - name: Add Codeberg to known hosts
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ env.CODEBERG_HOST_KEY }}" >> ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           fetch-depth: 0
-      - uses: webfactory/ssh-agent@dc588b651fe13675774614f8e6a936a468676387 # v0.9.0
+
+      - uses: webfactory/ssh-agent@a6f90b1f127823b31d4d4a8d96047790581349bd # v0.9.1
         with:
           ssh-private-key: ${{ secrets.CODEBERG_SSH_KEY }}
+
       - name: Mirror to Codeberg
         run: |
-          git remote add codeberg git@codeberg.org:hyperpolymath/${GITHUB_REPOSITORY#*/}.git || true
+          git remote add codeberg "git@codeberg.org:${{ github.repository_owner }}/${GITHUB_REPOSITORY#*/}.git" || true
           git push codeberg --all --force
           git push codeberg --tags --force
 
   mirror-bitbucket:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     if: vars.BITBUCKET_MIRROR_ENABLED == 'true'
     steps:
-      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
+      - name: Add Bitbucket to known hosts
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ env.BITBUCKET_HOST_KEY }}" >> ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           fetch-depth: 0
-      - uses: webfactory/ssh-agent@dc588b651fe13675774614f8e6a936a468676387 # v0.9.0
+
+      - uses: webfactory/ssh-agent@a6f90b1f127823b31d4d4a8d96047790581349bd # v0.9.1
         with:
           ssh-private-key: ${{ secrets.BITBUCKET_SSH_KEY }}
+
       - name: Mirror to Bitbucket
         run: |
-          git remote add bitbucket git@bitbucket.org:hyperpolymath/${GITHUB_REPOSITORY#*/}.git || true
+          git remote add bitbucket "git@bitbucket.org:${{ github.repository_owner }}/${GITHUB_REPOSITORY#*/}.git" || true
           git push bitbucket --all --force
           git push bitbucket --tags --force

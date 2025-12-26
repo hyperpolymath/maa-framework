@@ -1,8 +1,1 @@
-= MAA Framework
-:toc: auto
 
-Multi-Agent Architecture framework.
-
-== License
-
-AGPL-3.0-or-later

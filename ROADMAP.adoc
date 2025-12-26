@@ -1,0 +1,92 @@
+// SPDX-License-Identifier: Apache-2.0
+
+= MAA Framework Roadmap
+:toc:
+:icons: font
+
+== Current Status
+
+[NOTE]
+====
+*Phase 0: Foundation* — Complete
+
+Infrastructure and governance established. Awaiting specification uploads and implementation commencement.
+====
+
+== Development Phases
+
+=== Phase 0: Foundation [Complete]
+
+* [x] Repository initialization
+* [x] Multi-forge hub-and-spoke mirroring (GitHub → GitLab, Codeberg, Bitbucket)
+* [x] Security hardening (SHA-pinned actions, SSH host verification)
+* [x] Language policy definition (Hyperpolymath Standard)
+* [x] Code ownership and governance structure
+
+=== Phase 1: Specification
+
+* [ ] Upload MAA Framework specification documents
+* [ ] Define Oblíbený language grammar and semantics
+* [ ] Document Aletheia microkernel architecture
+* [ ] Establish formal verification requirements
+* [ ] Define API boundaries and interfaces
+
+=== Phase 2: Toolchain Bootstrap
+
+* [ ] Oblíbený lexer/parser (OCaml or Rust)
+* [ ] Initial type system implementation
+* [ ] REPL for language exploration
+* [ ] Build system integration (Guix/Nix)
+
+=== Phase 3: Core Runtime
+
+* [ ] Aletheia microkernel prototype
+* [ ] Memory management subsystem
+* [ ] IPC mechanisms
+* [ ] RISC-V target support
+
+=== Phase 4: Framework Libraries
+
+* [ ] Standard library for Oblíbený
+* [ ] Formal verification primitives
+* [ ] Economics-as-code modules
+* [ ] Distributed computing abstractions (BOINC compatibility)
+
+=== Phase 5: Ecosystem
+
+* [ ] Developer documentation
+* [ ] Example applications
+* [ ] Community contribution guidelines
+* [ ] Package registry (if applicable)
+
+== Architecture Vision
+
+[source]
+----
+┌─────────────────────────────────────────────────────┐
+│                   Applications                       │
+├─────────────────────────────────────────────────────┤
+│              MAA Framework Libraries                 │
+│  ┌──────────┐ ┌──────────┐ ┌──────────────────────┐ │
+│  │  Formal  │ │Economics │ │    Distributed       │ │
+│  │Verificat.│ │ as Code  │ │     Computing        │ │
+│  └──────────┘ └──────────┘ └──────────────────────┘ │
+├─────────────────────────────────────────────────────┤
+│                    Oblíbený                          │
+│           (Reference Language + Compiler)            │
+├─────────────────────────────────────────────────────┤
+│                    Aletheia                          │
+│                  (Microkernel)                       │
+├─────────────────────────────────────────────────────┤
+│                    RISC-V                            │
+│               (Hardware Target)                      │
+└─────────────────────────────────────────────────────┘
+----
+
+== Timeline
+
+No fixed timeline. Development proceeds as specifications are finalized and resources become available.
+
+== Contributing
+
+Roadmap updates will be coordinated through the canonical GitHub repository. Major phase transitions require maintainer approval.

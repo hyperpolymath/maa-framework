@@ -1,1 +1,131 @@
+// SPDX-License-Identifier: Apache-2.0
 
+= MAA Framework
+:toc: macro
+:toclevels: 3
+:icons: font
+
+A full-stack, open-source paradigm for building verifiably-compliant, secure, and sustainable systems.
+
+toc::[]
+
+== Status
+
+[IMPORTANT]
+====
+*Project Specification* — Implementation forthcoming.
+
+This repository currently serves as the official hub and governance center for the MAA Framework project. Source code, reference implementations, and detailed specifications will be uploaded as development progresses.
+====
+
+== Overview
+
+The MAA Framework is an integrated ecosystem comprising:
+
+[cols="1,3"]
+|===
+|Component |Description
+
+|*MAA Framework*
+|Full-stack paradigm for verifiably-compliant, secure, sustainable systems
+
+|*Oblíbený*
+|Reference language designed for the framework
+
+|*Aletheia*
+|Microkernel implementation
+|===
+
+== Project Scope
+
+The framework addresses the following domains:
+
+* *Security & Formal Verification* — Provable correctness guarantees
+* *AI Ethics & Axiology* — Value-aligned system design
+* *Dependability* — Fault-tolerant, reliable computing
+* *Language Design & Compilers* — Purpose-built toolchains
+* *Microkernel Architecture* — Minimal trusted computing base
+* *RISC-V* — Open hardware architecture support
+* *Sustainability* — Resource-efficient computing
+* *Economics-as-Code* — Programmable economic primitives
+* *Distributed Computing* — BOINC-compatible workloads
+* *Reversibility* — Turing-complete/incomplete computation models
+* *Web Protocols* — Modern network standards
+
+== Repository Contents
+
+=== Currently Available
+
+[source]
+----
+.
+├── .claude/CLAUDE.md      # Language policy (Hyperpolymath Standard)
+├── .github/
+│   ├── CODEOWNERS         # Maintainer assignments
+│   └── workflows/         # Multi-forge synchronization
+├── README.adoc            # This file
+├── README.md              # Brief description
+├── ROADMAP.adoc           # Development phases
+└── SECURITY.md            # Vulnerability reporting policy
+----
+
+=== Infrastructure
+
+* *Hub-and-spoke mirroring* to GitLab, Codeberg, Bitbucket
+* *SHA-pinned GitHub Actions* for supply chain security
+* *SSH host key verification* for MITM protection
+* *Minimal permission model* (`contents: read`)
+
+== Language Policy
+
+This project follows the *Hyperpolymath Standard* for technology choices.
+
+.Allowed
+[%autowidth]
+|===
+|Technology |Use Case
+
+|ReScript |Primary application code
+|Deno |Runtime & package management
+|Rust |Performance-critical, systems, WASM
+|Tauri 2.0+ / Dioxus |Mobile applications
+|Gleam |Backend services (BEAM/JS)
+|Guile Scheme |State/meta files
+|===
+
+.Not Permitted
+[%autowidth]
+|===
+|Banned |Replacement
+
+|TypeScript |ReScript
+|Node.js / npm / Bun |Deno
+|Go |Rust
+|Kotlin / Swift |Tauri / Dioxus
+|===
+
+See link:.claude/CLAUDE.md[CLAUDE.md] for complete policy.
+
+== Mirrors
+
+[horizontal]
+GitHub:: https://github.com/hyperpolymath/maa-framework[hyperpolymath/maa-framework] *(canonical)*
+GitLab:: Synchronized automatically
+Codeberg:: Synchronized automatically
+Bitbucket:: Synchronized automatically
+
+== Security
+
+See link:SECURITY.md[SECURITY.md] for:
+
+* Vulnerability reporting procedures
+* Security measures implemented
+* Secret management practices
+
+== License
+
+Apache-2.0 (pending formal declaration)
+
+== Contributing
+
+Contribution guidelines will be established as the project develops. Currently maintained by https://github.com/hyperpolymath[@hyperpolymath].

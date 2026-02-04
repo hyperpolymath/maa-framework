@@ -1,11 +1,11 @@
 ;; SPDX-License-Identifier: AGPL-3.0-or-later
-;; ECOSYSTEM.scm - Ecosystem relationships for maa-framework
+;; ECOSYSTEM.scm - Ecosystem relationships for maa-library
 ;; Media-Type: application/vnd.ecosystem+scm
 
 (ecosystem
   (version "1.0.0")
-  (name "maa-framework")
-  (type "library")  ;; or: application, tool, specification, template
+  (name "maa-library")
+  (type "library")  ;; or: application, library, specification, template
   (purpose "Hyperpolymath ecosystem component")
 
   (position-in-ecosystem
@@ -25,4 +25,4 @@
 
   (what-this-is-not
     "This is not a standalone project - it integrates with "
-    "the broader hyperpolymath tooling ecosystem."))
+    "the broader hyperpolymath librarying ecosystem."))

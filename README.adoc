@@ -95,17 +95,6 @@ This project follows the *Hyperpolymath Standard* for technology choices.
 |Guile Scheme |State/meta files
 |===
 
-.Not Permitted
-[%autowidth]
-|===
-|Banned |Replacement
-
-|TypeScript |ReScript
-|Node.js / npm / Bun |Deno
-|Go |Rust
-|Kotlin / Swift |Tauri / Dioxus
-|===
-
 See link:.claude/CLAUDE.md[CLAUDE.md] for complete policy.
 
 == Mirrors

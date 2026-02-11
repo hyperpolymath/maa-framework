@@ -2,7 +2,7 @@
 
 = MAA Framework
 
-image:https://img.shields.io/badge/License-PMPL--1.0-blue.svg[License: PMPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"]
+image:[License: PMPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"]
 :toc: macro
 :toclevels: 3
 :icons: font
@@ -115,7 +115,7 @@ See link:SECURITY.md[SECURITY.md] for:
 
 == License
 
-Apache-2.0 (pending formal declaration)
+PMPL-1.0-or-later
 
 == Contributing
 

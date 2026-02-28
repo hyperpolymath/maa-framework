@@ -23,6 +23,9 @@ Thumbs.db
 credentials.json
 secrets.yaml
 
+# Rust
+/target/
+
 # Logs
 *.log
 logs/

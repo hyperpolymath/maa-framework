@@ -1,0 +1,61 @@
+// SPDX-License-Identifier: PMPL-1.0-or-later
+= Absolute Zero Roadmap
+Jonathan D. A. Jewell <jonathan.jewell@open.ac.uk>
+:toc:
+
+== Current Status (v1.0.0-alpha, 65%)
+
+* **81 Coq proofs completed** (Qed) across 10 modules
+* **19 proofs remaining** (Admitted) across 6 modules
+* **4 modules fully complete**: CNO.v, CNOCategory.v, StatMech.v, StatMech_helpers.v
+* **6 proof systems**: Coq, Lean 4, Z3, Agda, Isabelle, Mizar (stub)
+* **License**: PMPL-1.0-or-later (migration from AGPL complete)
+
+== Immediate Priority: Proof Completion
+
+See link:PROOF-INSIGHTS.md[PROOF-INSIGHTS.md] for detailed proof strategies.
+
+=== Easy (can be completed now)
+* QuantumCNO.v: quantum_state_eq_refl/sym/trans (need Cexp axioms)
+* MalbolgeCore.v: 1 proof (needs classification)
+
+=== Medium (requires careful work)
+* QuantumCNO.v: global_phase_is_cno, quantum_cno_composition (fix Cexp bug)
+* FilesystemCNO.v: 6 proofs (needs analysis)
+
+=== Hard (may need axiomatization)
+* LandauerDerivation.v: 3 proofs (needs measure theory)
+* LambdaCNO.v: y_not_cno (non-termination reasoning)
+* QuantumMechanicsExact.v: 3 proofs (likely axiom-level)
+
+== Near-Term Milestones
+
+=== v0.8.0 - Compliance Sprint
+* [ ] Complete 12-15 of 19 remaining proofs
+* [x] License migration to PMPL-1.0-or-later
+* [ ] Migrate Python interpreters to Rust
+* [ ] Remove npm/package.json dependencies
+* [ ] Complete checkpoint files
+
+=== v0.9.0 - Container Verification
+* [ ] Containerfile with all 6 proof systems
+* [ ] Automated proof checking in CI
+* [ ] Cross-architecture testing (amd64, arm64)
+
+=== v1.0.0 - Publication Release
+* [ ] Zero Admitted in core proofs (or justified axioms)
+* [ ] Peer-reviewed paper submitted
+* [ ] 3 industrial CNO examples
+* [ ] Full RSR compliance
+
+== Long-Term Vision (v2-v12)
+
+See link:ROADMAP-V1-TO-V12.adoc[ROADMAP-V1-TO-V12.adoc] for the full
+7-year roadmap covering language expansion, AI-assisted proving,
+quantum verification, and standardization.
+
+== Key Relationships
+
+* **ECHIDNA**: Security scanning - potential CNO verification integration
+* **Valence Shell**: Filesystem operations proved in FilesystemCNO.v
+* **echidnabot**: GitHub bot for automated proof checking in PRs

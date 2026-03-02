@@ -1,0 +1,23 @@
+:root {
+    /* 🌗 Theme colours */
+    --colour-bg: #000000;
+    --colour-text: #cccccc;
+    --section-bg: transparent;
+    --section-bg-b: #111111;
+    --section-text-b: #999999;
+    --section-border: #444444;
+
+    /* 📏 Spacing & dimensions */
+    --section-padding: 20px;
+    --section-margin: 10px;
+    --section-width: 60%;
+
+    /* 🖋 Typography */
+    --font-family-base: monospace, monospace;
+    --font-size-base: 1rem;
+    --line-height-base: 1.5;
+
+    /* 🔲 Focus outline */
+    --focus-colour: #005ea5;
+    --focus-width: 3px;
+}

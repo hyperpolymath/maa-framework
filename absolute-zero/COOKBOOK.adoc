@@ -1,0 +1,739 @@
+= Absolute Zero Cookbook
+Jonathan D. A. Jewell <jonathan@metadatastician.art>
+v1.0, 2025-11-22
+:toc: left
+:toclevels: 3
+:sectnums:
+:icons: font
+:source-highlighter: pygments
+
+== Introduction
+
+This cookbook provides practical, step-by-step instructions for working with the *Absolute Zero* project — a formal verification framework for Certified Null Operations (CNOs).
+
+=== What This Project Does
+
+Absolute Zero formally proves that certain programs provably compute *nothing*:
+
+* *Termination*: Program always halts
+* *State Preservation*: Input state = Output state
+* *Purity*: No I/O, no side effects
+* *Thermodynamic Reversibility*: Zero energy dissipation (Landauer's Principle)
+
+=== Proof Systems Used
+
+[cols="1,2,1"]
+|===
+|System |Purpose |Status
+
+|Coq 8.19
+|Core CNO theory, physics proofs
+|70% complete
+
+|Lean 4
+|Alternative verification, category theory
+|66% complete
+
+|Z3 4.13
+|SMT-based automated verification
+|100% (22 theorems)
+
+|Agda 2.6
+|Dependent type theory
+|100% (foundational)
+
+|Isabelle/HOL
+|Higher-order logic
+|100% (foundational)
+|===
+
+== Quick Start
+
+=== Prerequisites
+
+==== Fedora/RHEL
+[source,bash]
+----
+sudo dnf install -y coq z3 nodejs npm opam podman just
+opam init
+opam install coq
+----
+
+==== Ubuntu/Debian
+[source,bash]
+----
+sudo apt install -y coq z3 nodejs npm just
+----
+
+==== Arch Linux
+[source,bash]
+----
+sudo pacman -S coq z3 nodejs npm
+----
+
+==== Lean 4 (All platforms)
+[source,bash]
+----
+curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh
+----
+
+=== Clone and Build
+
+[source,bash]
+----
+# Clone repository
+git clone https://github.com/Hyperpolymath/absolute-zero.git
+cd absolute-zero
+
+# Check available tools
+just check-tools
+
+# Build everything
+just build-all
+
+# Run verification
+just verify-all
+----
+
+== Build System
+
+=== Using Just (Recommended)
+
+[source,bash]
+----
+# List all available recipes
+just --list
+
+# Build specific proof system
+just build-coq
+just build-lean
+just build-z3
+
+# Verification
+just verify-all
+just verify-coq
+just verify-lean
+just verify-z3
+
+# Testing
+just test-all
+
+# Statistics
+just stats
+just proof-status
+
+# Cleanup
+just clean
+just clean-all
+----
+
+=== Using Oil Shell (Alternative)
+
+If you prefer Oil shell:
+
+[source,bash]
+----
+# Make executable (if not already)
+chmod +x absolute-zero.oil
+
+# Build all
+oil absolute-zero.oil build
+
+# Verify all
+oil absolute-zero.oil verify
+
+# Show statistics
+oil absolute-zero.oil stats
+
+# Help
+oil absolute-zero.oil help
+----
+
+=== Manual Build (No Just/Oil)
+
+If neither `just` nor Oil shell is available:
+
+[source,bash]
+----
+# Build Coq proofs
+cd proofs/coq/common && coqc CNO.v
+cd ../physics && coqc -R ../common CNO StatMech.v
+cd ../physics && coqc -R ../common CNO LandauerDerivation.v
+cd ../quantum && coqc -R ../common CNO QuantumMechanicsExact.v
+
+# Build Lean 4 proofs
+cd proofs/lean4 && lake build
+
+# Verify Z3 specifications
+z3 proofs/z3/cno_properties.smt2
+
+# Build TypeScript
+npm install && npm run build
+----
+
+== Proof Development
+
+=== Coq Development Workflow
+
+==== Project Structure
+[source,text]
+----
+proofs/coq/
+├── common/
+│   └── CNO.v              # Core CNO theory (Phase 1)
+├── physics/
+│   ├── StatMech.v         # Statistical mechanics
+│   └── LandauerDerivation.v  # Derives Landauer's Principle
+├── quantum/
+│   └── QuantumMechanicsExact.v  # Exact quantum formulations
+├── category/
+│   └── CNOCategory.v      # Category theory
+├── lambda/
+│   └── LambdaCNO.v        # Lambda calculus CNOs
+└── malbolge/
+    └── MalbolgeCore.v     # Malbolge proofs
+----
+
+==== Adding a New Theorem
+
+. Open the relevant `.v` file
+. Add theorem statement:
++
+[source,coq]
+----
+Theorem my_new_theorem :
+  forall (p : Program),
+    is_CNO p -> some_property p.
+----
+
+. Prove it (no `Admitted`!):
++
+[source,coq]
+----
+Proof.
+  intros p H_cno.
+  unfold is_CNO in H_cno.
+  destruct H_cno as [H_term [H_id [H_pure H_rev]]].
+  (* Your proof here *)
+  Qed.  (* Not Admitted! *)
+----
+
+. Compile and verify:
++
+[source,bash]
+----
+just build-coq
+just verify-coq
+----
+
+==== Checking Proof Completion
+
+[source,bash]
+----
+# How many theorems are incomplete?
+grep -r "Admitted\." proofs/coq/ | wc -l
+
+# Where are they?
+grep -r "Admitted\." proofs/coq/
+
+# Proof statistics
+just proof-status
+----
+
+=== Lean 4 Development Workflow
+
+==== Project Structure
+[source,text]
+----
+proofs/lean4/
+├── lakefile.lean          # Build configuration
+├── CNO.lean               # Core CNO theory
+├── StatMech.lean          # Statistical mechanics
+├── QuantumCNO.lean        # Quantum CNOs
+├── CNOCategory.lean       # Category theory
+├── LambdaCNO.lean         # Lambda calculus
+└── FilesystemCNO.lean     # Filesystem CNOs
+----
+
+==== Key Differences from Coq
+
+* Use `sorry` instead of `Admitted`
+* Type `ℝ` for reals (not `Float`!)
+* Type `ℂ` for complex numbers
+* Mathlib4 required for real analysis
+
+==== Adding a New Theorem
+
+[source,lean]
+----
+theorem my_new_theorem (p : CNO.Program) :
+    CNO.isCNO p → some_property p := by
+  intro h_cno
+  -- Your proof here
+  -- No 'sorry'!
+  done
+----
+
+==== Building
+
+[source,bash]
+----
+cd proofs/lean4
+
+# Update dependencies
+lake update
+
+# Build
+lake build
+
+# Check for sorry
+grep -r "sorry" *.lean
+----
+
+=== Z3 SMT Development
+
+==== Adding New Properties
+
+Z3 specifications are in `proofs/z3/cno_properties.smt2`.
+
+[source,smt2]
+----
+;; Define a new property
+(assert (forall ((s State))
+  (=> (is-cno (my-operation s))
+      (= s (my-operation s)))))
+
+;; Check satisfiability
+(push)
+(assert (not (my-property)))
+(check-sat)  ;; Should be 'unsat' if property holds
+(pop)
+----
+
+==== Verifying
+
+[source,bash]
+----
+# Run Z3 verification
+just verify-z3
+
+# Or directly
+z3 proofs/z3/cno_properties.smt2
+----
+
+== Understanding the Proofs
+
+=== Phase 1: Core Theory (100% Complete)
+
+*Status*: All proofs complete, 0 `Admitted`
+
+Key theorems in `proofs/coq/common/CNO.v`:
+
+[cols="1,2"]
+|===
+|Theorem |What It Proves
+
+|`cno_empty`
+|Empty program is a CNO
+
+|`cno_halt`
+|Halt instruction is a CNO
+
+|`cno_composition`
+|Composition of CNOs is a CNO
+
+|`state_eq_refl/sym/trans`
+|State equality is an equivalence relation
+
+|`cno_equiv_trans`
+|CNO equivalence is transitive
+|===
+
+=== Phase 2: Physics (83% Complete)
+
+*Status*: 2 remaining `Admitted`, core theorem proven
+
+Key files:
+
+* `StatMech.v`: CNOs dissipate zero energy
+* `LandauerDerivation.v`: Derives Landauer's Principle from statistical mechanics
+
+[source,coq]
+----
+(** Main Result: CNOs dissipate zero energy *)
+Theorem cno_zero_energy_dissipation :
+  forall (p : Program) (P : StateDistribution),
+    is_CNO p ->
+    energy_dissipated_phys P (post_execution_dist p P) = 0.
+----
+
+*Proof Chain*:
+
+. Probability theory (Kolmogorov axioms)
+. Shannon entropy (information theory)
+. Boltzmann entropy: S = k_B ln(2) H
+. Second Law of Thermodynamics
+. Landauer's Principle: E ≥ kT ln(2) per bit erased
+. CNOs preserve entropy → Zero energy dissipation
+
+=== Phase 3-4: Advanced Topics (60-70% Complete)
+
+* *Category Theory* (`CNOCategory.v`): CNOs as identity morphisms
+* *Lambda Calculus* (`LambdaCNO.v`): λx.x is a CNO
+* *Quantum* (`QuantumCNO.lean`): Identity gate is quantum CNO
+* *Filesystem* (`FilesystemCNO.v`): Reversible filesystem operations
+
+== Verification & Testing
+
+=== Full Verification Pipeline
+
+[source,bash]
+----
+# Run complete CI pipeline
+just ci
+
+# Equivalent to:
+just build-all
+just verify-all
+just test-all
+just docs-proof-stats
+----
+
+=== Containerized Verification
+
+Using Podman (preferred) or Docker:
+
+[source,bash]
+----
+# Build container image
+just container-build
+
+# Run verification in container
+just container-verify
+
+# Interactive shell
+just container-shell
+
+# Inside container:
+just verify-all
+----
+
+=== Property-Based Testing
+
+Z3 provides 10 property specifications useful for testing:
+
+. *Idempotence*: f(f(x)) = f(x)
+. *No side effects*: Observable state unchanged
+. *Commutativity*: f ∘ g = g ∘ f
+. *Determinism*: Same input → same output
+. *No memory leaks*: Bounded memory usage
+. *Load-Store cancellation*
+. *Store-Load idempotence*
+. *Register preservation*
+. *I/O preservation*
+. *Negative testing*: Non-CNOs fail properties
+
+These can be integrated with property-based testing frameworks (QuickCheck, Hypothesis, Echidna).
+
+== Common Tasks
+
+=== Check Proof Completion Status
+
+[source,bash]
+----
+just proof-status
+----
+
+Output:
+[source,text]
+----
+=== Proof Completion Status ===
+
+Coq proofs:
+  Theorems: 70
+  Complete: 49
+  Admitted: 21
+  Completion: 70%
+
+Lean 4 proofs:
+  Theorems: 56
+  Complete: 37
+  Sorry: 19
+  Completion: 66%
+
+Z3 SMT specifications:
+  Theorems: 22
+----
+
+=== Count Lines of Proof
+
+[source,bash]
+----
+just loc
+----
+
+=== Generate Documentation
+
+[source,bash]
+----
+just docs-all
+----
+
+=== Clean Build Artifacts
+
+[source,bash]
+----
+# Clean build artifacts
+just clean
+
+# Deep clean (including dependencies)
+just clean-all
+----
+
+== Integration with Other Projects
+
+=== Echidna (Smart Contract Fuzzing)
+
+The 10 Z3 properties can be translated to Solidity invariants:
+
+[source,solidity]
+----
+contract CNOProperties {
+    // Property 1: Idempotence
+    function echidna_cno_idempotent() public returns (bool) {
+        uint256 state_before = currentState();
+        executeCNO();
+        executeCNO();
+        return currentState() == state_before;
+    }
+
+    // Property 2: No side effects
+    function echidna_no_side_effects() public returns (bool) {
+        uint256 memory_before = getMemoryHash();
+        executeCNO();
+        return getMemoryHash() == memory_before;
+    }
+}
+----
+
+Run Echidna:
+[source,bash]
+----
+echidna-test contracts/CNOProperties.sol --contract CNOProperties
+----
+
+=== Valence Shell (Reversible Filesystem)
+
+Valence Shell operations can be proven as CNOs:
+
+[source,coq]
+----
+Theorem mkdir_rmdir_is_cno :
+  forall (path : Path),
+    mkdir path ;; rmdir path ≡ Nop.
+----
+
+== Troubleshooting
+
+=== Coq Compilation Errors
+
+*Problem*: `Error: Cannot find library CNO`
+
+*Solution*:
+[source,bash]
+----
+cd proofs/coq/common && coqc CNO.v
+----
+
+*Problem*: `Admitted` statements
+
+*Solution*: These are incomplete proofs. Check `VERIFICATION_RESULTS.md` for status.
+
+=== Lean 4 Build Errors
+
+*Problem*: `unknown package 'mathlib'`
+
+*Solution*:
+[source,bash]
+----
+cd proofs/lean4
+lake update
+----
+
+*Problem*: Type errors with `Float`
+
+*Solution*: This was fixed in commit `063e560`. Pull latest changes.
+
+=== Z3 Errors
+
+*Problem*: Z3 returns `unknown`
+
+*Solution*: Some properties may require more time. Use:
+[source,bash]
+----
+z3 -T:60 proofs/z3/cno_properties.smt2  # 60 second timeout
+----
+
+=== Container Issues
+
+*Problem*: Permission denied
+
+*Solution*: Use Podman (rootless) instead of Docker:
+[source,bash]
+----
+alias docker=podman
+just container-build
+----
+
+== Advanced Topics
+
+=== Extending the Proof Framework
+
+==== Adding a New Language
+
+. Create `proofs/coq/mylang/MyLangCore.v`
+. Define language semantics
+. Prove CNO properties
+. Add to build system
+
+==== Adding a New Proof System
+
+. Create directory: `proofs/mysystem/`
+. Port CNO definitions
+. Add to `justfile`
+. Update `VERIFICATION_RESULTS.md`
+
+=== Cross-Solver Verification
+
+Goal: Prove the same theorem in multiple systems.
+
+[cols="1,1,1"]
+|===
+|Theorem |Coq |Lean 4
+
+|Empty program is CNO
+|✓ Proven
+|✓ Proven
+
+|Composition
+|✓ Proven
+|✓ Proven
+
+|Landauer → Zero energy
+|✓ Proven
+|⏳ In progress
+|===
+
+=== Publishing Research
+
+Phase 1 is publication-ready:
+
+*Venue*: ITP (Interactive Theorem Proving) or CPP (Certified Programs and Proofs)
+
+*Title*: "Certified Null Operations: A Multi-Prover Formalization of Computational Nothingness"
+
+*Status*: 97.4% complete (Phase 1)
+
+See `FORMAL_ANALYSIS_PHASE1.md` for complete analysis.
+
+== Appendix
+
+=== File Reference
+
+[cols="1,2"]
+|===
+|File |Purpose
+
+|`justfile`
+|Build automation (recommended)
+
+|`absolute-zero.oil`
+|Oil shell wrapper
+
+|`CLAUDE.md`
+|AI assistant context
+
+|`COOKBOOK.adoc`
+|This file (getting started guide)
+
+|`FORMAL_ANALYSIS_PHASE1.md`
+|Comprehensive Phase 1 analysis
+
+|`FORMAL_ANALYSIS_PHASE2.md`
+|Phase 2-4 analysis
+
+|`VERIFICATION_RESULTS.md`
+|Latest verification results
+
+|`proofs/coq/common/CNO.v`
+|Core Coq proofs (Phase 1)
+
+|`proofs/lean4/CNO.lean`
+|Core Lean 4 proofs
+
+|`proofs/z3/cno_properties.smt2`
+|Z3 SMT specifications (22 theorems)
+|===
+
+=== Command Quick Reference
+
+[source,bash]
+----
+# Build
+just build-all           # Everything
+just build-coq           # Coq only
+just build-lean          # Lean 4 only
+just build-z3            # Z3 only
+
+# Verify
+just verify-all          # All systems
+just verify-coq          # Check for Admitted
+just verify-lean         # Check for sorry
+just verify-z3           # Run Z3
+
+# Test
+just test-all            # All tests
+just test-typescript     # TypeScript tests
+
+# Stats
+just stats               # Lines of code
+just proof-status        # Completion percentage
+just loc                 # Detailed line counts
+
+# Container
+just container-build     # Build image
+just container-verify    # Verify in container
+just container-shell     # Interactive shell
+
+# Cleanup
+just clean               # Build artifacts
+just clean-all           # Everything
+
+# Development
+just watch-typescript    # Watch mode
+just ci                  # Full CI pipeline
+just check-tools         # Check dependencies
+----
+
+=== License
+
+This project is dual-licensed:
+
+* *AGPL 3.0*: For open-source use
+* *Palimpsest 0.5*: For academic research
+
+See `LICENSE-AGPL3.md` and `LICENSE-PALIMPSEST.md` for details.
+
+=== Contact
+
+*Jonathan D. A. Jewell*
+
+* GitLab: https://gitlab.com/hyperpolymath[@hyperpolymath]
+* GitHub: https://github.com/Hyperpolymath[@Hyperpolymath]
+* Email: jonathan@metadatastician.art
+
+---
+
+_Last updated: 2025-11-22_
+
+_Status: Proofs verified ✓ | Theorems established ✓ | More work to do ✓_

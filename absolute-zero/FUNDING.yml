@@ -1,0 +1,35 @@
+# Funding for Absolute Zero
+# Certified Null Operations - Formal Verification Research
+
+# GitHub Sponsors
+# github: [Hyperpolymath]  # Uncomment if GitHub Sponsors is set up
+
+# Open Collective
+# open_collective: absolute-zero  # Uncomment if Open Collective is set up
+
+# Patreon
+# patreon: hyperpolymath  # Uncomment if Patreon is set up
+
+# Ko-fi
+# ko_fi: hyperpolymath  # Uncomment if Ko-fi is set up
+
+# Liberapay
+# liberapay: hyperpolymath  # Uncomment if Liberapay is set up
+
+# Custom funding links
+custom:
+  - "https://gitlab.com/maa-framework/6-the-foundation/absolute-zero"
+  # - "https://paypal.me/hyperpolymath"  # Uncomment if PayPal is set up
+  # - "https://buymeacoffee.com/hyperpolymath"  # Uncomment if Buy Me a Coffee is set up
+
+# Note: This project is academic research, not commercial software
+# Funding supports:
+# - Completion of 27 remaining Admitted proofs in Coq
+# - Completion of 19 remaining sorry proofs in Lean 4
+# - Derivation of Landauer's Principle from first principles
+# - PhD by Publication research in reversible computing
+# - Conference travel for presenting results
+# - Publication fees for open-access journals
+#
+# Academic institutions interested in collaboration:
+# Contact: jonathan@metadatastician.art

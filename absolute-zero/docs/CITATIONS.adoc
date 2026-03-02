@@ -1,0 +1,36 @@
+= absolute-zero - Citation Guide
+:toc:
+
+== BibTeX
+
+[source,bibtex]
+----
+@software{absolute-zero_2025,
+  author = {Polymath, Hyper},
+  title = {absolute-zero},
+  year = {2025},
+  url = {https://github.com/hyperpolymath/absolute-zero},
+  license = {AGPL-3.0-or-later}
+}
+----
+
+== Harvard Style
+
+Polymath, H. (2025) _absolute-zero_ [Computer software]. Available at: https://github.com/hyperpolymath/absolute-zero
+
+== OSCOLA
+
+Hyper Polymath, 'absolute-zero' (2025) <https://github.com/hyperpolymath/absolute-zero>
+
+== MLA
+
+Polymath, Hyper. "absolute-zero." 2025, github.com/hyperpolymath/absolute-zero.
+
+== APA 7
+
+Polymath, H. (2025). _absolute-zero_ [Computer software]. GitHub. https://github.com/hyperpolymath/absolute-zero
+
+== See Also
+
+* link:../CITATION.cff[CITATION.cff]
+* link:../codemeta.json[codemeta.json]

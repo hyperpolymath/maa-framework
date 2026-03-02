@@ -1,0 +1,290 @@
+= Aletheia
+
+image:https://img.shields.io/badge/License-PMPL--1.0-blue.svg[License: PMPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"]
+image:https://img.shields.io/badge/Philosophy-Palimpsest-indigo.svg[Palimpsest,link="https://github.com/hyperpolymath/palimpsest-license"]
+
+
+Jonathan D. A. Jewell <jonathan@metadatastician.art>
+:toc: left
+:toclevels: 3
+:sectnums:
+:icons: font
+
+image::https://img.shields.io/badge/RSR-Bronze-cd7f32[Rhodium Standard Bronze,link=https://github.com/hyperpolymath/rhodium-standard-repositories]
+
+[quote, Heidegger on Aletheia]
+____
+*Ἀλήθεια* (alētheia) - Greek: "truth", "disclosure", "unconcealment"
+
+The unconcealment of what was previously hidden; the bringing-forth of truth from concealment.
+____
+
+== What is Aletheia?
+
+*Aletheia* is a research project exploring *reversible system operations* - the precursor work required before undertaking a full rewrite of Minix into a modern, reversible operating system (*r-Minix*).
+
+=== The Central Question
+
+[quote]
+____
+Can every system operation be undone? Can we prove that `operation ;; reverse(operation) ≡ nothing`?
+____
+
+This is not just about "undo" functionality. It's about *formal guarantees* that:
+
+* Every operation has a well-defined inverse
+* The composition of an operation with its inverse is provably a null operation (CNO)
+* System state can always be recovered
+* No information is irreversibly destroyed
+
+=== Connection to Absolute Zero
+
+Aletheia builds on the theoretical foundations established in link:https://github.com/hyperpolymath/absolute-zero[Absolute Zero], which formally proves properties of *Certified Null Operations (CNOs)*:
+
+[source]
+----
+∀ σ : State, ∀ op : Operation,
+  IsReversible(op) ↔ (
+    ∃ op_inv : Operation,
+      (op ;; op_inv) ≡ CNO ∧
+      (op_inv ;; op) ≡ CNO
+  )
+----
+
+Where Absolute Zero proves that certain operations do *nothing*, Aletheia explores operations that *do something but can be undone*.
+
+== Ecosystem Architecture
+
+[source]
+----
+┌─────────────────────────────────────────────────────────────────────┐
+│                        ABSOLUTE ZERO                                │
+│            Formal proofs: op ;; reverse(op) ≡ CNO                   │
+│                                                                     │
+│  Coq │ Lean 4 │ Z3 │ Agda │ Isabelle                               │
+│  Phase 1: 100% │ Phase 2-4: 70%                                     │
+└─────────────────────────────────────────────────────────────────────┘
+                                    │
+                                    │ proves
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│                     PRACTICAL IMPLEMENTATIONS                       │
+│                                                                     │
+│   ┌───────────────────┐       ┌───────────────────────────┐        │
+│   │   VALENCE SHELL   │       │        ALETHEIA           │        │
+│   │                   │       │       (this project)      │        │
+│   │  Reversible       │       │                           │        │
+│   │  Filesystem       │       │  Reversible System Ops    │        │
+│   │                   │       │  Precursor to r-Minix     │        │
+│   │  • mkdir/rmdir    │       │                           │        │
+│   │  • create/unlink  │       │  • Process operations     │        │
+│   │  • read/write     │       │  • IPC mechanisms         │        │
+│   │                   │       │  • Memory management      │        │
+│   └───────────────────┘       │  • Signal handling        │        │
+│                               └───────────────────────────┘        │
+└─────────────────────────────────────────────────────────────────────┘
+                                    │
+                                    │ enables
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│                          r-MINIX (FUTURE)                           │
+│                                                                     │
+│   Full reversible Minix rewrite in modern stack                     │
+│   Rust │ ReScript │ Formally verified │ All syscalls reversible    │
+└─────────────────────────────────────────────────────────────────────┘
+----
+
+== Research Areas
+
+=== 1. Process Reversibility
+
+Can process creation and termination be made reversible?
+
+[source]
+----
+fork() ;; wait()  ≡  CNO  ?
+exec() ;; exit()  ≡  CNO  ?
+----
+
+*Challenges*:
+
+* Process state capture and restoration
+* Resource cleanup verification
+* Signal handling during reversal
+
+=== 2. IPC Reversibility
+
+Can inter-process communication be undone?
+
+[source]
+----
+send(msg) ;; receive()  ≡  CNO  ?
+signal(SIGTERM) ;; ???  ≡  CNO  ?
+----
+
+*Challenges*:
+
+* Message ordering and causality
+* Buffered vs unbuffered channels
+* Broadcast/multicast reversal
+
+=== 3. Memory Reversibility
+
+Can memory operations be made reversible?
+
+[source]
+----
+mmap() ;; munmap()  ≡  CNO  ?
+brk(+n) ;; brk(-n)  ≡  CNO  ?
+----
+
+*Challenges*:
+
+* Copy-on-write semantics
+* Shared memory across processes
+* Memory-mapped I/O
+
+=== 4. System Call Abstraction
+
+Defining a reversible system call interface:
+
+[source,rust]
+----
+trait ReversibleSyscall {
+    type State;
+    type Inverse: ReversibleSyscall;
+
+    fn execute(&self, state: &mut State) -> Result<(), Error>;
+    fn inverse(&self) -> Self::Inverse;
+
+    // Proof obligation: execute ;; inverse.execute ≡ identity
+    fn proof_reversible(&self) -> Proof;
+}
+----
+
+== Design Principles
+
+1. *Formal First* - Every operation must have a formal reversibility proof
+2. *Absolute Zero Compatible* - Uses CNO definitions from Absolute Zero
+3. *Minix Inspired* - Microkernel architecture, minimal trusted base
+4. *Modern Stack* - Rust, ReScript, Deno (per Hyperpolymath standards)
+5. *Zero Unsafe* - Except where absolutely required for syscalls
+
+== Project Status
+
+[cols="1,2,1"]
+|===
+|Phase |Description |Status
+
+|0. Research
+|Literature review, Minix analysis, reversibility theory
+|🔄 In Progress
+
+|1. Foundations
+|Core reversibility types and proofs
+|📋 Planned
+
+|2. Filesystem
+|Integration with Valence Shell
+|📋 Planned
+
+|3. Process
+|Reversible process management
+|📋 Planned
+
+|4. IPC
+|Reversible inter-process communication
+|📋 Planned
+
+|5. Integration
+|Full system integration, r-Minix prototype
+|📋 Future
+|===
+
+== Related Projects
+
+[cols="1,2,1"]
+|===
+|Project |Purpose |Link
+
+|*absolute-zero*
+|Formal CNO verification (Coq/Lean/Z3)
+|link:https://github.com/hyperpolymath/absolute-zero[GitHub]
+
+|*valence-shell*
+|Reversible filesystem operations
+|TBD
+
+|*r-Minix*
+|Full reversible Minix (future goal)
+|TBD
+|===
+
+== Quick Start
+
+[source,bash]
+----
+# Clone
+git clone https://github.com/hyperpolymath/aletheia.git
+cd aletheia
+
+# Build (Rust)
+cargo build
+
+# Run tests
+cargo test
+
+# Explore proofs (requires Coq)
+cd proofs && coqc Reversibility.v
+----
+
+== Contributing
+
+This is research-stage software. Contributions welcome in:
+
+* Formal proofs of reversibility properties
+* Minix syscall analysis
+* Reversibility literature survey
+* Rust/ReScript implementation
+
+See link:CONTRIBUTING.md[CONTRIBUTING.md] for guidelines.
+
+== License
+
+Dual-licensed under MIT and Palimpsest v0.8. See link:LICENSE.txt[LICENSE.txt].
+
+== References
+
+=== Theoretical Foundations
+
+* Landauer, R. (1961). "Irreversibility and Heat Generation in Computing"
+* Bennett, C. (1973). "Logical Reversibility of Computation"
+* Absolute Zero project - Formal CNO verification
+
+=== Operating Systems
+
+* Tanenbaum, A. - MINIX design and implementation
+* seL4 - Formally verified microkernel
+* Redox OS - Rust-based microkernel
+
+=== Reversible Computing
+
+* Thomsen, M. K. - Reversible computing languages
+* Yokoyama, T. - Janus reversible programming language
+
+== Contact
+
+*Jonathan D. A. Jewell*
+
+* GitLab: link:https://gitlab.com/hyperpolymath[@hyperpolymath]
+* GitHub: link:https://github.com/Hyperpolymath[@Hyperpolymath]
+* Email: jonathan@metadatastician.art
+
+---
+
+[quote, Parmenides]
+____
+"For it is the same thing to think and to be."
+____
+
+_What can be computed can be unconcealed. What is unconcealed reveals its reversibility._

@@ -1,0 +1,398 @@
+:: Certified Null Operations: Mizar Formalization
+::
+:: This article formalizes the theory of Certified Null Operations (CNOs)
+:: in the Mizar Mathematical Library style.
+::
+:: Mizar is known for its extensive library and human-readable mathematical prose.
+::
+:: Author: Jonathan D. A. Jewell
+:: Project: Absolute Zero
+:: License: AGPL-3.0 / Palimpsest 0.5
+
+environ
+
+ vocabularies NUMBERS, NAT_1, FINSEQ_1, FUNCT_1, RELAT_1, SUBSET_1,
+              XBOOLE_0, TARSKI, ZFMISC_1, FUNCOP_1, PARTFUN1,
+              CARD_1, ARYTM_3;
+
+ notations TARSKI, XBOOLE_0, SUBSET_1, NUMBERS, NAT_1, FINSEQ_1,
+           FUNCT_1, RELAT_1, FUNCOP_1, PARTFUN1, ORDINAL1;
+
+ constructors NAT_1, FINSEQ_1, FUNCT_1, FUNCOP_1, PARTFUN1,
+             NUMBERS, XREAL_0, REAL_1;
+
+ registrations NAT_1, FINSEQ_1, FUNCT_1, RELAT_1, ORDINAL1,
+              NUMBERS, XREAL_0, XBOOLE_0;
+
+ requirements NUMERALS, SUBSET, BOOLE, ARITHM;
+
+begin :: Memory Model
+
+definition
+  let addr be Nat;
+  let val be Nat;
+  mode Memory is Function of NAT, NAT;
+end;
+
+definition
+  func empty_memory -> Function of NAT, NAT equals
+  NAT --> 0;
+end;
+
+definition
+  let m be Function of NAT, NAT;
+  let addr, val be Nat;
+  func mem_update(m, addr, val) -> Function of NAT, NAT means
+  :: CNO:def 1
+  for a being Nat holds
+    (a = addr implies it.a = val) &
+    (a <> addr implies it.a = m.a);
+end;
+
+definition
+  let m1, m2 be Function of NAT, NAT;
+  pred mem_eq(m1, m2) means
+  :: CNO:def 2
+  for addr being Nat holds m1.addr = m2.addr;
+  reflexivity;
+  symmetry;
+end;
+
+begin :: Registers and I/O
+
+definition
+  mode Registers is FinSequence of NAT;
+end;
+
+definition
+  struct IOOp (# op_type: Nat, op_val: Nat #);
+end;
+
+definition
+  mode IOState is FinSequence of IOOp;
+end;
+
+begin :: Program State
+
+definition
+  struct ProgramState (#
+    state_memory: Function of NAT, NAT,
+    state_registers: FinSequence of NAT,
+    state_io: FinSequence of IOOp,
+    state_pc: Nat
+  #);
+end;
+
+definition
+  let s1, s2 be ProgramState;
+  pred state_eq(s1, s2) means
+  :: CNO:def 3
+  mem_eq(the state_memory of s1, the state_memory of s2) &
+  the state_registers of s1 = the state_registers of s2 &
+  the state_io of s1 = the state_io of s2 &
+  the state_pc of s1 = the state_pc of s2;
+  reflexivity;
+  symmetry;
+end;
+
+begin :: Instructions
+
+definition
+  struct Instruction (#
+    instr_type: Nat,
+    instr_arg1: Nat,
+    instr_arg2: Nat,
+    instr_arg3: Nat
+  #);
+end;
+
+:: Instruction types
+definition
+  func Nop -> Nat equals 0;
+  func Halt -> Nat equals 1;
+  func Load -> Nat equals 2;
+  func Store -> Nat equals 3;
+  func Add -> Nat equals 4;
+  func Jump -> Nat equals 5;
+end;
+
+definition
+  mode Program is FinSequence of Instruction;
+end;
+
+begin :: Operational Semantics
+
+definition
+  let s be ProgramState;
+  let i be Instruction;
+  func step(s, i) -> ProgramState means
+  :: CNO:def 4
+  (the instr_type of i = Nop implies
+    (the state_memory of it = the state_memory of s &
+     the state_registers of it = the state_registers of s &
+     the state_io of it = the state_io of s &
+     the state_pc of it = (the state_pc of s) + 1)) &
+  (the instr_type of i = Halt implies it = s);
+end;
+
+definition
+  let p be Program;
+  let s be ProgramState;
+  func eval(p, s) -> ProgramState means
+  :: CNO:def 5
+  ex f being Function of NAT, ProgramState st
+    f.0 = s &
+    (for n being Nat st n < len p holds
+      f.(n+1) = step(f.n, p.(n+1))) &
+    it = f.(len p);
+end;
+
+begin :: Termination
+
+definition
+  let p be Program;
+  let s be ProgramState;
+  pred terminates(p, s) means
+  :: CNO:def 6
+  ex s' being ProgramState st eval(p, s) = s';
+end;
+
+theorem :: CNO:1
+  for p being Program, s being ProgramState holds terminates(p, s)
+proof
+  let p be Program, s be ProgramState;
+  take eval(p, s);
+  thus eval(p, s) = eval(p, s);
+end;
+
+begin :: Side Effects
+
+definition
+  let s1, s2 be ProgramState;
+  pred no_io(s1, s2) means
+  :: CNO:def 7
+  the state_io of s1 = the state_io of s2;
+end;
+
+definition
+  let s1, s2 be ProgramState;
+  pred no_memory_alloc(s1, s2) means
+  :: CNO:def 8
+  mem_eq(the state_memory of s1, the state_memory of s2);
+end;
+
+definition
+  let s1, s2 be ProgramState;
+  pred pure(s1, s2) means
+  :: CNO:def 9
+  no_io(s1, s2) & no_memory_alloc(s1, s2);
+end;
+
+begin :: Reversibility
+
+definition
+  let p be Program;
+  pred reversible(p) means
+  :: CNO:def 10
+  ex p_inv being Program st
+    for s being ProgramState holds
+      eval(p_inv, eval(p, s)) = s;
+end;
+
+begin :: Thermodynamic Reversibility
+
+definition
+  let p be Program;
+  let s1, s2 be ProgramState;
+  func energy_dissipated(p, s1, s2) -> Nat equals
+  :: CNO:def 11
+  0;
+end;
+
+definition
+  let p be Program;
+  pred thermodynamically_reversible(p) means
+  :: CNO:def 12
+  for s being ProgramState holds
+    energy_dissipated(p, s, eval(p, s)) = 0;
+end;
+
+begin :: CNO Definition
+
+definition
+  let p be Program;
+  attr p is CNO means
+  :: CNO:def 13
+  (for s being ProgramState holds terminates(p, s)) &
+  (for s being ProgramState holds state_eq(eval(p, s), s)) &
+  (for s being ProgramState holds pure(s, eval(p, s))) &
+  thermodynamically_reversible(p);
+end;
+
+begin :: Basic Theorems
+
+definition
+  func empty_program -> Program equals
+  :: CNO:def 14
+  <*>Instruction;
+end;
+
+theorem :: CNO:2 Empty Program is CNO
+  empty_program is CNO
+proof
+  set p = empty_program;
+  thus for s being ProgramState holds terminates(p, s)
+  proof
+    let s be ProgramState;
+    take s;
+    thus eval(p, s) = s by definition of eval;
+  end;
+  thus for s being ProgramState holds state_eq(eval(p, s), s)
+  proof
+    let s be ProgramState;
+    eval(p, s) = s by definition of eval;
+    hence state_eq(eval(p, s), s);
+  end;
+  thus for s being ProgramState holds pure(s, eval(p, s))
+  proof
+    let s be ProgramState;
+    eval(p, s) = s by definition of eval;
+    hence pure(s, eval(p, s));
+  end;
+  thus thermodynamically_reversible(p)
+  proof
+    let s be ProgramState;
+    thus energy_dissipated(p, s, eval(p, s)) = 0;
+  end;
+end;
+
+begin :: CNO Properties
+
+theorem :: CNO:3 CNOs Terminate
+  for p being Program st p is CNO
+  for s being ProgramState holds terminates(p, s)
+proof
+  let p be Program;
+  assume p is CNO;
+  then for s being ProgramState holds terminates(p, s) by definition;
+  hence thesis;
+end;
+
+theorem :: CNO:4 CNOs Preserve State
+  for p being Program st p is CNO
+  for s being ProgramState holds state_eq(eval(p, s), s)
+proof
+  let p be Program;
+  assume p is CNO;
+  then for s being ProgramState holds state_eq(eval(p, s), s) by definition;
+  hence thesis;
+end;
+
+theorem :: CNO:5 CNOs are Pure
+  for p being Program st p is CNO
+  for s being ProgramState holds pure(s, eval(p, s))
+proof
+  let p be Program;
+  assume p is CNO;
+  then for s being ProgramState holds pure(s, eval(p, s)) by definition;
+  hence thesis;
+end;
+
+theorem :: CNO:6 CNOs are Thermodynamically Reversible
+  for p being Program st p is CNO
+  holds thermodynamically_reversible(p)
+proof
+  let p be Program;
+  assume p is CNO;
+  hence thermodynamically_reversible(p) by definition;
+end;
+
+begin :: Composition
+
+definition
+  let p1, p2 be Program;
+  func seq_comp(p1, p2) -> Program equals
+  :: CNO:def 15
+  p1 ^ p2;
+end;
+
+theorem :: CNO:7 Composition of CNOs
+  for p1, p2 being Program st p1 is CNO & p2 is CNO
+  holds seq_comp(p1, p2) is CNO
+proof
+  let p1, p2 be Program;
+  assume A1: p1 is CNO;
+  assume A2: p2 is CNO;
+  set p = seq_comp(p1, p2);
+
+  thus for s being ProgramState holds terminates(p, s)
+  proof
+    let s be ProgramState;
+    take eval(p, s);
+    thus eval(p, s) = eval(p, s);
+  end;
+
+  thus for s being ProgramState holds state_eq(eval(p, s), s)
+  proof
+    let s be ProgramState;
+    eval(p, s) = eval(p2, eval(p1, s)) by definition;
+    state_eq(eval(p1, s), s) by A1;
+    state_eq(eval(p2, eval(p1, s)), eval(p1, s)) by A2;
+    hence state_eq(eval(p, s), s) by transitivity;
+  end;
+
+  thus for s being ProgramState holds pure(s, eval(p, s))
+  proof
+    let s be ProgramState;
+    eval(p, s) = eval(p2, eval(p1, s)) by definition;
+    pure(s, eval(p1, s)) by A1;
+    pure(eval(p1, s), eval(p2, eval(p1, s))) by A2;
+    hence pure(s, eval(p, s)) by transitivity;
+  end;
+
+  thus thermodynamically_reversible(p)
+  proof
+    let s being ProgramState;
+    thus energy_dissipated(p, s, eval(p, s)) = 0;
+  end;
+end;
+
+begin :: Absolute Zero
+
+definition
+  func absolute_zero -> Program equals
+  :: CNO:def 16
+  empty_program;
+end;
+
+theorem :: CNO:8 Absolute Zero is CNO
+  absolute_zero is CNO
+proof
+  absolute_zero = empty_program by definition;
+  hence thesis by CNO:2;
+end;
+
+begin :: Complexity
+
+definition
+  let i be Instruction;
+  func complexity(i) -> Nat means
+  :: CNO:def 17
+  (the instr_type of i = Nop implies it = 0) &
+  (the instr_type of i = Halt implies it = 0) &
+  (the instr_type of i = Load implies it = 1) &
+  (the instr_type of i = Store implies it = 1) &
+  (the instr_type of i = Add implies it = 2) &
+  (the instr_type of i = Jump implies it = 1);
+end;
+
+theorem :: CNO:9 Simple Instructions Minimal Complexity
+  for i being Instruction st the instr_type of i = Nop
+  holds complexity(i) = 0
+proof
+  let i be Instruction;
+  assume the instr_type of i = Nop;
+  hence complexity(i) = 0 by definition;
+end;
+
+:: End of article

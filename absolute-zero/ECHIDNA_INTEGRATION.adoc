@@ -1,0 +1,514 @@
+= Echidna Integration for Absolute Zero
+Jonathan D. A. Jewell <jonathan@metadatastician.art>
+v1.0, 2025-11-22
+:toc: left
+:toclevels: 3
+:sectnums:
+:icons: font
+
+== Overview
+
+This document describes the integration of **Echidna** (Ethereum smart contract fuzzer) with the Absolute Zero CNO formal verification framework.
+
+=== Why Echidna?
+
+Echidna provides property-based testing that complements our formal proofs:
+
+[cols="1,2,2"]
+|===
+|System |Approach |Strength
+
+|Coq/Lean/Z3
+|Formal proof
+|100% certainty (when proven)
+
+|Echidna
+|Fuzzing + symbolic execution
+|Finds counterexamples quickly
+
+|Combined
+|Proof + Testing
+|High confidence + practical validation
+|===
+
+== Echidna 2.0+ Provers
+
+Echidna 2.0 introduced multiple backend provers for symbolic execution:
+
+=== 1. Z3 (Primary)
+
+**Type**: SMT Solver +
+**Version**: 4.13+ +
+**Status**: ✅ Already integrated in Absolute Zero
+
+**Configuration**:
+[source,yaml]
+----
+backend: "smt"
+smtSolver: "z3"
+smtTimeout: 30
+----
+
+**Strengths**:
+- Excellent theory support (arithmetic, bit-vectors, arrays)
+- Same solver used in our Z3 proofs (`proofs/z3/cno_properties.smt2`)
+- Mature and well-tested
+
+**Installation**:
+[source,bash]
+----
+# Fedora
+sudo dnf install z3
+
+# Ubuntu
+sudo apt install z3
+
+# Already installed for Absolute Zero proofs
+----
+
+=== 2. CVC5 (Alternative SMT)
+
+**Type**: SMT Solver +
+**Version**: 1.0+ +
+**Status**: ⚠️ Optional, not yet integrated
+
+**Configuration**:
+[source,yaml]
+----
+backend: "smt"
+smtSolver: "cvc5"
+smtTimeout: 30
+----
+
+**Strengths**:
+- Better at some string/sequence theories
+- Competitive with Z3
+- Open-source (MIT license)
+
+**Installation**:
+[source,bash]
+----
+# From binary
+wget https://github.com/cvc5/cvc5/releases/download/cvc5-1.1.0/cvc5-Linux
+chmod +x cvc5-Linux
+sudo mv cvc5-Linux /usr/local/bin/cvc5
+
+# Or build from source
+git clone https://github.com/cvc5/cvc5.git
+cd cvc5
+./configure.sh
+cd build
+make
+sudo make install
+----
+
+**Integration Status**: 🔴 Not yet integrated
+
+=== 3. Bitwuzla (Bit-Vector Specialist)
+
+**Type**: Bit-Vector SMT Solver +
+**Version**: Latest +
+**Status**: ⚠️ Optional, specialized use case
+
+**Strengths**:
+- Optimized for bit-vector arithmetic
+- Useful for low-level CNO properties (CPU instructions, etc.)
+- Very fast for certain theories
+
+**Installation**:
+[source,bash]
+----
+# From source
+git clone https://github.com/bitwuzla/bitwuzla.git
+cd bitwuzla
+./configure.py
+cd build
+ninja
+sudo ninja install
+----
+
+**Use Case**: Testing assembly-level CNOs (`examples/assembly/nop.asm`)
+
+**Integration Status**: 🔴 Not yet integrated
+
+=== 4. Slither (Static Analyzer)
+
+**Type**: Static Analysis Tool +
+**Version**: 0.10+ +
+**Status**: ⚠️ Recommended for Solidity contracts
+
+**Not a prover**, but essential for Echidna workflow:
+- Detects vulnerabilities before fuzzing
+- Generates better fuzzing targets
+- Complements Echidna
+
+**Installation**:
+[source,bash]
+----
+pip3 install slither-analyzer
+
+# Or via pipx (isolated)
+pipx install slither-analyzer
+----
+
+**Usage**:
+[source,bash]
+----
+slither tests/contracts/CNOProperties.sol
+----
+
+**Integration Status**: 🟡 Documented, not automated
+
+=== 5. Medusa (Alternative Fuzzer)
+
+**Type**: Smart Contract Fuzzer (Go-based) +
+**Version**: 0.1+ +
+**Status**: ⚠️ Experimental alternative to Echidna
+
+**Relationship to Echidna**:
+- Written in Go (Echidna is Haskell)
+- Compatible property format
+- Faster startup, less mature
+
+**Installation**:
+[source,bash]
+----
+go install github.com/crytic/medusa@latest
+----
+
+**Integration Status**: 🔴 Not yet integrated
+
+== CNO Property Testing
+
+=== The 10 CNO Properties
+
+Based on `proofs/z3/cno_properties.smt2`, we test:
+
+==== Property 1: Idempotence
+
+[source,solidity]
+----
+function echidna_cno_idempotent() public returns (bool) {
+    uint256 state_before = currentState();
+    executeCNO();
+    uint256 state_after_1 = currentState();
+    executeCNO();
+    uint256 state_after_2 = currentState();
+
+    return state_before == state_after_1 &&
+           state_after_1 == state_after_2;
+}
+----
+
+**Z3 equivalent**:
+[source,smt2]
+----
+(assert (forall ((s State))
+  (= (executeCNO (executeCNO s)) (executeCNO s))))
+----
+
+==== Property 2: No Side Effects
+
+[source,solidity]
+----
+function echidna_no_side_effects() public returns (bool) {
+    uint256 memory_before = getMemoryHash();
+    uint256 storage_before = getStorageHash();
+
+    executeCNO();
+
+    return memory_before == getMemoryHash() &&
+           storage_before == getStorageHash();
+}
+----
+
+==== Property 3: Commutativity
+
+[source,solidity]
+----
+function echidna_cno_commutes() public returns (bool) {
+    uint256 state = currentState();
+
+    uint256 state_AB = executeCNO_A_then_B(state);
+    uint256 state_BA = executeCNO_B_then_A(state);
+
+    return state_AB == state_BA;
+}
+----
+
+==== Property 4: Determinism
+
+[source,solidity]
+----
+function echidna_deterministic(uint256 input) public returns (bool) {
+    setState(input);
+    uint256 output1 = executeCNO();
+
+    setState(input);
+    uint256 output2 = executeCNO();
+
+    return output1 == output2;
+}
+----
+
+==== Property 5: No Memory Leaks
+
+[source,solidity]
+----
+function echidna_bounded_gas() public returns (bool) {
+    uint256 gas_before = gasleft();
+    executeCNO();
+    uint256 gas_used = gas_before - gasleft();
+
+    return gas_used < MAX_GAS_LIMIT;
+}
+----
+
+==== Properties 6-10
+
+See `tests/contracts/CNOProperties.sol` for:
+- Load-store cancellation
+- Store-load idempotence
+- Register preservation
+- I/O preservation
+- Negative testing (non-CNOs fail)
+
+== Installation Guide
+
+=== Complete Echidna Stack
+
+[source,bash]
+----
+# 1. Install Echidna
+# Recommended: Use binary release
+wget https://github.com/crytic/echidna/releases/download/v2.2.1/echidna-2.2.1-Linux.tar.gz
+tar -xzf echidna-2.2.1-Linux.tar.gz
+sudo mv echidna /usr/local/bin/
+
+# Or build from source (requires Haskell Stack)
+git clone https://github.com/crytic/echidna.git
+cd echidna
+stack install
+
+# 2. Install Z3 (if not already installed)
+sudo dnf install z3  # Fedora
+sudo apt install z3  # Ubuntu
+
+# 3. Install Slither
+pip3 install --user slither-analyzer
+
+# 4. Install Foundry (for Solidity compilation)
+curl -L https://foundry.paradigm.xyz | bash
+foundryup
+
+# 5. Verify installation
+echidna --version
+z3 --version
+slither --version
+forge --version
+----
+
+=== Minimal Setup (Echidna + Z3 only)
+
+[source,bash]
+----
+# Install Echidna binary
+wget https://github.com/crytic/echidna/releases/download/v2.2.1/echidna-2.2.1-Linux.tar.gz
+tar -xzf echidna-2.2.1-Linux.tar.gz
+sudo mv echidna /usr/local/bin/
+
+# Z3 already installed for Absolute Zero
+z3 --version
+----
+
+== Running Echidna Tests
+
+=== Basic Usage
+
+[source,bash]
+----
+# Run Echidna on CNO properties
+echidna tests/contracts/CNOProperties.sol --contract CNOProperties --config echidna.yml
+
+# Expected output:
+# echidna_cno_idempotent: passed! (50000 tests)
+# echidna_no_side_effects: passed! (50000 tests)
+# echidna_cno_commutes: passed! (50000 tests)
+# ...
+----
+
+=== With Coverage
+
+[source,bash]
+----
+echidna tests/contracts/CNOProperties.sol \
+  --contract CNOProperties \
+  --config echidna.yml \
+  --coverage
+
+# Generates coverage report in tests/echidna-corpus/
+----
+
+=== Continuous Integration
+
+Add to `.gitlab-ci.yml`:
+[source,yaml]
+----
+echidna_test:
+  stage: test
+  image: trailofbits/echidna:latest
+  script:
+    - echidna tests/contracts/CNOProperties.sol --contract CNOProperties --config echidna.yml
+  artifacts:
+    paths:
+      - tests/echidna-corpus/
+----
+
+== Integration with Formal Proofs
+
+=== Proof Hierarchy
+
+[source]
+----
+Level 1: Formal Proof (Coq/Lean/Z3)
+    ↓ Proves correctness for all inputs
+
+Level 2: Echidna Property Testing
+    ↓ Validates practical implementation
+
+Level 3: Unit Tests
+    ↓ Specific test cases
+
+Level 4: Integration Tests
+    ↓ End-to-end validation
+----
+
+=== Workflow
+
+1. **Write formal proof** in Coq:
++
+[source,coq]
+----
+Theorem cno_idempotent :
+  forall (p : Program),
+    is_CNO p ->
+    forall s, eval p (eval p s) = eval p s.
+----
+
+2. **Translate to Z3**:
++
+[source,smt2]
+----
+(assert (forall ((s State))
+  (= (eval-cno (eval-cno s)) (eval-cno s))))
+(check-sat)  ; Should be unsat (property holds)
+----
+
+3. **Implement in Solidity**:
++
+[source,solidity]
+----
+contract CNO {
+    function execute() public pure returns (uint256) {
+        return 0;  // Null operation
+    }
+}
+----
+
+4. **Test with Echidna**:
++
+[source,solidity]
+----
+function echidna_idempotent() public returns (bool) {
+    uint256 s1 = cno.execute();
+    uint256 s2 = cno.execute();
+    return s1 == s2;
+}
+----
+
+=== Cross-Validation
+
+| Property | Coq | Lean 4 | Z3 | Echidna |
+|----------|-----|--------|-----|---------|
+| Idempotence | ✅ Proven | ✅ Proven | ✅ Valid | 🔄 Fuzz |
+| Commutativity | ✅ Proven | ✅ Proven | ✅ Valid | 🔄 Fuzz |
+| Termination | ✅ Proven | ⏳ sorry | ✅ Valid | ❌ N/A |
+| Reversibility | ⏳ Admitted | ⏳ sorry | ✅ Valid | 🔄 Fuzz |
+
+== Troubleshooting
+
+=== Echidna Not Found
+
+**Problem**: `echidna: command not found`
+
+**Solution**:
+[source,bash]
+----
+# Check PATH
+echo $PATH | grep -q /usr/local/bin || export PATH="/usr/local/bin:$PATH"
+
+# Or install via Stack
+stack install echidna
+----
+
+=== Z3 Timeout
+
+**Problem**: Echidna times out with Z3 backend
+
+**Solution**:
+[source,yaml]
+----
+# In echidna.yml
+smtTimeout: 60  # Increase from 30
+testLimit: 10000  # Reduce test count
+----
+
+=== Contract Compilation Fails
+
+**Problem**: Solidity compilation errors
+
+**Solution**:
+[source,bash]
+----
+# Use Foundry instead of solc directly
+forge build
+echidna tests/contracts/CNOProperties.sol --contract CNOProperties
+----
+
+== Future Work
+
+=== Planned Integrations
+
+1. **CVC5 backend** (Q1 2025)
+   - Alternative SMT solver
+   - Better string theory support
+
+2. **Bitwuzla for assembly** (Q2 2025)
+   - Test `examples/assembly/nop.asm`
+   - Bit-vector optimizations
+
+3. **Medusa comparison** (Q2 2025)
+   - Benchmark against Echidna
+   - Evaluate Go vs Haskell performance
+
+4. **Automated proof-to-test** (Q3 2025)
+   - Generate Echidna tests from Coq proofs
+   - Reduce manual translation
+
+=== Research Questions
+
+1. Can Echidna find counterexamples to incomplete proofs?
+2. How do fuzzing results guide proof completion?
+3. What's the optimal balance between proving and testing?
+
+== Resources
+
+- **Echidna**: https://github.com/crytic/echidna
+- **Echidna Tutorial**: https://secure-contracts.com/program-analysis/echidna/index.html
+- **Building Secure Contracts**: https://secure-contracts.com/
+- **Trail of Bits Blog**: https://blog.trailofbits.com/category/echidna/
+- **Absolute Zero Z3 Proofs**: `proofs/z3/cno_properties.smt2`
+
+---
+
+_Last updated: 2025-11-22_

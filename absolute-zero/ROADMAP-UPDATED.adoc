@@ -1,0 +1,420 @@
+// SPDX-License-Identifier: PMPL-1.0-or-later
+= Absolute Zero: Updated Roadmap (v1.0 → v12.0)
+Jonathan D. A. Jewell <jonathan.jewell@open.ac.uk>
+:toc: left
+:toclevels: 3
+:sectnums:
+
+== Architecture Clarification (2026-02-05)
+
+**CRITICAL UPDATE**: ECHIDNA is a **separate tool** that operates ON absolute-zero, not merged into it.
+
+```
+┌─────────────────────────────────────┐
+│   ECHIDNA (separate repo)           │
+│   Neurosymbolic theorem prover      │
+│   - ML tactic suggestion            │
+│   - 12 proof backends               │
+│   - Runs as external tool           │
+└──────────────┬──────────────────────┘
+               │ operates on
+               ↓
+┌─────────────────────────────────────┐
+│   absolute-zero (this repo)         │
+│   CNO formal verification           │
+│   - Coq/Lean/Z3 proofs (subjects)   │
+│   - Test languages (Python, C, etc.)│
+│   - Standalone research artifact    │
+└─────────────────────────────────────┘
+```
+
+**Key points**:
+* ECHIDNA helps complete our Coq/Lean proofs (external assistance)
+* Python/npm are TEST SUBJECTS (we prove CNO applies to them)
+* Proofs remain in Coq/Lean/Z3 (RSR-compliant)
+* v1.0 focus: Pure formal verification artifact
+
+---
+
+== Phase 1: v1.0 (MVP) — 6 Months
+
+**Goal**: Publication-ready research artifact
+
+=== Simplified Architecture
+
+```
+absolute-zero/
+├── proofs/              # Pure formal verification
+│   ├── coq/            # 21 Admitted → 0 (with ECHIDNA help)
+│   ├── lean4/          # Complete
+│   ├── z3/             # Complete
+│   ├── agda/           # Complete
+│   ├── isabelle/       # Complete
+│   └── mizar/          # Validate installation
+│
+├── docs/               # Research documentation
+│   ├── paper/         # Peer-reviewed publication
+│   └── theory/        # Mathematical foundations
+│
+└── examples/          # CNO examples (test subjects)
+    ├── malbolge/     # ✅ Formalized in Coq
+    ├── c/            # 🎯 v2.0 - prove `return;` is CNO
+    ├── rust/         # 🎯 v2.0 - prove `()` is CNO
+    └── python/       # 🎯 v2.0 - prove `pass` is CNO
+```
+
+**NO runtime dependencies on Python/npm** - they are documentation subjects only.
+
+---
+
+=== v0.8: Standards Compliance (Month 1)
+
+**Focus**: Clean, compliant foundation
+
+==== Tasks
+* [x] ✅ **License Migration** (COMPLETED 2026-02-05)
+  - PMPL-1.0-or-later implemented
+  - SPDX headers updated
+  - README corrected
+
+* [ ] **Language Policy Cleanup**
+  - Remove outdated Python references from README
+  - Document: Python is a TEST SUBJECT, not a dependency
+  - Update justfile to remove non-existent Python recipes
+
+* [ ] **Documentation Audit**
+  - Clarify proof systems vs. test subjects
+  - Remove aspirational features not yet implemented
+  - Focus on what exists: Coq/Lean/Z3 proofs
+
+**Deliverable**: Clean repo, no confusion about architecture
+
+---
+
+=== v0.9: Proof Completion with ECHIDNA (Month 2)
+
+**Focus**: Use ECHIDNA tool to complete 21 Admitted proofs
+
+==== Setup
+```bash
+# ECHIDNA runs separately (not merged)
+cd ~/Documents/hyperpolymath-repos/echidna
+cargo build --release
+
+# Point ECHIDNA at absolute-zero proofs
+./target/release/echidna complete \
+  --proof-dir ~/Documents/hyperpolymath-repos/absolute-zero/proofs/coq \
+  --prover Coq \
+  --output suggestions.txt
+
+# Review suggestions, manually integrate
+```
+
+==== Target: 21 Admitted → 0
+
+**Files needing completion**:
+* `proofs/coq/physics/StatMech.v` (2 Admitted)
+* Other Phase 2-4 files (19 Admitted)
+
+**Process**:
+1. Run ECHIDNA to suggest tactics
+2. Manually review and verify suggestions
+3. Complete proofs in Coq
+4. Cross-verify in Lean 4, Z3
+5. Commit completed proofs
+
+**Deliverable**: 100% proof completion (0 Admitted/sorry)
+
+---
+
+=== v0.10: Container Verification (Month 3)
+
+**Focus**: Reproducible verification
+
+==== Tasks
+* [ ] Build Containerfile with all 6 proof systems
+* [ ] Verify all proofs in container
+* [ ] CI/CD integration
+* [ ] Test on multiple architectures
+
+**Deliverable**: `podman run absolute-zero verify-all` succeeds
+
+---
+
+=== v0.11: Research Paper (Months 4-5)
+
+**Focus**: Peer-reviewed publication
+
+==== Paper Structure
+1. Introduction: CNO definition and motivation
+2. Formal Framework: Multi-system proofs
+3. Examples: Malbolge, esoteric languages
+4. Thermodynamics: Landauer's Principle
+5. Applications: Compiler optimization, sandboxing
+6. Related Work: CompCert, seL4
+7. Future: Quantum CNOs, mainstream languages
+
+**Submission targets**: POPL, PLDI, ICFP, ITP
+
+**Deliverable**: Accepted paper (or in revision)
+
+---
+
+=== v1.0: Official Release (Month 6)
+
+**Release criteria**:
+* ✅ All 6 proof systems verified
+* ✅ Zero Admitted/sorry
+* ✅ Paper accepted
+* ✅ Container verified
+* ✅ Documentation complete
+* ✅ DOI assigned (Zenodo)
+
+**Artifacts**:
+* Git tag: v1.0.0
+* DOI: 10.5281/zenodo.XXXXXX
+* Release notes
+* Announcement blog post
+
+---
+
+== Phase 2: Language Expansion (v2-v4) — 18 Months
+
+=== v2.0: Mainstream Language CNOs (Months 7-12)
+
+**Goal**: Prove CNO applies beyond esoteric languages
+
+==== New Test Subjects (Formalized in Coq)
+
+```coq
+(* C language CNO *)
+Theorem c_return_is_cno :
+  is_CNO (C_Semantics.eval "void f() { return; }").
+
+(* Rust language CNO *)
+Theorem rust_unit_is_cno :
+  is_CNO (Rust_Semantics.eval "fn f() { () }").
+
+(* Python language CNO *)
+Theorem python_pass_is_cno :
+  is_CNO (Python_Semantics.eval "def f(): pass").
+
+(* JavaScript language CNO *)
+Theorem js_empty_is_cno :
+  is_CNO (JS_Semantics.eval "() => {}").
+```
+
+**Implementation**:
+1. Formalize language semantics in Coq (operational semantics)
+2. Prove specific programs are CNOs
+3. Cross-verify in other proof systems
+4. Document in paper
+
+**Critical**: These languages don't run our code - we reason ABOUT them IN Coq.
+
+**Deliverable**: CNO verified for 10+ mainstream languages
+
+---
+
+=== v3.0: ECHIDNA Deep Integration (Months 13-15)
+
+**Goal**: Streamline proof discovery workflow
+
+**Features**:
+* Pre-commit hook: Quick CNO verification
+* CI/CD: Automated multi-prover consensus
+* CLI wrapper: `absolute-zero verify <theorem>`
+* Documentation: ECHIDNA user guide
+
+**Still separate repos** - ECHIDNA as external tool.
+
+**Deliverable**: Faster proof iteration cycle
+
+---
+
+=== v4.0: Industrial Applications (Months 16-18)
+
+**Goal**: Real-world CNO examples
+
+==== Case Studies
+
+1. **LLVM Optimization**
+   - Prove dead code elimination preserves CNO property
+   - Benchmark performance gains
+   - Contribute to LLVM project
+
+2. **Database Transactions**
+   - Prove PostgreSQL rollback is CNO
+   - Verify atomicity guarantees
+   - Performance analysis
+
+3. **WebAssembly Sandboxing**
+   - Prove WASM CNO validators
+   - Security guarantees
+   - Browser integration
+
+**Deliverable**: 3 industrial case studies with benchmarks
+
+---
+
+== Phase 3: Ecosystem Growth (v5-v8) — 24 Months
+
+=== v5.0: Compiler Integration (Months 19-24)
+
+**Goal**: CNO in production toolchains
+
+* LLVM pass for CNO detection
+* GCC plugin
+* Rust compiler integration (proc macro)
+* Build system support (Cargo, CMake)
+
+**Deliverable**: CNO verification in major compilers
+
+---
+
+=== v6.0: Formal Methods Bridge (Months 25-30)
+
+**Goal**: Integration with existing tools
+
+* Frama-C (C verification)
+* Why3 (multi-prover)
+* Dafny (program verification)
+* TLA+ (temporal logic)
+
+**Deliverable**: Universal CNO standard format
+
+---
+
+=== v7.0: Quantum CNOs (Months 31-36)
+
+**Goal**: Extend to quantum computing
+
+* Quantum circuit CNO definition
+* Qiskit/Cirq integration
+* Error correction verification
+
+**Deliverable**: World's first quantum CNO verifier
+
+---
+
+=== v8.0: Hardware Verification (Months 37-42)
+
+**Goal**: CNOs in hardware design
+
+* Verilog/VHDL CNO detection
+* FPGA optimization
+* CPU instruction verification
+
+**Deliverable**: Hardware CNO suite
+
+---
+
+== Phase 4-5: AI & Universal Standard (v9-v12) — 42 Months
+
+=== v9-v10: AI-Assisted Proving (Months 43-60)
+
+* Neural theorem proving (transformer models)
+* Autonomous proof discovery
+* Continuous verification
+
+**Deliverable**: AI copilot for CNO research
+
+---
+
+=== v11-v12: Universal Adoption (Months 61-84)
+
+* Cross-domain verification (biology, chemistry, finance)
+* ISO/IEEE standardization
+* Global infrastructure
+
+**Deliverable**: CNO as foundational CS primitive
+
+---
+
+== Resource Requirements (Simplified)
+
+[cols="1,1,1"]
+|===
+|Phase |Duration |Team Size
+
+|v1.0 (MVP)
+|6 months
+|1 researcher + ECHIDNA tool
+
+|v2-v4 (Expansion)
+|18 months
+|2 researchers + 1 engineer
+
+|v5-v8 (Ecosystem)
+|24 months
+|4 researchers + 2 engineers
+
+|v9-v12 (Universal)
+|42 months
+|10+ team
+|===
+
+**Budget** (revised):
+* v1.0: $150K (leaner, focused on paper)
+* v2-v4: $600K
+* v5-v12: $4M
+* **Total**: $4.75M over 7 years
+
+---
+
+== Key Architectural Principles
+
+1. **Proof Systems ≠ Test Subjects**
+   - Proofs IN: Coq, Lean, Z3 (RSR-compliant)
+   - Proofs ABOUT: Python, C, Rust, etc.
+
+2. **ECHIDNA is External**
+   - Separate repo, separate binary
+   - Helps with proof completion
+   - Not merged into absolute-zero
+
+3. **v1.0 = Pure Research**
+   - No runtime dependencies
+   - Formal proofs only
+   - Publication-ready
+
+4. **v2.0+ = Practical Applications**
+   - Compiler integration
+   - Industrial case studies
+   - Real-world impact
+
+---
+
+== Success Metrics
+
+=== v1.0 KPIs
+* ✅ Paper accepted at tier-1 venue
+* ✅ 0 Admitted/sorry (100% proven)
+* ✅ 500+ GitHub stars
+* ✅ DOI assigned
+
+=== v6.0 KPIs
+* 🎯 50+ languages formalized
+* 🎯 1,000+ citations
+* 🎯 10 companies using
+
+=== v12.0 KPIs
+* 🌟 ISO/IEEE standard
+* 🌟 10,000+ users
+* 🌟 Taught in 100+ universities
+
+---
+
+== Conclusion
+
+**Updated vision**: Absolute Zero remains a focused formal verification research project for v1.0, with ECHIDNA as an external assistance tool.
+
+**No architectural complexity** - just pure proofs in Coq/Lean/Z3, reasoning about programs in various languages.
+
+**Expansion happens gradually** - v2.0 adds mainstream languages, v3.0+ adds tooling.
+
+**Foundation first** - nail the theory (v1.0), then build applications (v2.0+).
+
+---
+
+_Roadmap updated 2026-02-05 with architectural clarity_

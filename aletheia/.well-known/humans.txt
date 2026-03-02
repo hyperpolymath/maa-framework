@@ -1,0 +1,31 @@
+/* TEAM */
+Project: Aletheia
+Name: MAA Framework Contributors
+Location: Global
+Twitter: @maaframework
+
+/* CONTRIBUTORS */
+Role: Core Development
+Location: Global
+Contact: contributors@maa-framework.org
+
+/* THANKS */
+The Rust Community - For an amazing language
+The FOSS Community - For inspiring security-first development
+RFC 9116 Authors - For standardizing security.txt
+All our contributors - For making Aletheia possible
+
+/* SITE */
+Last update: 2025-11-22
+Language: English
+Standards: RFC 9116, RSR Bronze
+Doctype: Rust
+IDE: Any (Vim, Emacs, VS Code, Helix, etc.)
+
+/* PHILOSOPHY */
+Aletheia (Greek: truth, disclosure, unconcealment)
+We believe in:
+  - Zero-dependency security
+  - Offline-first operations
+  - Complete auditability
+  - Truth in software

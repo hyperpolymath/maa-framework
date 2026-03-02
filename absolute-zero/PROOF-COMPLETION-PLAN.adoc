@@ -1,0 +1,326 @@
+// SPDX-License-Identifier: PMPL-1.0-or-later
+= Proof Completion Strategy
+:toc:
+:sectnums:
+
+== Date: 2026-02-05
+
+== Current Status
+
+**Total Admitted**: 27 proofs across 8 files
+
+**Manual Completion Attempt**: 1 proof (StatMech.v:cno_logically_reversible)
+- ⚠️ More complex than expected
+- Requires additional lemmas about state equality and eval relation
+- Need: "if s =st= s' and eval p s s'', then eval p s' s''"
+
+**Insight**: These proofs need careful proof engineering, not simple tactics.
+
+---
+
+== Proof Complexity Analysis
+
+=== Easy (5-10 tactics) 🟢
+
+**Characteristics**:
+- Direct application of existing lemmas
+- Simple unfolding + reflexivity/assumption
+- No new lemmas needed
+
+**Candidates** (estimated):
+- Some LambdaCNO.v proofs
+- CNOCategory.v (may have direct applications)
+
+---
+
+=== Medium (10-30 tactics) 🟡
+
+**Characteristics**:
+- Require case analysis
+- Need intermediate assertions
+- Build on existing theorems
+
+**Candidates**:
+- StatMech.v:cno_logically_reversible
+- FilesystemCNO.v (several)
+- QuantumCNO.v (some)
+
+---
+
+=== Hard (30+ tactics, new lemmas) 🔴
+
+**Characteristics**:
+- Need new helper lemmas
+- Complex induction
+- Non-trivial reasoning about state
+
+**Candidates**:
+- StatMech.v:bennett_logical_implies_thermodynamic
+- LandauerDerivation.v (thermodynamics)
+- QuantumMechanicsExact.v (quantum)
+- MalbolgeCore.v (C register reasoning)
+
+---
+
+== Strategy: Systematic ECHIDNA Usage
+
+=== Phase 1: Assessment (Week 1, Day 1-2)
+
+**Goal**: Classify all 27 proofs by difficulty
+
+```bash
+# For each file with Admitted
+for file in $(find proofs/coq -name "*.v" -exec grep -l "Admitted" {} \;); do
+  echo "=== Analyzing $file ==="
+
+  # Get ECHIDNA's difficulty assessment
+  just echidna-suggest "$file" | tee "analysis/$(basename $file .v)-assessment.txt"
+
+  # Manual review: mark as Easy/Medium/Hard
+done
+```
+
+**Deliverable**: Classification matrix
+
+---
+
+=== Phase 2: Easy Wins (Week 1, Day 3-5)
+
+**Goal**: Complete 5-10 easy proofs to build confidence
+
+**Process**:
+1. Select easiest proofs (ECHIDNA confidence >0.8)
+2. Use ECHIDNA suggestions
+3. Manually verify and integrate
+4. Commit incrementally (1-2 proofs per commit)
+
+**Commands**:
+```bash
+# For each easy proof
+just echidna-complete proofs/coq/category/CNOCategory.v
+# Review suggestions
+# Manually integrate if valid
+# Test compilation
+# Commit
+```
+
+---
+
+=== Phase 3: Medium Proofs (Week 2-3)
+
+**Goal**: Complete 10-15 medium proofs with ECHIDNA + manual effort
+
+**Process**:
+1. ECHIDNA provides initial tactics
+2. Manual refinement needed
+3. May require writing helper lemmas
+4. Cross-verify in Lean 4/Z3
+
+**Example workflow**:
+```coq
+(* Original: *)
+Theorem foo : ...
+Proof.
+  admit.
+Admitted.
+
+(* ECHIDNA suggests: *)
+(* Tactic 1: intros; unfold ... *)
+(* Tactic 2: apply existing_lemma *)
+(* Tactic 3: ... *)
+
+(* Manual integration: *)
+Theorem foo : ...
+Proof.
+  intros x H.
+  unfold is_CNO in H.
+  apply cno_preserves_state.
+  (* Remaining gap - needs new lemma *)
+  assert (helper_fact : ...).
+  { (* prove helper *) }
+  apply helper_fact.
+  assumption.
+Qed.
+```
+
+---
+
+=== Phase 4: Hard Proofs (Week 4-5)
+
+**Goal**: Complete remaining hard proofs, possibly with new lemmas
+
+**Process**:
+1. Identify missing infrastructure
+2. Write and prove helper lemmas first
+3. Use ECHIDNA for helper lemmas too
+4. Complete main theorems
+5. Extensive cross-verification
+
+**Hard proof examples**:
+
+1. **bennett_logical_implies_thermodynamic**
+   - Needs: bijection preservation lemmas
+   - Needs: entropy preservation under bijections
+   - Strategy: Prove helpers first, then main theorem
+
+2. **Malbolge C register**
+   - Needs: Malbolge operational semantics lemmas
+   - Needs: Encryption/decryption proofs
+   - Strategy: May need to revisit Malbolge formalization
+
+---
+
+=== Phase 5: Verification (Week 6)
+
+**Goal**: Cross-verify all completed proofs
+
+```bash
+# Multi-prover consensus
+just echidna-verify
+
+# Check no Admitted remain
+grep -r "Admitted" proofs/coq/ && echo "FAIL: Admitted found" || echo "✓ All proofs complete"
+
+# Container verification
+just container-build
+just container-verify
+```
+
+---
+
+== Required Lemmas (Preliminary Analysis)
+
+### State Equality Lemmas
+
+```coq
+(** If s =st= s' and eval p s s'', then eval p s' s'' *)
+Lemma eval_state_eq_left :
+  forall p s s' s'',
+    s =st= s' ->
+    eval p s s'' ->
+    eval p s' s''.
+
+(** If s =st= s' and eval p s'' s, then eval p s'' s' *)
+Lemma eval_state_eq_right :
+  forall p s s' s'',
+    s =st= s' ->
+    eval p s'' s ->
+    eval p s'' s'.
+```
+
+### CNO Infrastructure
+
+```coq
+(** CNOs always evaluate to the same state *)
+Lemma cno_eval_self :
+  forall p s,
+    is_CNO p ->
+    eval p s s.
+
+(** CNO composition preserves CNO property *)
+Lemma cno_compose :
+  forall p1 p2,
+    is_CNO p1 ->
+    is_CNO p2 ->
+    is_CNO (p1 ++ p2).
+```
+
+---
+
+## Metrics & Goals
+
+### Week 1
+- [ ] Classify all 27 proofs (Easy/Medium/Hard)
+- [ ] Complete 5 easy proofs
+- [ ] Identify required helper lemmas
+
+### Week 2-3
+- [ ] Complete 15 medium proofs
+- [ ] Write 5-10 helper lemmas
+- [ ] Cross-verify with Lean 4
+
+### Week 4-5
+- [ ] Complete 7 hard proofs
+- [ ] Write remaining helper lemmas
+- [ ] Extensive testing
+
+### Week 6
+- [ ] 27 → 0 Admitted ✅
+- [ ] Multi-prover verification ✅
+- [ ] Container integration ✅
+
+---
+
+## Tools & Commands
+
+### Daily Workflow
+
+```bash
+# Morning: Check status
+just echidna-list
+
+# Select target proof
+TARGET="proofs/coq/physics/StatMech.v"
+
+# Get ECHIDNA suggestions
+just echidna-suggest $TARGET > suggestions.txt
+
+# Review suggestions
+cat suggestions.txt
+
+# Attempt auto-complete
+just echidna-complete $TARGET
+
+# Review generated proof
+diff $TARGET ${TARGET%.v}_completed.v
+
+# Manual integration (use editor)
+vim $TARGET
+
+# Verify (if coqc available)
+# coqc -R proofs/coq/common CNO $TARGET
+
+# Commit
+git add $TARGET
+git commit -m "proof: complete $(grep -B2 'Qed' $TARGET | grep 'Theorem\|Lemma' | tail -1)"
+```
+
+---
+
+## Risk Mitigation
+
+### Risk 1: ECHIDNA Suggestions Invalid
+**Likelihood**: Medium
+**Impact**: Low (manual review catches this)
+**Mitigation**: Always manually verify, never blindly apply
+
+### Risk 2: Missing Infrastructure
+**Likelihood**: High (already observed)
+**Impact**: Medium (delays completion)
+**Mitigation**: Write helper lemmas proactively
+
+### Risk 3: Time Overrun
+**Likelihood**: Medium
+**Impact**: High (delays v1.0)
+**Mitigation**: Start with easy wins, adjust timeline if needed
+
+### Risk 4: Multi-Prover Disagreements
+**Likelihood**: Low
+**Impact**: High (correctness concerns)
+**Mitigation**: Investigate disagreements immediately, fix root cause
+
+---
+
+## Success Criteria
+
+* [ ] 0 Admitted proofs remaining
+* [ ] All proofs compile without errors
+* [ ] Multi-prover consensus (≥3/4 agreement)
+* [ ] Container verification passes
+* [ ] Documentation updated (VERIFICATION_RESULTS.adoc)
+
+**Target date**: 2026-03-19 (6 weeks from today)
+
+---
+
+_Strategy document created 2026-02-05_

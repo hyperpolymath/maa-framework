@@ -1,0 +1,100 @@
+# Rhodibot CI/CD Pipeline
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: '0 0 * * 1' # Weekly on Monday
+
+env:
+  CARGO_TERM_COLOR: always
+  RUSTFLAGS: -Dwarnings
+
+jobs:
+  check:
+    name: Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-action@stable
+
+      - name: Check formatting
+        run: cargo fmt --check
+
+      - name: Clippy
+        run: cargo clippy -- -D warnings
+
+      - name: Check for unsafe code
+        run: |
+          if grep -r "unsafe" src/; then
+            echo "Unsafe code detected!"
+            exit 1
+          fi
+
+      - name: Check for dependencies
+        run: |
+          deps=$(cargo tree --depth 0 | grep -c "^")
+          if [ "$deps" -gt 1 ]; then
+            echo "External dependencies detected!"
+            cargo tree
+            exit 1
+          fi
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    needs: check
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-action@stable
+
+      - name: Run tests
+        run: cargo test --verbose
+
+      - name: Run tests (release)
+        run: cargo test --release --verbose
+
+  build:
+    name: Build
+    runs-on: ${{ matrix.os }}
+    needs: test
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-action@stable
+
+      - name: Build release
+        run: cargo build --release
+
+      - name: Upload binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: rhodibot-${{ matrix.os }}
+          path: |
+            target/release/rhodibot
+            target/release/rhodibot.exe
+
+  self-verify:
+    name: Self-Verification
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-action@stable
+
+      - name: Build
+        run: cargo build --release
+
+      - name: Self-verify RSR compliance
+        run: ./target/release/rhodibot check .
+
+      - name: Generate badge
+        run: ./target/release/rhodibot badge
+
+      - name: Generate conformity document
+        run: ./target/release/rhodibot conformity

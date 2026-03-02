@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Absolute Zero</title>
+  <link rel="stylesheet" href="css/main.css">
+</head>
+<body data-theme="dark" data-font="monospace">
+
+  <header role="banner"><h1>Absolute Zero</h1></header>
+
+  <main role="main">
+    <div class="section a">Silence invoked</div>
+    <div class="section b">Reflection begins</div>
+    <div class="section a">Silence returns</div>
+  </main>
+
+  <aside role="complementary" aria-label="Appearance settings">
+    <button id="toggle-theme">Toggle theme</button>
+    <select id="select-font">
+      <option value="monospace">Monospace</option>
+      <option value="sans">Sans-serif</option>
+    </select>
+  </aside>
+
+  <!-- Load compiled JS modules -->
+  <script type="module" src="js/wasm-loader.js" defer></script>
+  <script type="module" src="js/audit-trail.js" defer></script>
+  <script type="module" src="js/narrative-scaffold.js" defer></script>
+  <script type="module" src="js/interpreter/malbolge-interpreter.js" defer></script>
+</body>
+</html>

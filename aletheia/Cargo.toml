@@ -1,0 +1,33 @@
+[package]
+name = "aletheia"
+version = "1.9.0"
+edition = "2021"
+authors = ["Jonathan D.A. Jewell <jonathan.jewell@open.ac.uk>"]
+license = "PMPL-1.0-or-later"
+description = "RSR compliance verification tool - truth in repository standards"
+repository = "https://github.com/hyperpolymath/aletheia"
+keywords = ["verification", "compliance", "rsr", "security", "standards"]
+categories = ["development-tools", "command-line-utilities"]
+rust-version = "1.80"
+default-run = "aletheia"
+
+[dependencies]
+# Zero dependencies for Bronze-level RSR compliance
+# All functionality implemented using std library only
+
+[dev-dependencies]
+# Zero dev dependencies - tests use std only
+
+[[bin]]
+name = "aletheia"
+path = "src/main.rs"
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+strip = true
+
+[profile.dev]
+opt-level = 0
+debug = true

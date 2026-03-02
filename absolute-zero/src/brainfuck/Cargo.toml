@@ -1,0 +1,20 @@
+[package]
+name = "brainfuck-cno"
+version = "0.1.0"
+edition = "2021"
+authors = ["Jonathan D.A. Jewell <jonathan@hyperpolymath.org>"]
+description = "Brainfuck interpreter with CNO (Certified Null Operation) detection"
+license = "AGPL-3.0-or-later"
+repository = "https://github.com/hyperpolymath/absolute-zero"
+
+[lib]
+name = "brainfuck_cno"
+path = "src/lib.rs"
+
+[[bin]]
+name = "brainfuck"
+path = "src/main.rs"
+
+[dependencies]
+
+[dev-dependencies]

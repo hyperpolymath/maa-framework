@@ -1,0 +1,977 @@
+= Justfile Cookbook for Absolute Zero
+Jonathan D. A. Jewell <jonathan@metadatastician.art>
+v1.0, 2025-11-22
+:toc: left
+:toclevels: 4
+:sectnums:
+:icons: font
+:source-highlighter: pygments
+
+== Introduction
+
+This cookbook documents all `just` recipes in the Absolute Zero project. Every recipe is explained with examples, flags, and common usage patterns.
+
+=== Quick Reference
+
+[source,bash]
+----
+just --list              # Show all recipes
+just help               # Show help message
+just build-all          # Build everything
+just verify-all         # Verify all proofs
+just ci                 # Run full CI pipeline
+----
+
+== Build Recipes
+
+=== build-all
+
+Build all proof systems and interpreters.
+
+*Dependencies*: build-rescript, build-coq, build-lean, build-agda, build-isabelle, build-typescript
+
+[source,bash]
+----
+just build-all
+----
+
+*What it does*:
+1. Builds ReScript interpreters
+2. Compiles Coq proofs
+3. Compiles Lean 4 proofs
+4. Compiles Agda proofs
+5. Builds Isabelle/HOL proofs
+6. Compiles TypeScript (deprecated, will be removed)
+
+*Exit codes*:
+- `0`: All builds successful
+- `1`: One or more builds failed
+
+=== build-coq
+
+Compile all Coq proof files.
+
+[source,bash]
+----
+just build-coq
+----
+
+*Build order*:
+1. `proofs/coq/common/CNO.v` (core definitions)
+2. `proofs/coq/physics/StatMech.v` (requires CNO)
+3. `proofs/coq/physics/LandauerDerivation.v` (requires CNO)
+4. `proofs/coq/quantum/QuantumMechanicsExact.v` (requires CNO)
+5. `proofs/coq/malbolge/MalbolgeCore.v` (requires CNO)
+
+*Flags used*:
+- `-R ../common CNO`: Maps `common` directory to `CNO` namespace
+
+*Common errors*:
+[cols="1,2"]
+|===
+|Error |Solution
+
+|`coqc: command not found`
+|Install Coq: `sudo dnf install coq`
+
+|`Cannot find library CNO`
+|Build `CNO.v` first
+
+|`Admitted` in proof
+|Complete the proof or accept incomplete theorem
+|===
+
+=== build-lean
+
+Compile Lean 4 proofs using `lake`.
+
+[source,bash]
+----
+just build-lean
+----
+
+*What it does*:
+1. Changes to `proofs/lean4/`
+2. Runs `lake build`
+3. Compiles all `.lean` files
+4. Downloads Mathlib dependencies if needed
+
+*First-time setup*:
+[source,bash]
+----
+cd proofs/lean4
+lake update  # Update dependencies
+lake build   # Build everything
+----
+
+*Dependencies downloaded*:
+- `mathlib4`: Standard mathematical library
+
+*Build artifacts*:
+- `.lake/` directory (can be cleaned with `lake clean`)
+
+=== build-z3
+
+Verify Z3 SMT specifications.
+
+[source,bash]
+----
+just build-z3
+# or directly:
+just verify-z3
+----
+
+*What it does*:
+1. Runs `z3 proofs/z3/cno_properties.smt2`
+2. Checks 22 theorems
+3. Verifies 10 properties
+
+*Output*:
+- `sat`: Property can be satisfied (may indicate counterexample)
+- `unsat`: Property cannot be violated (proof succeeds)
+- `unknown`: Z3 couldn't determine (increase timeout)
+
+*Timeout configuration*:
+[source,bash]
+----
+z3 -T:60 proofs/z3/cno_properties.smt2  # 60 second timeout
+----
+
+=== build-typescript
+
+⚠️  **DEPRECATED**: Will be removed. Use Deno instead.
+
+[source,bash]
+----
+just build-typescript
+----
+
+*Migration path*:
+- Replace with `deno task build`
+- Port TypeScript files to Deno
+- Remove `ts/` directory
+
+== Verification Recipes
+
+=== verify-all
+
+Run all verification checks across all proof systems.
+
+*Dependencies*: verify-coq, verify-z3, verify-lean, verify-agda, verify-isabelle
+
+[source,bash]
+----
+just verify-all
+----
+
+*What it verifies*:
+[cols="1,2,1"]
+|===
+|System |Check |Time
+
+|Coq
+|No `Admitted` statements
+|~30s
+
+|Lean 4
+|No `sorry` statements
+|~45s
+
+|Z3
+|All assertions satisfied
+|~10s
+
+|Agda
+|Type checking passes
+|~20s
+
+|Isabelle
+|Theory compilation
+|~60s
+|===
+
+=== verify-coq
+
+Verify Coq proofs are complete.
+
+[source,bash]
+----
+just verify-coq
+----
+
+*Checks performed*:
+1. Compiles all `.v` files
+2. Counts `Admitted` statements
+3. Reports incomplete proofs
+
+*Expected output*:
+[source]
+----
+Building Coq proofs...
+✓ Coq proofs compiled
+✓ Coq proofs verified
+----
+
+*If incomplete*:
+[source]
+----
+⚠ Some proofs incomplete:
+proofs/coq/physics/LandauerDerivation.v:142: Admitted.
+proofs/coq/quantum/QuantumMechanicsExact.v:87: Admitted.
+----
+
+=== verify-z3
+
+Verify Z3 SMT specifications.
+
+[source,bash]
+----
+just verify-z3
+----
+
+*Properties verified* (10 total):
+1. Idempotence: `f(f(x)) = f(x)`
+2. No side effects
+3. Commutativity: `f ∘ g = g ∘ f`
+4. Determinism
+5. No memory leaks
+6. Load-store cancellation
+7. Store-load idempotence
+8. Register preservation
+9. I/O preservation
+10. Negative testing
+
+*Theorems verified* (22 total):
+- See `proofs/z3/cno_properties.smt2` for full list
+
+== Testing Recipes
+
+=== test-all
+
+Run all tests (unit, integration, proofs).
+
+*Dependencies*: test-interpreters, test-proofs
+
+[source,bash]
+----
+just test-all
+----
+
+*Test suites*:
+1. Interpreter tests (Brainfuck, Whitespace, Malbolge)
+2. Proof verification tests
+3. Example CNO validation
+
+=== test-typescript
+
+⚠️ **DEPRECATED**: Use `deno test` instead.
+
+[source,bash]
+----
+just test-typescript
+----
+
+*Migration*:
+[source,bash]
+----
+# New approach:
+deno test --allow-read tests/
+----
+
+== Container Recipes
+
+=== container-build
+
+Build container image using Podman (or Docker fallback).
+
+[source,bash]
+----
+just container-build
+----
+
+*Image details*:
+- Name: `absolute-zero:latest`
+- Base: Fedora 39
+- Includes: Coq, Z3, Lean 4, Deno, ReScript
+
+*Build flags*:
+[source,bash]
+----
+podman build -t absolute-zero:latest -f Containerfile .
+----
+
+=== container-verify
+
+Run verification inside container.
+
+[source,bash]
+----
+just container-verify
+----
+
+*What it does*:
+1. Starts container
+2. Mounts current directory
+3. Runs `just verify-all`
+4. Exits and removes container
+
+*Volume mounting*:
+- Podman: `-v $(PWD):/workspace:Z` (SELinux label)
+- Docker: `-v $(PWD):/workspace`
+
+=== container-shell
+
+Open interactive shell in container.
+
+[source,bash]
+----
+just container-shell
+----
+
+*Inside the container*:
+[source,bash]
+----
+# You're now in /workspace
+ls proofs/
+just verify-all
+exit
+----
+
+== Documentation Recipes
+
+=== docs-all
+
+Generate all documentation.
+
+*Dependencies*: docs-proof-stats, docs-adoc
+
+[source,bash]
+----
+just docs-all
+----
+
+*Generated docs*:
+- Proof statistics
+- AsciiDoc documentation
+- API documentation (if configured)
+
+=== docs-proof-stats
+
+Generate proof completion statistics.
+
+[source,bash]
+----
+just docs-proof-stats
+----
+
+*Output*:
+[source]
+----
+=== Proof Statistics ===
+Coq proofs:
+   3204 total
+
+Admitted count: 27
+
+Lean 4 proofs:
+   2891 total
+sorry count: 19
+
+Z3 specifications:
+611 proofs/z3/cno_properties.smt2
+----
+
+=== docs-adoc
+
+Convert Markdown documentation to AsciiDoc.
+
+⚠️ **Note**: This recipe requires `pandoc`.
+
+[source,bash]
+----
+just docs-adoc
+----
+
+*Conversions*:
+- `README.md` → `README.adoc`
+- `CLAUDE.md` → `CLAUDE.adoc`
+- All other `.md` → `.adoc` (except `SECURITY.md`)
+
+== Cleanup Recipes
+
+=== clean
+
+Clean all build artifacts.
+
+*Dependencies*: clean-coq, clean-lean, clean-typescript, clean-rescript
+
+[source,bash]
+----
+just clean
+----
+
+*What gets deleted*:
+- Coq: `*.vo`, `*.vok`, `*.vos`, `*.glob`
+- Lean: `.lake/` directory
+- TypeScript: `node_modules/`, `dist/`
+- ReScript: `lib/`
+
+=== clean-coq
+
+Clean Coq build artifacts.
+
+[source,bash]
+----
+just clean-coq
+----
+
+*Files removed*:
+[source,bash]
+----
+find proofs/coq -name "*.vo" -delete
+find proofs/coq -name "*.vok" -delete
+find proofs/coq -name "*.vos" -delete
+find proofs/coq -name "*.glob" -delete
+find proofs/coq -name ".*.aux" -delete
+----
+
+=== clean-lean
+
+Clean Lean 4 build artifacts.
+
+[source,bash]
+----
+just clean-lean
+----
+
+*What it does*:
+[source,bash]
+----
+cd proofs/lean4 && lake clean
+----
+
+*Removes*:
+- `.lake/build/`
+- `.lake/packages/`
+- Compiled `.olean` files
+
+=== clean-all
+
+Deep clean including dependencies.
+
+[source,bash]
+----
+just clean-all
+----
+
+*Additional deletions*:
+- `package-lock.json`
+- Verification logs
+- Temporary files
+
+== CI/CD Recipes
+
+=== ci
+
+Run full CI pipeline locally.
+
+*Dependencies*: build-all, test-all, verify-all
+
+[source,bash]
+----
+just ci
+----
+
+*Pipeline stages*:
+1. Build all systems
+2. Run all tests
+3. Verify all proofs
+4. Generate documentation stats
+
+*Exit codes*:
+- `0`: Pipeline succeeded
+- `1`: Any stage failed
+
+*Time estimate*: 3-5 minutes
+
+=== quick-check
+
+Quick verification for git hooks.
+
+[source,bash]
+----
+just quick-check
+----
+
+*Checks performed*:
+- Coq: Count `Admitted`
+- Lean: Count `sorry`
+- No full compilation
+
+*Use case*: Pre-commit hook
+
+[source,bash]
+----
+# .git/hooks/pre-commit
+#!/bin/bash
+just quick-check || exit 1
+----
+
+== Development Recipes
+
+=== watch
+
+Watch TypeScript files for changes.
+
+⚠️ **DEPRECATED**: Use `deno task dev` instead.
+
+[source,bash]
+----
+just watch
+# New:
+deno task dev
+----
+
+=== format
+
+Format ReScript code.
+
+[source,bash]
+----
+just format
+----
+
+*What it does*:
+[source,bash]
+----
+cd interpreters/rescript && npx rescript format
+----
+
+=== lint
+
+Lint TypeScript code.
+
+⚠️ **DEPRECATED**: Use `deno lint` instead.
+
+[source,bash]
+----
+just lint
+# New:
+deno lint
+----
+
+== Statistics Recipes
+
+=== stats
+
+Show project statistics.
+
+[source,bash]
+----
+just stats
+----
+
+*Output*:
+[source]
+----
+Project statistics:
+
+Proof code:
+  19287 total
+
+Implementation code:
+   4891 total
+
+Documentation:
+  12453 total
+
+Total:
+  36631 total
+----
+
+=== proof-status
+
+Show detailed proof completion status.
+
+[source,bash]
+----
+just proof-status
+----
+
+*Output format*:
+[source]
+----
+=== Proof Completion Status ===
+
+Coq proofs:
+  Theorems: 84
+  Complete: 57
+  Admitted: 27
+  Completion: 68%
+
+Lean 4 proofs:
+  Theorems: 56
+  Complete: 37
+  Sorry: 19
+  Completion: 66%
+
+Z3 SMT specifications:
+  Theorems: 22
+----
+
+=== loc
+
+Count lines of code with detailed breakdown.
+
+[source,bash]
+----
+just loc
+----
+
+*Categories*:
+- Coq proofs
+- Lean 4 proofs
+- Z3 specifications
+- TypeScript/Deno
+- ReScript
+
+== Installation Recipes
+
+=== install-help
+
+Show installation instructions for all dependencies.
+
+[source,bash]
+----
+just install-help
+----
+
+*Platforms covered*:
+- Fedora/RHEL
+- Ubuntu/Debian
+- Arch Linux
+- Lean 4 (all platforms)
+- Agda
+- Isabelle
+
+=== check-tools
+
+Check which tools are installed.
+
+[source,bash]
+----
+just check-tools
+----
+
+*Output*:
+[source]
+----
+=== Tool Availability Check ===
+✓ coqc: Coq 8.19.1
+✓ z3: 4.13.0
+✓ lean: Lean 4.5.0
+✓ lake: 4.5.0
+✗ agda not found
+✗ isabelle not found
+✓ npm: 10.2.4
+✓ podman: 4.9.3
+✗ docker not found
+----
+
+== Advanced Recipes
+
+=== container-test-all
+
+Run all tests inside container.
+
+[source,bash]
+----
+just container-test-all
+----
+
+*Use case*: Ensure tests pass in clean environment
+
+=== paper
+
+Generate research paper PDF.
+
+⚠️ **Requires**: LaTeX
+
+[source,bash]
+----
+just paper
+----
+
+*What it does*:
+[source,bash]
+----
+cd papers && pdflatex main.tex
+----
+
+== Recipe Flags and Options
+
+=== Common Patterns
+
+==== Dry Run
+
+`just` doesn't have built-in dry-run, but you can:
+
+[source,bash]
+----
+just --dry-run build-all  # Shows commands without executing
+----
+
+==== Verbose Output
+
+[source,bash]
+----
+just --verbose build-coq  # Show all commands
+----
+
+==== Show Recipe
+
+[source,bash]
+----
+just --show build-coq  # Display recipe definition
+----
+
+==== Choose Justfile
+
+[source,bash]
+----
+just --justfile ./alternative.justfile build-all
+----
+
+==== Set Working Directory
+
+[source,bash]
+----
+just --working-directory /path/to/absolute-zero build-all
+----
+
+== Customization
+
+=== Override Recipes
+
+Create a `.justfile.user` (not tracked by git):
+
+[source,just]
+----
+# .justfile.user
+# Load main justfile
+import "justfile"
+
+# Override build-coq with custom flags
+build-coq-custom:
+    coqc -verbose -R proofs/coq/common CNO proofs/coq/common/CNO.v
+----
+
+Then:
+[source,bash]
+----
+just --justfile .justfile.user build-coq-custom
+----
+
+=== Environment Variables
+
+Recipes can use environment variables:
+
+[source,just]
+----
+# In justfile:
+build-coq-debug:
+    COQ_DEBUG=1 coqc CNO.v
+----
+
+Set externally:
+[source,bash]
+----
+COQ_DEBUG=1 just build-coq
+----
+
+== Troubleshooting
+
+=== Recipe Fails with "command not found"
+
+**Problem**: Tool not installed
+
+**Solution**:
+[source,bash]
+----
+just check-tools       # See what's missing
+just install-help      # Get install instructions
+----
+
+=== Coq Build Fails with Dependency Error
+
+**Problem**: Build order incorrect
+
+**Solution**:
+[source,bash]
+----
+just clean-coq         # Clean old artifacts
+just build-coq         # Rebuild in correct order
+----
+
+=== Container Recipes Fail
+
+**Problem**: Podman/Docker not running
+
+**Solution**:
+[source,bash]
+----
+systemctl --user start podman.socket  # Fedora
+sudo systemctl start docker           # Ubuntu
+----
+
+=== Z3 Returns "unknown"
+
+**Problem**: Timeout or resource limits
+
+**Solution**:
+[source,bash]
+----
+z3 -T:120 proofs/z3/cno_properties.smt2  # Increase timeout
+----
+
+== Best Practices
+
+=== Daily Workflow
+
+[source,bash]
+----
+# Morning:
+git pull
+just check-tools
+just verify-all
+
+# During work:
+# (edit proofs)
+just build-coq
+just verify-coq
+
+# Before commit:
+just quick-check
+just ci
+
+# Before push:
+just clean
+just ci
+----
+
+=== Git Hooks Integration
+
+`.git/hooks/pre-commit`:
+[source,bash]
+----
+#!/bin/bash
+just quick-check || {
+    echo "Proofs incomplete, commit anyway? (y/n)"
+    read answer
+    [ "$answer" = "y" ] || exit 1
+}
+----
+
+`.git/hooks/pre-push`:
+[source,bash]
+----
+#!/bin/bash
+just ci || {
+    echo "CI failed, push anyway? (y/n)"
+    read answer
+    [ "$answer" = "y" ] || exit 1
+}
+----
+
+== Appendix
+
+=== Full Recipe List
+
+[source,bash]
+----
+$ just --list
+Available recipes:
+    build-agda
+    build-all
+    build-coq
+    build-isabelle
+    build-lean
+    build-rescript
+    build-typescript
+    check-tools
+    ci
+    clean
+    clean-all
+    clean-coq
+    clean-lean
+    clean-rescript
+    clean-typescript
+    container-build
+    container-shell
+    container-test-all
+    container-verify
+    default
+    docs-adoc
+    docs-all
+    docs-proof-stats
+    docker-build
+    docker-verify
+    format
+    help
+    install-help
+    install-npm
+    install-provers-fedora
+    install-provers-ubuntu
+    install-python
+    lint
+    loc
+    paper
+    proof-status
+    quick-check
+    run-brainfuck FILE
+    run-example LANG FILE
+    run-malbolge FILE
+    run-whitespace FILE
+    stats
+    test-all
+    test-interpreters
+    test-proofs
+    test-typescript
+    verify-agda
+    verify-all
+    verify-coq
+    verify-isabelle
+    verify-lean
+    verify-z3
+    view-docs
+    watch
+----
+
+=== Recipe Dependencies Graph
+
+[source]
+----
+ci
+├── build-all
+│   ├── build-rescript
+│   ├── build-coq
+│   ├── build-lean
+│   ├── build-agda
+│   ├── build-isabelle
+│   └── build-typescript
+├── test-all
+│   ├── test-interpreters
+│   └── test-proofs
+└── verify-all
+    ├── verify-coq (depends on build-coq)
+    ├── verify-z3
+    ├── verify-lean
+    ├── verify-agda (depends on build-agda)
+    └── verify-isabelle (depends on build-isabelle)
+----
+
+---
+
+_Last updated: 2025-11-22_
+
+_For issues or suggestions, see: https://github.com/Hyperpolymath/absolute-zero/issues_

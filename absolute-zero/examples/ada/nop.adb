@@ -1,0 +1,111 @@
+-------------------------------------------------------------------------------
+-- Certified Null Operation in Ada
+--
+-- A program that does absolutely nothing at the application level.
+-- Returns success (exit code 0) without any side effects.
+--
+-- CNO Properties Demonstrated:
+-- - Termination: Procedure body executes and returns immediately
+-- - Purity: No side effects, no I/O, no mutation
+-- - State Preservation: System state unchanged (at logical level)
+-- - Type Safety: Ada's strong typing upheld trivially
+-- - Exception Safety: No exceptions possible
+--
+-- Compilation:
+--   gnatmake nop.adb
+--   gnatmake -O2 nop.adb  -- With optimizations
+--
+-- Execution:
+--   ./nop
+--   echo $?  # Should output 0
+--
+-- SPARK Verification:
+--   This code would be verifiable in SPARK (formal verification subset)
+--   gnatprove --level=4 nop.adb
+-------------------------------------------------------------------------------
+
+procedure Nop is
+begin
+   null;  -- Ada's explicit "do nothing" statement
+end Nop;
+
+-------------------------------------------------------------------------------
+-- Verification Notes:
+-- ==================
+--
+-- Logical Level:
+-- - This is a pure CNO: no observable effects
+-- - Ada's "null" statement is explicitly designed for this
+-- - No variables declared → no state to modify
+-- - No exceptions can be raised
+-- - No tasking → no concurrency concerns
+--
+-- Physical Level:
+-- - Ada runtime initialization (elaboration)
+-- - Stack frame allocated for procedure
+-- - Exit code 0 returned to OS
+-- - CPU cycles consumed
+--
+-- Assembly Analysis:
+--   With optimization (-O2), this compiles to minimal code:
+--   The procedure body becomes effectively a return instruction
+--   Ada runtime handles the actual process exit
+--
+-- Ada Language Features:
+-- - "null" statement: Explicit placeholder for "do nothing"
+-- - Procedure vs Function: Procedures don't return values
+-- - No explicit return needed: procedures end naturally
+-- - Strong typing: Even with no operations, type safety applies
+--
+-- Exception Safety:
+-- - No code that can raise exceptions
+-- - No handlers needed (though they could be added)
+-- - Demonstrates Ada's "prove absence of errors" philosophy
+-- - In SPARK: Can prove no runtime errors possible
+--
+-- SPARK Provability:
+--   SPARK can prove:
+--   - No runtime errors (trivially true)
+--   - No data dependencies (no data)
+--   - No information flow violations (no information)
+--   - Terminates immediately (no loops or recursion)
+--
+-- Tasking and Concurrency:
+-- - No tasks declared → no rendezvous
+-- - No protected objects → no contention
+-- - Single sequential flow
+-- - Demonstrates baseline for concurrent Ada programs
+--
+-- Contrast with Other Languages:
+-- - C: return 0; (explicit return value)
+-- - C++: return 0; (same as C)
+-- - Rust: fn main() { } (implicit unit return)
+-- - Ada: null; (most explicit about "doing nothing")
+--
+-- Design Philosophy:
+-- Ada's "null" statement is unique: it explicitly states intent.
+-- Other languages use empty bodies or implicit returns.
+-- Ada makes the "do nothing" semantic visible in the code.
+-- This aligns with Ada's philosophy: "Make intent explicit."
+--
+-- Historical Note:
+-- The "null" statement was included in Ada from the beginning.
+-- It serves as a placeholder in case statements and loops.
+-- Here, it shows that CNO is a first-class concept in Ada.
+--
+-- Formal Methods:
+-- This is an ideal test case for formal verification:
+-- - Precondition: True
+-- - Postcondition: True (no state changes)
+-- - Invariant: ∀ state: state' = state (no mutations)
+-- - Termination: Proven by absence of loops/recursion
+--
+-- In SPARK notation:
+--   procedure Nop
+--     with Global => null,    -- No global variables accessed
+--          Depends => null    -- No dependencies
+--   is
+--   begin
+--      null;
+--   end Nop;
+-------------------------------------------------------------------------------

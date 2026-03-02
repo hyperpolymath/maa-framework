@@ -1,0 +1,727 @@
+// SPDX-License-Identifier: PMPL-1.0-or-later
+= Absolute Zero: Roadmap to v12.0
+Jonathan D. A. Jewell <jonathan.jewell@open.ac.uk>
+:toc: left
+:toclevels: 3
+:sectnums:
+:icons: font
+
+== Executive Summary
+
+This roadmap charts Absolute Zero's evolution from a research prototype (current v1.0.0-alpha at 50%) through v1.0 release to v12.0 — a comprehensive formal verification platform for computational nullity.
+
+**Timeline**: 18 months (v1.0) → 7 years (v12.0)
+
+**Vision**: Transform from academic proof-of-concept to production-ready verification infrastructure used by compiler writers, security researchers, and formal methods practitioners worldwide.
+
+---
+
+== Current State (v1.0.0-alpha, 50%)
+
+=== Completed ✅
+* **Core Theory**: 6 proof systems, 22 theorems, ~7000 lines of proof code
+* **Multi-Prover Verification**: Coq, Lean 4, Z3, Agda, Isabelle, (Mizar pending)
+* **Advanced Modules**: Statistical mechanics, category theory, lambda calculus, quantum, filesystem
+* **Research Foundation**: Paper drafts, examples, documentation
+
+=== Technical Debt ⚠️
+* Python interpreters (violates RSR language policy → migrate to Julia/Rust)
+* npm/package.json (violates Deno-only policy)
+* License inconsistencies (AGPL references → PMPL-1.0-or-later)
+* Incomplete checkpoint files (ECOSYSTEM.scm needs detail)
+* Container verification not validated
+
+=== Gaps for v1.0
+* No publication-ready paper
+* Missing industrial applications
+* No GUI/visualization tools
+* Limited language coverage (only esoteric languages)
+* No integration with existing verification ecosystems
+
+---
+
+== Phase 1: Road to v1.0 (MVP) — 6 Months
+
+**Goal**: Production-ready research artifact with published paper
+
+=== v1.0 Milestone Requirements
+
+[cols="1,2,1"]
+|===
+|Category |Deliverable |Status
+
+|**Theory**
+|All 6 proof systems verified in containers
+|🟡 90%
+
+|**Implementation**
+|Python → Rust migration complete
+|🔴 0%
+
+|**Documentation**
+|Peer-reviewed paper accepted
+|🔴 0%
+
+|**Standards**
+|Full RSR compliance (PMPL, Deno, no Python)
+|🔴 30%
+
+|**Infrastructure**
+|CI/CD with all proof systems
+|🟡 70%
+
+|**Applications**
+|3 real-world CNO examples
+|🟡 50%
+
+|===
+
+=== v0.8.0: Compliance Sprint (Month 1)
+
+**Focus**: Fix technical debt, achieve RSR compliance
+
+==== Critical Tasks
+* [ ] **License Migration**
+  - Replace all AGPL-3.0 references with PMPL-1.0-or-later
+  - Update SPDX headers in all 500+ files
+  - Create LICENSE and LICENSE-MPL-2.0 files
+  - Remove LICENSE-PALIMPS.md stub
+
+* [ ] **Language Policy Enforcement**
+  - Migrate Brainfuck interpreter: Python → Rust
+  - Migrate Whitespace interpreter: Python → Rust
+  - Remove package.json, npm dependencies
+  - Add deno.json for JS runtime needs
+  - Add Cargo.toml for Rust interpreters
+
+* [ ] **Checkpoint File Completion**
+  - Complete ECOSYSTEM.scm with proper descriptions
+  - Update STATE.scm with recent progress
+  - Add detailed related-projects section
+
+* [ ] **Repository Hygiene**
+  - Remove duplicate TypeScript code (use ReScript only)
+  - Clean up Elm playground (assess if needed)
+  - Consolidate documentation
+
+**Deliverable**: Clean, compliant codebase ready for publication
+
+---
+
+=== v0.9.0: Container & Verification (Month 2)
+
+**Focus**: Bulletproof verification infrastructure
+
+==== Tasks
+* [ ] **Container Validation**
+  - Build Containerfile with all 6 proof systems
+  - Verify all proofs run in container
+  - Add container publish workflow
+  - Test on multiple architectures (amd64, arm64)
+
+* [ ] **Proof System Integration**
+  - Mizar installation automation
+  - Cross-system theorem synchronization
+  - Automated proof checking in CI
+  - Proof coverage reporting
+
+* [ ] **Performance Optimization**
+  - Parallel proof verification
+  - Cached proof artifacts
+  - Incremental verification
+
+**Deliverable**: One-command verification (`podman run absolute-zero verify-all`)
+
+---
+
+=== v0.10.0: Real-World Applications (Month 3)
+
+**Focus**: Demonstrate practical utility
+
+==== CNO Examples
+* [ ] **Compiler Optimization**
+  - Dead code elimination example
+  - LLVM IR CNO detection
+  - Benchmark performance gains
+
+* [ ] **Database Transactions**
+  - Prove rollback is CNO
+  - PostgreSQL integration example
+  - Transaction safety verification
+
+* [ ] **Secure Sandboxing**
+  - Untrusted code safety proof
+  - WebAssembly CNO validator
+  - Docker/Podman sandbox
+
+==== Implementation
+* [ ] Rust CNO library (`crates.io` package)
+* [ ] CLI tool: `cno-verify <program>`
+* [ ] Integration tests with real codebases
+
+**Deliverable**: 3 working industrial examples with performance data
+
+---
+
+=== v0.11.0: Visualization & Accessibility (Month 4)
+
+**Focus**: Make theory accessible to non-experts
+
+==== GUI Development
+* [ ] **Web-Based Proof Explorer** (ReScript + Deno)
+  - Interactive proof tree visualization
+  - Step-through proof execution
+  - Theorem dependency graphs
+  - Mobile-responsive design
+
+* [ ] **CNO Playground** (Tauri 2.0)
+  - Write/test programs in browser
+  - Real-time CNO verification
+  - Visual state transition diagrams
+  - Share proof URLs
+
+==== Educational Materials
+* [ ] Tutorial series (6 modules)
+* [ ] Video lectures on theory
+* [ ] Jupyter notebooks for experimentation
+* [ ] Coq/Lean proof walkthroughs
+
+**Deliverable**: Interactive demo accessible to undergraduates
+
+---
+
+=== v0.12.0: Publication Sprint (Month 5)
+
+**Focus**: Research paper finalization
+
+==== Paper Sections
+* [ ] Abstract & introduction
+* [ ] Formal CNO definition (all 6 systems)
+* [ ] Composition theorems with proofs
+* [ ] Thermodynamic foundations (Landauer, Bennett)
+* [ ] Complexity analysis (undecidability proof)
+* [ ] Industrial applications & benchmarks
+* [ ] Related work comparison
+* [ ] Future research directions
+
+==== Submission Targets
+* **Tier 1**: POPL, PLDI, ICFP, OOPSLA
+* **Tier 2**: ITP, CPP, VSTTE
+* **Journals**: TOPLAS, JFP, PACMPL
+
+==== Supporting Materials
+* [ ] Artifact evaluation package
+* [ ] Benchmark suite
+* [ ] Proof mechanization guide
+* [ ] GitHub Pages documentation site
+
+**Deliverable**: Submission-ready paper + artifact
+
+---
+
+=== v1.0.0: Official Release (Month 6)
+
+**Focus**: Stable, documented, published
+
+==== Release Criteria
+* ✅ All 6 proof systems verified
+* ✅ Zero `Admitted` or `sorry` in core proofs
+* ✅ Full RSR compliance
+* ✅ Paper accepted (or in revision)
+* ✅ 3 industrial examples working
+* ✅ Container verified on 2+ architectures
+* ✅ Documentation complete
+* ✅ GUI functional
+
+==== Release Artifacts
+* [ ] Git tag: `v1.0.0`
+* [ ] GitHub/GitLab release notes
+* [ ] DOI via Zenodo
+* [ ] crates.io package: `absolute-zero`
+* [ ] Announcement blog post
+* [ ] Social media campaign
+
+==== Post-Release
+* [ ] Present at workshop/conference
+* [ ] Engage with proof assistant communities
+* [ ] Monitor issue tracker
+* [ ] Begin v2 planning
+
+**Deliverable**: Stable release with DOI, ready for citation
+
+---
+
+== Phase 2: Expansion (v2-v4) — 12 Months
+
+=== v2.0: Language Expansion (Months 7-9)
+
+**Goal**: Extend beyond esoteric languages
+
+==== New Language Support
+* [ ] **C**: Prove `return;` is CNO
+* [ ] **Rust**: Verify `()` and no-op functions
+* [ ] **Python**: Detect CNO patterns via AST
+* [ ] **JavaScript**: ReScript-based CNO linter
+* [ ] **SQL**: Transaction rollback verification
+* [ ] **Assembly**: x86-64 `nop` instruction proof
+
+==== Infrastructure
+* [ ] Universal CNO specification format
+* [ ] Language-agnostic verification engine
+* [ ] Plugin architecture for new languages
+
+==== Applications
+* [ ] Static analysis tool integration
+* [ ] IDE plugins (VS Code, Emacs, Vim)
+* [ ] Compiler plugin for GCC/Clang
+
+**Deliverable**: CNO verification for 10+ mainstream languages
+
+---
+
+=== v3.0: Automated Proof Generation (Months 10-12)
+
+**Goal**: AI-assisted proof discovery
+
+==== Features
+* [ ] **Machine Learning Models**
+  - Train on existing proofs
+  - Suggest proof strategies
+  - Auto-complete proof sketches
+
+* [ ] **Proof Search**
+  - Automated theorem proving
+  - SMT solver integration
+  - Sledgehammer-style tactics
+
+* [ ] **Proof Refactoring**
+  - Simplify complex proofs
+  - Detect proof duplication
+  - Suggest lemmas
+
+==== Research Integration
+* [ ] Collaborate with AI4Formal Methods community
+* [ ] Benchmark against Lean GPT-f
+* [ ] Contribute to mathlib/Lean proof corpus
+
+**Deliverable**: AI copilot for CNO proof engineering
+
+---
+
+=== v4.0: Production Hardening (Months 13-18)
+
+**Goal**: Enterprise-ready verification platform
+
+==== Features
+* [ ] **Performance**
+  - Parallel proof checking
+  - Distributed verification
+  - GPU-accelerated SMT solving
+
+* [ ] **Scalability**
+  - Verify large codebases (1M+ LOC)
+  - Incremental verification
+  - Proof caching & memoization
+
+* [ ] **Security**
+  - Proof auditing & provenance
+  - Cryptographic proof commitments
+  - Supply chain verification
+
+==== Enterprise Adoption
+* [ ] Docker Hub official image
+* [ ] Kubernetes operator
+* [ ] Cloud service (SaaS offering)
+* [ ] Enterprise support contracts
+
+**Deliverable**: Production SLA-ready verification service
+
+---
+
+== Phase 3: Ecosystem Integration (v5-v8) — 24 Months
+
+=== v5.0: Compiler Integration (Months 19-24)
+
+**Goal**: Seamless integration with existing toolchains
+
+==== Compiler Backends
+* [ ] **LLVM Plugin**
+  - CNO detection pass
+  - Dead code elimination
+  - Optimization hints
+
+* [ ] **GCC Plugin**
+  - Similar to LLVM
+  - GCC-specific optimizations
+
+* [ ] **Rust Compiler (rustc)**
+  - Macro for CNO annotation
+  - Compile-time verification
+  - Zero-cost abstractions
+
+==== Build System Integration
+* [ ] Cargo plugin: `cargo cno-verify`
+* [ ] CMake module
+* [ ] Meson integration
+* [ ] Bazel rules
+
+**Deliverable**: CNO verification in every major compiler
+
+---
+
+=== v6.0: Formal Methods Ecosystem (Months 25-30)
+
+**Goal**: Bridge to existing verification tools
+
+==== Tool Integration
+* [ ] **Frama-C**: C verification
+* [ ] **Why3**: Multi-prover integration
+* [ ] **Dafny**: Program verification
+* [ ] **F***: Dependent types
+* [ ] **TLA+**: Temporal logic
+
+==== Standard Formats
+* [ ] SMT-LIB 2.6 output
+* [ ] TPTP problem format
+* [ ] Proof certificates (LFSC, Dedukti)
+
+==== Ecosystem Position
+* [ ] Present at FM conferences
+* [ ] Contribute to Proof Market
+* [ ] Integration with Coq Platform
+
+**Deliverable**: Universal CNO verification format
+
+---
+
+=== v7.0: Quantum Computing (Months 31-36)
+
+**Goal**: Extend CNO theory to quantum realm
+
+==== Quantum CNOs
+* [ ] **Formal Definition**
+  - Quantum state preservation
+  - Unitary operation verification
+  - Entanglement preservation
+
+* [ ] **Proof Systems**
+  - QPL (Quantum Programming Language) integration
+  - Qiskit circuit verification
+  - Cirq CNO detection
+
+* [ ] **Applications**
+  - Quantum algorithm optimization
+  - Error correction verification
+  - Noise mitigation
+
+==== Research
+* [ ] Quantum CNO paper (QIP, QPL conference)
+* [ ] Collaboration with quantum computing labs
+* [ ] Open-source quantum simulator
+
+**Deliverable**: World's first quantum CNO verifier
+
+---
+
+=== v8.0: Hardware Verification (Months 37-42)
+
+**Goal**: Extend to hardware design
+
+==== HDL Support
+* [ ] **Verilog**: RTL CNO detection
+* [ ] **VHDL**: Hardware CNO verification
+* [ ] **Chisel**: Scala-based HDL
+* [ ] **Bluespec**: Formal hardware design
+
+==== Applications
+* [ ] CPU design verification
+* [ ] FPGA optimization
+* [ ] ASIC power analysis
+
+==== Industry Partnership
+* [ ] Collaborate with chip designers
+* [ ] RISC-V CNO instruction verification
+* [ ] Open-source hardware projects
+
+**Deliverable**: Hardware CNO verification suite
+
+---
+
+== Phase 4: AI & Automation (v9-v10) — 18 Months
+
+=== v9.0: Neural Theorem Proving (Months 43-51)
+
+**Goal**: State-of-the-art AI-assisted proving
+
+==== Deep Learning Models
+* [ ] **Transformer-based Prover**
+  - Train on 1M+ proofs
+  - Beat human experts on benchmarks
+  - Transfer learning across systems
+
+* [ ] **Reinforcement Learning**
+  - Learn proof strategies
+  - Optimize proof length
+  - Discover novel theorems
+
+* [ ] **Neuro-Symbolic Methods**
+  - Combine neural nets with symbolic reasoning
+  - Explainable AI proofs
+  - Human-readable justifications
+
+==== Research Impact
+* [ ] NeurIPS/ICML paper on CNO proving
+* [ ] Open-source model weights
+* [ ] Integration with AlphaProof successor
+
+**Deliverable**: AI that discovers CNO theorems autonomously
+
+---
+
+=== v10.0: Autonomous Verification (Months 52-60)
+
+**Goal**: Zero-human-in-the-loop verification
+
+==== Features
+* [ ] **Auto-Fix**
+  - Detect non-CNO code
+  - Suggest CNO rewrites
+  - Automated refactoring
+
+* [ ] **Continuous Verification**
+  - GitHub Actions integration
+  - Pre-commit hooks
+  - Real-time code review
+
+* [ ] **Proof Repair**
+  - Fix broken proofs automatically
+  - Handle API changes
+  - Maintain proof health
+
+==== Enterprise Features
+* [ ] SLA guarantees (99.9% uptime)
+* [ ] Security compliance (SOC 2)
+* [ ] Multi-tenancy support
+
+**Deliverable**: Fully autonomous CNO verification platform
+
+---
+
+== Phase 5: Universal Platform (v11-v12) — 24 Months
+
+=== v11.0: Cross-Domain Verification (Months 61-72)
+
+**Goal**: Verify CNOs in every computational domain
+
+==== New Domains
+* [ ] **Biology**: Protein folding simulations
+* [ ] **Chemistry**: Molecular dynamics
+* [ ] **Physics**: Lattice QCD simulations
+* [ ] **Finance**: Zero-knowledge trading
+* [ ] **Cryptography**: Homomorphic encryption
+
+==== Scientific Computing
+* [ ] Julia integration (native)
+* [ ] NumPy/SciPy CNO detection
+* [ ] BLAS/LAPACK verification
+* [ ] HPC cluster support
+
+==== Research Collaboration
+* [ ] Partner with national labs
+* [ ] NSF grant applications
+* [ ] EU Horizon funding
+
+**Deliverable**: CNO verification for scientific software
+
+---
+
+=== v12.0: The Universal CNO Standard (Months 73-84)
+
+**Goal**: Establish CNO as universal computational primitive
+
+==== Standardization
+* [ ] **ISO Standard**: Submit CNO specification
+* [ ] **IEEE Standard**: Formal verification methods
+* [ ] **W3C**: Web platform CNO API
+
+==== Global Adoption
+* [ ] Taught in CS curriculums
+* [ ] Required for safety-critical software
+* [ ] Referenced in regulations (FDA, FAA)
+
+==== Platform Maturity
+* [ ] 10,000+ users
+* [ ] 1,000+ papers citing Absolute Zero
+* [ ] 100+ companies using in production
+* [ ] 50+ programming languages supported
+
+==== Infrastructure
+* [ ] Distributed proof network
+* [ ] Proof marketplace
+* [ ] CNO certification authority
+* [ ] Global verification registry
+
+==== Legacy
+* [ ] Book: "The Absolute Zero Handbook"
+* [ ] Documentary on computational nullity
+* [ ] Hall of Fame for top contributors
+* [ ] Annual Absolute Zero Conference
+
+**Deliverable**: CNO verification as foundational CS infrastructure
+
+---
+
+== Resource Requirements
+
+=== Personnel (by Phase)
+
+[cols="1,2,1"]
+|===
+|Phase |Roles |FTE
+
+|**v1.0 (6mo)**
+|Lead researcher, 2 proof engineers
+|2.5
+
+|**v2-v4 (18mo)**
+|+ 2 software engineers, 1 ML researcher
+|5.5
+
+|**v5-v8 (24mo)**
+|+ 2 integration engineers, 1 quantum expert
+|8.5
+
+|**v9-v10 (18mo)**
+|+ 3 AI researchers, 1 DevOps engineer
+|12.5
+
+|**v11-v12 (24mo)**
+|+ 2 domain experts, 1 standards liaison
+|15.5
+|===
+
+=== Funding (Estimated)
+
+[cols="1,1,2"]
+|===
+|Phase |Duration |Budget (USD)
+
+|v1.0
+|6 months
+|$200K (salaries, compute, publication)
+
+|v2-v4
+|18 months
+|$800K (team expansion, cloud infra)
+
+|v5-v8
+|24 months
+|$1.5M (partnerships, hardware)
+
+|v9-v10
+|18 months
+|$2M (AI compute, research)
+
+|v11-v12
+|24 months
+|$3M (global expansion, standards)
+
+|**Total**
+|7 years
+|**$7.5M**
+|===
+
+=== Infrastructure
+
+* **Compute**: 100 CPU cores, 8 GPUs (for AI training)
+* **Storage**: 10 TB (proof artifacts, datasets)
+* **Cloud**: AWS/Azure/GCP multi-cloud
+* **CI/CD**: GitHub Actions, GitLab CI, self-hosted runners
+
+---
+
+== Risk Mitigation
+
+=== Technical Risks
+
+[cols="1,2,2"]
+|===
+|Risk |Impact |Mitigation
+
+|Proof complexity explosion
+|HIGH
+|Focus on decidable subsets, use SMT solvers
+
+|AI model hallucinations
+|MEDIUM
+|Formal verification of AI outputs
+
+|Performance bottlenecks
+|MEDIUM
+|Parallel execution, caching, incremental verification
+
+|Quantum CNO undecidability
+|LOW
+|Limit to finite-dimensional systems
+|===
+
+=== Strategic Risks
+
+[cols="1,2,2"]
+|===
+|Risk |Impact |Mitigation
+
+|Competing research
+|MEDIUM
+|Publish early, establish mindshare
+
+|Lack of adoption
+|HIGH
+|Focus on real-world applications first
+
+|Funding gaps
+|HIGH
+|Diversified funding (grants, industry, SaaS)
+
+|Team retention
+|MEDIUM
+|Competitive comp, interesting problems
+|===
+
+---
+
+== Success Metrics
+
+=== v1.0 KPIs
+* ✅ Paper accepted at top-tier venue
+* ✅ 500+ GitHub stars
+* ✅ 10+ external contributors
+* ✅ 3 industrial case studies
+
+=== v6.0 KPIs
+* 🎯 50+ languages supported
+* 🎯 1,000+ users
+* 🎯 10 companies in production
+* 🎯 20+ academic citations
+
+=== v12.0 KPIs
+* 🌟 10,000+ users globally
+* 🌟 1,000+ papers citing project
+* 🌟 ISO/IEEE standard approved
+* 🌟 Taught in 100+ universities
+
+---
+
+== Conclusion
+
+Absolute Zero has the potential to transform from a research curiosity into foundational computer science infrastructure. By systematically expanding from esoteric languages to mainstream compilers, from manual proofs to AI-assisted proving, and from academic prototypes to industrial platforms, we can establish **Certified Null Operations** as a universal computational primitive.
+
+**The vision**: In 2032, every compiler, every proof assistant, and every verification tool will have CNO detection built-in. Absolute Zero will be the reference implementation, the theoretical foundation, and the community hub for this transformation.
+
+**Next step**: Execute Phase 1 (v1.0) to prove the concept, then secure funding for the 7-year journey to v12.0.
+
+---
+
+_"From nothing, everything. From zero, infinity."_
+
+— Jonathan D. A. Jewell, 2026

@@ -1,0 +1,77 @@
+# SPDX-License-Identifier: PMPL-1.0-or-later
+# Aletheia RSR Compliance Check
+# This workflow verifies RSR Bronze-level compliance using Aletheia
+#
+# Usage: Copy this file to your repository's .github/workflows/ directory
+
+name: RSR Compliance
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  rsr-compliance:
+    name: RSR Bronze Compliance Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@4be9e76fd7c4901c61fb841f559994984270fce7 # stable
+        with:
+          toolchain: stable
+
+      - name: Cache Cargo registry
+        uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
+
+      - name: Install Aletheia
+        run: cargo install aletheia || cargo install --git https://gitlab.com/maa-framework/6-the-foundation/aletheia.git
+
+      - name: Run RSR Compliance Check
+        run: aletheia --format json > aletheia-report.json
+
+      - name: Display Results
+        run: |
+          echo "## RSR Compliance Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if jq -e '.bronze_compliant == true and .has_critical_warnings == false' aletheia-report.json > /dev/null; then
+            echo "✅ **Bronze-level RSR compliance: ACHIEVED**" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ **Bronze-level RSR compliance: NOT MET**" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Score" >> $GITHUB_STEP_SUMMARY
+          PASSED=$(jq '.score.passed' aletheia-report.json)
+          TOTAL=$(jq '.score.total' aletheia-report.json)
+          PCT=$(jq '.score.percentage' aletheia-report.json)
+          echo "$PASSED/$TOTAL checks passed ($PCT%)" >> $GITHUB_STEP_SUMMARY
+
+      - name: Upload Report
+        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4
+        with:
+          name: aletheia-report
+          path: aletheia-report.json
+
+      - name: Fail on Non-Compliance
+        run: |
+          if ! jq -e '.bronze_compliant == true and .has_critical_warnings == false' aletheia-report.json > /dev/null; then
+            echo "RSR Bronze compliance not met"
+            exit 1
+          fi

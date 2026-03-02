@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Absolute Zero Playground - CNO Explorer</title>
+    <link rel="stylesheet" href="css/elm-playground.css">
+    <script src="elm/dist/main.js"></script>
+</head>
+<body>
+    <div id="elm-app"></div>
+
+    <script>
+        // Initialize Elm application
+        const app = Elm.Main.init({
+            node: document.getElementById('elm-app')
+        });
+
+        // Future: WebSocket connection to Echidna
+        // app.ports.connectEchidna.subscribe((config) => {
+        //     const ws = new WebSocket('ws://localhost:8080/echidna');
+        //     // Handle WebSocket messages
+        // });
+    </script>
+
+    <noscript>
+        <p>This application requires JavaScript to run. Please enable JavaScript in your browser.</p>
+    </noscript>
+</body>
+</html>

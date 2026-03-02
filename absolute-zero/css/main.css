@@ -1,0 +1,29 @@
+@import "variables.css";
+@import "accessibility.css";
+
+/* paste your style.css rules below, swapping hard-codes for vars */
+
+body {
+    background-color: var(--colour-bg);
+    color: var(--colour-text);
+    font-family: var(--font-family-base);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
+
+.section {
+    padding: var(--section-padding);
+    margin: var(--section-margin);
+    border: 1px dashed var(--section-border);
+    width: var(--section-width);
+    text-align: center;
+}
+
+.section.b {
+    background-color: var(--section-bg-b);
+    color: var(--section-text-b);
+    font-style: italic;
+}

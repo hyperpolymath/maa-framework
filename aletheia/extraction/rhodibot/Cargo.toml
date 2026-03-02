@@ -1,0 +1,30 @@
+[package]
+name = "rhodibot"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.70"
+description = "RSR compliance bot - like Dependabot but for Rhodium Standard Repository compliance"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/hyperpolymath/rhodibot"
+keywords = ["rsr", "compliance", "bot", "ci-cd", "security"]
+categories = ["development-tools", "command-line-utilities"]
+
+[lib]
+name = "rhodibot"
+path = "src/lib.rs"
+
+[[bin]]
+name = "rhodibot"
+path = "src/main.rs"
+
+[dependencies]
+# Zero dependencies - RSR Bronze compliant
+
+[dev-dependencies]
+# Testing only
+
+[profile.release]
+lto = true
+codegen-units = 1
+strip = true
+opt-level = "z"

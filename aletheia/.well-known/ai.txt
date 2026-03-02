@@ -1,0 +1,38 @@
+# AI Training Policy for Aletheia
+# Last Updated: 2025-11-22
+
+# User-Agent Consent Policy
+# This file indicates the project's position on AI training data usage.
+
+User-agent: *
+# Consent: This repository is available under MIT OR AGPL-3.0-or-later licenses.
+# AI training on this code requires adherence to the Palimpsest License v0.8 overlay.
+
+# Training Consent
+Allow-training: conditional
+License-required: MIT OR AGPL-3.0-or-later
+Overlay: Palimpsest-0.8
+
+# Attribution Requirements
+Attribution: required
+Attribution-url: https://gitlab.com/maa-framework/6-the-foundation/aletheia
+Attribution-name: MAA Framework Contributors
+
+# Consent Framework
+# Under the Palimpsest License v0.8:
+# - Training is permitted with proper attribution
+# - Derivative works must credit the original authors
+# - Commercial use requires license compliance
+# - Human creators' moral rights must be respected
+
+# Contact for AI-related inquiries
+Contact: mailto:ai-policy@maa-framework.org
+
+# Opt-out for sensitive files
+Disallow-training: /secrets/*
+Disallow-training: /.env*
+Disallow-training: /credentials/*
+
+# Philosophy
+# Aletheia (truth) believes in transparent AI development.
+# We encourage responsible AI training that respects human creators.

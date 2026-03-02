@@ -1,0 +1,14 @@
+[package]
+name = "whitespace-cno"
+version = "0.1.0"
+edition = "2021"
+authors = ["Jonathan D.A. Jewell <jonathan@hyperpolymath.org>"]
+description = "Whitespace interpreter with CNO (Certified Null Operation) detection"
+license = "AGPL-3.0-or-later"
+repository = "https://github.com/hyperpolymath/absolute-zero"
+
+[lib]
+name = "whitespace_cno"
+path = "src/lib.rs"
+
+[dependencies]

@@ -1,0 +1,121 @@
+# Echidna Configuration for Absolute Zero CNO Testing
+# https://github.com/crytic/echidna
+
+# Test configuration
+testMode: "property"
+testLimit: 50000
+shrinkLimit: 5000
+timeout: 600  # 10 minutes
+
+# Contract configuration
+cryticArgs:
+  - "--compile-force-framework"
+  - "foundry"
+
+# Solidity compiler settings
+solcArgs: "--optimize --optimize-runs 200"
+solcVersion: "0.8.23"
+
+# Coverage
+coverage: true
+corpusDir: "tests/echidna-corpus"
+
+# Assertion checking
+checkAsserts: true
+assertionMode: true
+
+# Property-based testing for CNO properties
+# Based on the 10 Z3 properties in proofs/z3/cno_properties.smt2
+
+# Echidna will test Solidity implementations of:
+# 1. Idempotence: executeCNO(); executeCNO() == executeCNO()
+# 2. No side effects: state before == state after
+# 3. Commutativity: CNO1; CNO2 == CNO2; CNO1
+# 4. Determinism: Same input → same output
+# 5. No memory leaks: Gas usage bounded
+# 6. Load-store cancellation
+# 7. Store-load idempotence
+# 8. Register preservation
+# 9. I/O preservation
+# 10. Negative testing: non-CNOs fail properties
+
+# Fuzzing configuration
+workers: 4  # Parallel workers
+
+# Deployment configuration
+deployContracts:
+  - "CNOProperties"
+  - "CNOTester"
+
+# Filter functions to test
+filterFunctions:
+  - "echidna_*"  # All Echidna property tests
+
+# Optimization
+shrinkMode: true
+seqLen: 100
+
+# Output
+format: "text"
+quiet: false
+
+# Advanced features (Echidna 2.0+)
+# Multi-ABI support
+multiAbi: false
+
+# Symbolic execution backend
+backend: "smt"  # or "concrete" for faster but less thorough
+
+# SMT solver configuration
+smtSolver: "z3"  # Use Z3 (same as our proofs)
+smtTimeout: 30
+
+# Coverage-guided fuzzing
+coverageFormats:
+  - "txt"
+  - "html"
+
+# Experimental: Mutation testing
+# mutationTesting: true
+
+# Seed for reproducibility
+seed: null  # Random seed, set to number for reproducibility
+
+# Advanced property testing
+propMaxGas: 12000000
+propTests: 100
+
+# Dapp paths
+dappRoot: "tests/contracts"
+buildDir: "tests/contracts/out"
+
+# Filter contracts
+filterContracts:
+  - "CNO*"
+
+# Transaction settings
+balanceContract: 0xffffffff
+balanceAddr: 0xffffffff
+
+# Call sequence limits
+minSeqLen: 1
+maxSeqLen: 100
+
+# RPC configuration (if testing against actual chain)
+# rpcUrl: "http://localhost:8545"
+# rpcBlock: "latest"
+
+# Echidna property naming convention:
+# - echidna_property_name() returns bool
+# - Echidna fuzzes to find inputs that return false
+# - If no false found after testLimit, property holds
+
+# Example properties for CNO testing:
+# function echidna_cno_idempotent() public returns (bool) {
+#     uint256 before = getState();
+#     executeCNO();
+#     uint256 after1 = getState();
+#     executeCNO();
+#     uint256 after2 = getState();
+#     return before == after1 && after1 == after2;
+# }

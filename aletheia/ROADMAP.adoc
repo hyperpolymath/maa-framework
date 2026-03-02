@@ -1,0 +1,267 @@
+// SPDX-License-Identifier: PMPL-1.0-or-later
+= Aletheia Roadmap: v1.0.0 to v10.0.0
+
+This document outlines the complete development roadmap for Aletheia.
+
+== Philosophy
+
+**Aletheia** (Greek: truth, disclosure, unconcealment) embodies the principle that repository compliance should be:
+- **Verifiable**: Automated, reproducible checks
+- **Transparent**: Clear pass/fail criteria
+- **Auditable**: Zero dependencies, single-file implementation
+- **Trustworthy**: No network access, no data exfiltration
+
+---
+
+== Current State: v1.9.0 (Stable)
+
+=== Status: Released
+
+[cols="1,1"]
+|===
+| Metric | Value
+
+| Self-Verification | 20/20 checks (100%)
+| Bronze Compliance | 16/16 (100%)
+| Silver Compliance | 4/4 (100%)
+| Dependencies | 0 (zero)
+| Unsafe Blocks | 0 (zero)
+| Source Modules | 5 (main, types, checks, config, output)
+| Lines of Code | ~2100
+| Unit Tests | 22
+| Integration Tests | 29
+| MSRV | 1.80
+| Toolchain | stable
+| GitHub Workflows | 23 (all SHA-pinned)
+| .scm Checkpoint Files | 7
+|===
+
+=== v1.0.0 Completed Features
+- [x] Bronze-level RSR verification (16 checks)
+- [x] CLI interface with distinct exit codes (0-4)
+- [x] Human-readable reports
+- [x] JSON output format (`--format json`)
+- [x] Quiet mode (`-q` / `--quiet`)
+- [x] Verbose mode (`-v` / `--verbose`)
+- [x] Help text (`--help`) and version (`--version`)
+- [x] Self-verification capability
+- [x] Symlink detection and security warnings
+- [x] Verification timestamps (TOCTOU mitigation)
+- [x] LICENSE and LICENSE.txt acceptance
+- [x] README.adoc / README.md alternatives
+- [x] justfile / Justfile alternatives
+- [x] Performance benchmarks
+- [x] Comprehensive documentation
+- [x] 7 .scm checkpoint files (STATE, META, ECOSYSTEM, HANDOVER, PLAYBOOK, AGENTIC, NEUROSYM)
+- [x] 23 GitHub Actions workflows (all 17 required + extras)
+- [x] Nix flake for reproducible builds
+- [x] Fuzzing infrastructure (ClusterFuzzLite)
+
+=== v1.1.0 Completed Features (SARIF Output)
+- [x] SARIF 2.1.0 output format for CI/CD integration (`--format sarif`)
+- [x] GitHub Code Scanning compatible output
+- [x] GitLab SAST compatible output
+- [x] Rule IDs with `rsr/` prefix namespace
+- [x] Compliance levels mapped to SARIF severity (Bronze=error, Silver=warning, Gold/Platinum=note)
+
+=== v1.2.0 Completed Features (Configuration)
+- [x] `.aletheia.toml` configuration file
+- [x] Zero-dependency TOML subset parser (supports tables, strings, bools, ints, arrays, comments)
+- [x] Per-check enable/disable (8 check toggles)
+- [x] Ignore patterns for files
+- [x] Default configuration when no file present
+
+=== v1.3.0 Completed Features (Improved Checks)
+- [x] Module split: main.rs -> types.rs, checks.rs, config.rs, output.rs
+- [x] SPDX license header scanning (Silver)
+- [x] GitHub Actions workflow SHA-pin verification (Silver)
+- [x] .editorconfig detection (Silver)
+- [x] CONTRIBUTING.md content validation (Silver)
+- [x] Silver checks don't affect Bronze compliance
+
+=== v1.4.0 Completed Features (Self-Compliance)
+- [x] SPDX-License-Identifier headers in all src/ files (8/8)
+- [x] SHA-pinned all 61 GitHub Actions (100%)
+- [x] CONTRIBUTING.md with substantive content
+- [x] 100% self-verification (20/20 checks)
+
+=== v1.5.0 Completed Features (Ignore Patterns)
+- [x] Glob pattern matching engine (*, ? wildcards)
+- [x] `ignore.files` from .aletheia.toml wired to all checks
+- [x] Ignored files shown as "(ignored)" in reports
+
+=== v1.6.0 Completed Features (Fix Suggestions)
+- [x] Remediation hints for all failing checks
+- [x] Fix Suggestions section in normal report mode
+- [x] Inline suggestions in verbose mode (💡 icons)
+- [x] Suggestions included in JSON output
+
+=== v1.7.0 Completed Features (HTML Report)
+- [x] `--format html` standalone HTML output
+- [x] Embedded CSS (no external dependencies)
+- [x] Visual progress bar with color coding
+- [x] Pass/fail status badges per check
+- [x] Fix suggestions displayed inline
+
+=== v1.8.0 Completed Features (Badge Generation)
+- [x] `--badge` flag for SVG compliance badge
+- [x] shields.io-compatible badge format
+- [x] Color coding: green (passing), yellow (partial), red (failing)
+- [x] Shows compliance percentage
+
+=== v1.9.0 Completed Features (Pre-commit Hook)
+- [x] `aletheia init-hook` subcommand
+- [x] Installs git pre-commit hook
+- [x] Hook runs `aletheia -q` before each commit
+- [x] Safety: refuses to overwrite existing hooks
+- [x] Unix file permissions (0755) set automatically
+
+---
+
+---
+
+== Medium-Term: v2.0.0 - v4.0.0
+
+=== v2.0.0: Silver-Level RSR
+- [ ] Formal verification hooks
+- [ ] Proof artifact detection
+- [ ] Property-based testing validation
+- [ ] Mutation testing integration
+- [ ] Coverage thresholds
+
+=== v3.0.0: Multi-Language & Scale
+- [ ] Language detection
+- [ ] Language-specific checks (Rust, ReScript, Gleam, etc.)
+- [ ] Build system detection
+- [ ] Parallel file checking
+- [ ] Incremental verification (cache)
+- [ ] Batch repository analysis
+
+=== v4.0.0: Gold-Level RSR
+- [ ] Multi-language repository support
+- [ ] Polyglot build systems
+- [ ] Cross-language dependency verification
+- [ ] Interface contract checking
+- [ ] API compatibility validation
+
+---
+
+== Long-Term: v5.0.0 - v7.0.0
+
+=== v5.0.0: Reporting & Extensibility
+- [ ] HTML report generation
+- [ ] Compliance dashboard
+- [ ] Trend tracking
+- [ ] Badge generation
+- [ ] Plugin architecture
+- [ ] Custom check modules
+- [ ] Pre-commit hooks
+
+=== v6.0.0: Platinum-Level RSR
+- [ ] CADRE integration
+- [ ] Formal specification support
+- [ ] Proof assistant integration (Lean, Coq)
+- [ ] SBOM (Software Bill of Materials) generation
+- [ ] License compliance checking
+- [ ] SLSA provenance verification
+- [ ] OpenSSF Scorecard integration
+
+=== v7.0.0: Enterprise & Governance
+- [ ] Organization-wide policies
+- [ ] Team compliance tracking
+- [ ] Audit trail generation
+- [ ] Compliance attestation
+- [ ] Third-party audit support
+
+---
+
+== Vision: v8.0.0 - v10.0.0
+
+=== v8.0.0: Advanced Security
+- [ ] Supply chain attack detection
+- [ ] Dependency confusion detection
+- [ ] Typosquatting detection
+- [ ] Malware signature scanning
+- [ ] Behavioral analysis
+
+=== v9.0.0: Full TPCF Implementation
+- [ ] Perimeter 1: Inner Sanctum verification
+- [ ] Perimeter 2: Trusted Contributors verification
+- [ ] Perimeter 3: Community Sandbox verification
+- [ ] Trust level propagation
+- [ ] Reputation scoring
+
+=== v10.0.0: The Dream
+- [ ] Complete RSR compliance spectrum (Bronze to Diamond)
+- [ ] Global repository verification network
+- [ ] Zero-knowledge compliance proofs
+- [ ] Decentralized trust network
+- [ ] Universal package verification
+- [ ] Cross-ecosystem compatibility
+- [ ] Real-time compliance monitoring
+- [ ] Predictive compliance
+- [ ] Full ecosystem health dashboard
+
+---
+
+== Constraints (Non-Negotiable)
+
+These constraints apply to ALL versions:
+
+=== Zero Dependencies (Bronze Requirement)
+- **NEVER** add external crates
+- Use only Rust standard library
+- Implement functionality from scratch
+
+=== Zero Unsafe Code (Bronze Requirement)
+- **NEVER** use `unsafe` keyword
+- No FFI calls
+- No raw pointer operations
+
+=== Offline-First (Bronze Requirement)
+- **NEVER** make network requests
+- Work entirely from local filesystem
+- Air-gapped compatible
+
+=== Single Binary
+- **ALWAYS** produce a single, static binary
+- No runtime dependencies
+- Cross-compilation support
+
+---
+
+== Contribution Opportunities
+
+=== Good First Issues
+1. Add more unit tests for edge cases
+2. Improve error messages
+3. Add example repositories
+4. SARIF output format
+
+=== Intermediate
+1. Configuration file support (`.aletheia.toml`)
+2. Content validation (beyond file existence)
+3. HTML report generation
+4. Custom check definitions
+
+=== Advanced
+1. Plugin architecture design
+2. Formal verification integration
+3. Silver-level RSR implementation
+4. Batch repository analysis
+
+---
+
+== Resources
+
+- **GitHub**: https://github.com/hyperpolymath/aletheia
+- **Documentation**: See `docs/` directory
+- **Contributing**: See `CONTRIBUTING.md`
+- **Security**: See `SECURITY.md`
+
+---
+
+**Version**: 2.0 +
+**Last Updated**: 2026-02-05
+
+_"Truth in repository standards, one check at a time."_

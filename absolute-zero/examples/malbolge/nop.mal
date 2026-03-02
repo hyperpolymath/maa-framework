@@ -1,0 +1,15 @@
+The simplest Malbolge CNO: the empty program.
+
+In Malbolge, an empty program immediately halts,
+producing no output and leaving state unchanged.
+
+This is "Absolute Zero" - a program that does absolutely nothing.
+
+Properties:
+- Terminates immediately
+- No output
+- Memory unchanged
+- All registers unchanged
+- Zero energy dissipated (Landauer's principle)
+
+This is the canonical example of a Certified Null Operation.

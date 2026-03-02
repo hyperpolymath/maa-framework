@@ -1,0 +1,189 @@
+// SPDX-License-Identifier: PMPL-1.0-or-later
+= License Audit: Absolute Zero & ECHIDNA
+:toc:
+:sectnums:
+
+== Audit Date: 2026-02-05
+
+== absolute-zero Repository
+
+=== Current State ⚠️
+
+**LICENSE file**: Not present (only LICENSE-PALIMPS.md stub at 0 bytes)
+
+**README.adoc** (lines 326-341):
+```
+### AGPL 3.0 (Primary License)      ❌ OUTDATED
+### Palimpsest 0.5 (Academic License) ❌ OUTDATED
+```
+
+**Checkpoint files** (STATE.scm, ECOSYSTEM.scm, META.scm):
+```scheme
+;; SPDX-License-Identifier: MPL-2.0-or-later  ⚠️ Should be PMPL-1.0-or-later
+```
+
+**Expected**: PMPL-1.0-or-later (primary), MPL-2.0 (fallback)
+
+=== Required Actions
+
+1. **Create LICENSE file**:
+```bash
+cd ~/Documents/hyperpolymath-repos/absolute-zero
+cp ~/Documents/hyperpolymath-repos/echidna/LICENSE .
+```
+
+2. **Update SPDX headers**:
+```bash
+# Fix checkpoint files
+sed -i 's/MPL-2.0-or-later/PMPL-1.0-or-later/' STATE.scm ECOSYSTEM.scm META.scm
+
+# Add to all source files
+find proofs -name "*.v" -o -name "*.lean" | while read f; do
+  echo "// SPDX-License-Identifier: PMPL-1.0-or-later" | cat - "$f" > temp && mv temp "$f"
+done
+```
+
+3. **Update README.adoc**:
+```adoc
+== License
+
+SPDX-License-Identifier: PMPL-1.0-or-later
+
+Primary License: Palimpsest-MPL License 1.0 or later (PMPL-1.0-or-later)
+
+Fallback (where required): Mozilla Public License 2.0 (MPL-2.0)
+
+See LICENSE for full text.
+```
+
+4. **Remove outdated files**:
+```bash
+rm LICENSE-PALIMPS.md  # 0 bytes, not useful
+```
+
+---
+
+== ECHIDNA Repository
+
+=== Current State ⚠️ INCONSISTENT
+
+**LICENSE file** (line 1):
+```
+SPDX-License-Identifier: PMPL-1.0-or-later  ✅ CORRECT
+```
+
+**Cargo.toml** (line 4):
+```toml
+license = "MIT OR Palimpsest-0.6"  ❌ OUTDATED
+```
+
+**Source files** (mixed):
+```rust
+// SPDX-License-Identifier: MIT OR Palimpsest-0.6  ❌ OUTDATED (some files)
+// SPDX-License-Identifier: PMPL-1.0              ✅ CORRECT (other files)
+// SPDX-License-Identifier: PMPL-1.0-or-later    ✅ CORRECT (LICENSE)
+```
+
+=== Required Actions
+
+1. **Fix Cargo.toml**:
+```toml
+# Before:
+license = "MIT OR Palimpsest-0.6"
+
+# After:
+license = "PMPL-1.0-or-later"
+```
+
+2. **Fix source file headers**:
+```bash
+cd ~/Documents/hyperpolymath-repos/echidna
+
+# Replace old SPDX
+find . -name "*.rs" -o -name "*.jl" -o -name "*.res" | while read f; do
+  sed -i 's#MIT OR Palimpsest-0.6#PMPL-1.0-or-later#g' "$f"
+  sed -i 's#PMPL-1.0$#PMPL-1.0-or-later#g' "$f"
+done
+```
+
+3. **Verify consistency**:
+```bash
+# Should all return PMPL-1.0-or-later
+grep "SPDX-License-Identifier" LICENSE
+grep "license =" Cargo.toml
+grep -r "SPDX-License-Identifier" --include="*.rs" | head -5
+```
+
+---
+
+== Hyperpolymath License Standard (Reminder)
+
+### Primary: PMPL-1.0-or-later
+
+**Use for**:
+* All original hyperpolymath code
+* Research projects (absolute-zero, echidna)
+* Libraries and tools
+
+**SPDX**: `PMPL-1.0-or-later`
+
+### Fallback: MPL-2.0
+
+**Use only when required by**:
+* Platform constraints (Chrome/Firefox extension stores)
+* Ecosystem requirements (Ada/GNAT)
+* OSI approval needed
+
+**SPDX**: `MPL-2.0` with comment explaining fallback
+
+### NEVER Use
+
+* ❌ AGPL-3.0 (old license, replaced)
+* ❌ Palimpsest-0.5 (superseded by PMPL-1.0)
+* ❌ Palimpsest-0.6 (superseded by PMPL-1.0)
+* ❌ MIT (unless third-party)
+
+---
+
+## Verification Checklist
+
+### absolute-zero
+
+- [ ] LICENSE file created (PMPL-1.0-or-later full text)
+- [ ] LICENSE-MPL-2.0 file created (fallback)
+- [ ] Remove LICENSE-PALIMPS.md (0 bytes)
+- [ ] Update README.adoc license section
+- [ ] Fix SPDX in STATE.scm, ECOSYSTEM.scm, META.scm
+- [ ] Add SPDX headers to all proof files
+- [ ] Update .machine_readable/META.scm with license info
+- [ ] Commit with message: "fix: migrate to PMPL-1.0-or-later license"
+
+### echidna
+
+- [ ] Fix Cargo.toml license field
+- [ ] Update all source file SPDX headers
+- [ ] Verify LICENSE file is PMPL-1.0-or-later
+- [ ] Update README badges if any
+- [ ] Commit with message: "fix: standardize to PMPL-1.0-or-later"
+
+### echidnabot
+
+- [ ] Verify license consistency
+- [ ] Update if needed
+
+### idris2-echidna
+
+- [ ] Verify license consistency (checked: ✅ PMPL-1.0-or-later in README)
+- [ ] Update if needed
+
+---
+
+## Timeline
+
+**Immediate** (today): Fix absolute-zero (critical for v1.0)
+**This week**: Fix echidna, echidnabot
+**Before v2.0**: Audit all 139 hyperpolymath repos
+
+---
+
+_Audit completed 2026-02-05_

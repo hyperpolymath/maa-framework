@@ -2,7 +2,7 @@
 name = "aletheia"
 version = "1.9.0"
 edition = "2021"
-authors = ["Jonathan D.A. Jewell <jonathan.jewell@open.ac.uk>"]
+authors = ["Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>"]
 license = "PMPL-1.0-or-later"
 description = "RSR compliance verification tool - truth in repository standards"
 repository = "https://github.com/hyperpolymath/aletheia"

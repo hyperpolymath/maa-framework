@@ -1,4 +1,4 @@
-# {{PROJECT_NAME}}
+# maa-framework
 
 > {{PROJECT_DESCRIPTION}}
 
@@ -7,7 +7,7 @@
 ```bash
 # Clone the repository
 git clone {{REPOSITORY_URL}}
-cd {{PROJECT_NAME}}
+cd maa-framework
 
 # Build
 cargo build --release

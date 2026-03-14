@@ -360,7 +360,7 @@ aletheia/
 For questions about this document or Aletheia development:
 
 - **GitHub**: https://github.com/hyperpolymath/aletheia
-- **Author**: Jonathan D.A. Jewell <jonathan.jewell@open.ac.uk>
+- **Author**: Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 
 ---
 

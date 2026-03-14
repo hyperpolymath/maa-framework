@@ -6,29 +6,29 @@
 [source,bibtex]
 ----
 @software{absolute-zero_2025,
-  author = {Polymath, Hyper},
+  author = {Jewell, Jonathan D.A.},
   title = {absolute-zero},
   year = {2025},
-  url = {https://github.com/hyperpolymath/absolute-zero},
-  license = {AGPL-3.0-or-later}
+  url = {https://github.com/hyperpolymath/maa-framework},
+  license = {PMPL-1.0-or-later}
 }
 ----
 
 == Harvard Style
 
-Polymath, H. (2025) _absolute-zero_ [Computer software]. Available at: https://github.com/hyperpolymath/absolute-zero
+Jewell, J.D.A. (2025) _absolute-zero_ [Computer software]. Available at: https://github.com/hyperpolymath/maa-framework
 
 == OSCOLA
 
-Hyper Polymath, 'absolute-zero' (2025) <https://github.com/hyperpolymath/absolute-zero>
+Jonathan D.A. Jewell, 'absolute-zero' (2025) <https://github.com/hyperpolymath/maa-framework>
 
 == MLA
 
-Polymath, Hyper. "absolute-zero." 2025, github.com/hyperpolymath/absolute-zero.
+Jewell, Jonathan D.A. "absolute-zero." 2025, github.com/hyperpolymath/maa-framework.
 
 == APA 7
 
-Polymath, H. (2025). _absolute-zero_ [Computer software]. GitHub. https://github.com/hyperpolymath/absolute-zero
+Jewell, J.D.A. (2025). _absolute-zero_ [Computer software]. GitHub. https://github.com/hyperpolymath/maa-framework
 
 == See Also
 

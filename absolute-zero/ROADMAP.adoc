@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: PMPL-1.0-or-later
 = Absolute Zero Roadmap
-Jonathan D. A. Jewell <jonathan.jewell@open.ac.uk>
+Jonathan D. A. Jewell <j.d.a.jewell@open.ac.uk>
 :toc:
 
 == Current Status (v1.0.0-alpha, 65%)

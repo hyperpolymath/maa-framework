@@ -719,10 +719,10 @@ just check-tools         # Check dependencies
 
 This project is dual-licensed:
 
-* *AGPL 3.0*: For open-source use
+* *PMPL-1.0-or-later*: For open-source use
 * *Palimpsest 0.5*: For academic research
 
-See `LICENSE-AGPL3.md` and `LICENSE-PALIMPSEST.md` for details.
+See `LICENSE` and `LICENSE-PALIMPSEST.md` for details.
 
 === Contact
 

@@ -6,29 +6,29 @@
 [source,bibtex]
 ----
 @software{aletheia_2025,
-  author = {Polymath, Hyper},
+  author = {Jewell, Jonathan D.A.},
   title = {aletheia},
   year = {2025},
-  url = {https://github.com/hyperpolymath/aletheia},
-  license = {AGPL-3.0-or-later}
+  url = {https://github.com/hyperpolymath/maa-framework},
+  license = {PMPL-1.0-or-later}
 }
 ----
 
 == Harvard Style
 
-Polymath, H. (2025) _aletheia_ [Computer software]. Available at: https://github.com/hyperpolymath/aletheia
+Jewell, J.D.A. (2025) _aletheia_ [Computer software]. Available at: https://github.com/hyperpolymath/maa-framework
 
 == OSCOLA
 
-Hyper Polymath, 'aletheia' (2025) <https://github.com/hyperpolymath/aletheia>
+Jonathan D.A. Jewell, 'aletheia' (2025) <https://github.com/hyperpolymath/maa-framework>
 
 == MLA
 
-Polymath, Hyper. "aletheia." 2025, github.com/hyperpolymath/aletheia.
+Jewell, Jonathan D.A. "aletheia." 2025, github.com/hyperpolymath/maa-framework.
 
 == APA 7
 
-Polymath, H. (2025). _aletheia_ [Computer software]. GitHub. https://github.com/hyperpolymath/aletheia
+Jewell, J.D.A. (2025). _aletheia_ [Computer software]. GitHub. https://github.com/hyperpolymath/maa-framework
 
 == See Also
 

@@ -1,0 +1,26 @@
+# SPDX-License-Identifier: PMPL-1.0-or-later
+# Clade declaration — part of the gv-clade-index registry
+# See: https://github.com/hyperpolymath/gv-clade-index
+
+[identity]
+uuid = "e22e99d9-cd00-5764-95de-5e49d7151ea3"
+primary-forge = "github"
+primary-owner = "hyperpolymath"
+canonical-name = "maa-framework"
+prefixed-name = "pt-maa-framework"
+
+[clade]
+primary = "pt"
+secondary = ["gv"]
+assigned = "2026-03-16"
+rationale = ""
+
+[forges]
+github = "hyperpolymath/maa-framework"
+gitlab = "hyperpolymath/maa-framework"
+bitbucket = "hyperpolymath/maa-framework"
+
+[lineage]
+type = "standalone"
+parent = "Mutually Assured Accountability Framework"
+born = "2026-03-16"

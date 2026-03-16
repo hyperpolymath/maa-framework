@@ -11,6 +11,7 @@
 //! 2. HEAP: Addressable key-value store for persistent variables.
 //! 3. CALL STACK: Tracks subroutine returns and labels.
 
+#![forbid(unsafe_code)]
 use std::collections::HashMap;
 
 const DEFAULT_MAX_CYCLES: usize = 1_000_000;

@@ -11,6 +11,7 @@
 //! 2. PURITY: The program must produce no output buffer content.
 //! 3. REVERSIBILITY: The memory tape and pointer must be returned to their initial state.
 
+#![forbid(unsafe_code)]
 use std::collections::VecDeque;
 
 const MEMORY_SIZE: usize = 30000;

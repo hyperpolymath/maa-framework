@@ -11,6 +11,7 @@
 //! 4. FORMAL BASE CASE: Used as the root reference for performance and behavior 
 //!    benchmarking within the MAA Framework.
 
+#![forbid(unsafe_code)]
 fn main() {
     // FORMAL DEFINITION:
     // At the application level, the main function contains no instructions.

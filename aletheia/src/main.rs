@@ -13,6 +13,7 @@
 //! 3. Air-Gapped Readiness: Ensures no network dependencies in core logic.
 //! 4. Provenance: Validates SPDX headers and license compliance.
 
+#![forbid(unsafe_code)]
 mod checks;
 mod config;
 mod output;

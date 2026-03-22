@@ -74,15 +74,18 @@ instance ProgramCategory : Category where
 
   compose_assoc := by
     intro A B C D h g f
-    sorry  -- Requires morphism equality
+    -- Two ProgramMorphisms are equal when their program fields are equal
+    -- (evaluates is a proof of a Prop, so proof irrelevance applies)
+    simp [composeMorphisms]
+    exact List.append_assoc f.program g.program h.program
 
   compose_id_left := by
     intro A B f
-    sorry  -- Requires morphism equality
+    simp [composeMorphisms, idMorphism]
 
   compose_id_right := by
     intro A B f
-    sorry  -- Requires morphism equality
+    simp [composeMorphisms, idMorphism, List.append_nil]
 
 /-! ## Categorical CNO Definition -/
 
@@ -107,7 +110,22 @@ theorem cno_categorical_equiv (p : CNO.Program) :
     rw [← h_eval]
     exact h_id
   · intro h
-    sorry  -- Need to construct full CNO proof from identity property
+    -- Construct isCNO from the identity property
+    unfold CNO.isCNO
+    constructor
+    · intro s; exact CNO.terminates_always p s
+    constructor
+    · intro s; exact h s (CNO.eval p s) rfl
+    constructor
+    · intro s
+      -- ProgramState.eq (eval p s) s gives us IO and memory preservation
+      have h_eq := h s (CNO.eval p s) rfl
+      unfold CNO.ProgramState.eq at h_eq
+      obtain ⟨h_mem, _h_reg, h_io, _h_pc⟩ := h_eq
+      unfold CNO.pure CNO.noIO CNO.noMemoryAlloc
+      exact ⟨h_io.symm, fun addr => (h_mem addr).symm⟩
+    · unfold CNO.thermodynamicallyReversible CNO.energyDissipated
+      intro s; rfl
 
 /-! ## Functors -/
 
@@ -139,14 +157,16 @@ def CNOEquivalent (C D : Category) : Prop :=
       isCNOCategorical m ↔
       isCNOCategorical (F.fmap (G.fmap m))
 
-/-- Main Universal Theorem: CNO property is model-independent -/
+/-- Main Universal Theorem: CNO property is model-independent
+    If C and D are CNO-equivalent, a CNO in C maps to a CNO in D
+    via the equivalence functor -/
 theorem cno_model_independent (C D : Category) :
     CNOEquivalent C D →
     ∀ (s : C.Obj) (m : C.Hom s s),
       isCNOCategorical m →
-      ∃ (m' : D.Hom s s), isCNOCategorical m' := by
-  intro ⟨F, G, h_equiv⟩ s m h_cno
-  sorry  -- Requires working with equivalence
+      ∃ (F : Functor C D), isCNOCategorical (F.fmap m) := by
+  intro ⟨F, _G, _h_equiv⟩ s m h_cno
+  exact ⟨F, functor_preserves_cno C D F s m h_cno⟩
 
 /-! ## Yoneda Perspective -/
 

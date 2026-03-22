@@ -72,7 +72,12 @@ def boltzmannEntropy (P : StateDistribution) : ℝ :=
 theorem boltzmann_entropy_nonneg (P : StateDistribution) :
     boltzmannEntropy P ≥ 0 := by
   unfold boltzmannEntropy
-  sorry  -- Requires real number arithmetic
+  -- kB > 0 (axiom), log 2 > 0 (since 2 > 1), shannonEntropy ≥ 0 (axiom)
+  apply mul_nonneg
+  · apply mul_nonneg
+    · exact le_of_lt kB_positive
+    · exact le_of_lt (Real.log_pos (by norm_num : (1 : ℝ) < 2))
+  · exact shannon_entropy_nonneg P
 
 /-! ## Landauer's Principle -/
 

@@ -110,8 +110,13 @@ theorem lambda_id_is_cno : isLambdaCNO lambda_id := by
       · unfold subst
         simp
         apply BetaReduceStar.beta_refl
-    · -- arg is in normal form (assuming it's a value)
-      sorry  -- Requires assumption that arg is a value
+    · -- NOTE: isNormalForm arg cannot be proven for arbitrary terms.
+      -- The isLambdaCNO definition is too strong as stated — it
+      -- requires termination for ALL arguments, but not all lambda
+      -- terms have normal forms (e.g., Ω = (λx.xx)(λx.xx)).
+      -- The identity property (second conjunct) IS provable for all args.
+      -- A corrected definition would restrict to normalizing terms.
+      sorry  -- BLOCKED: requires arg to be in normal form (design issue)
 
   · -- Identity
     apply BetaReduceStar.beta_step
@@ -163,9 +168,14 @@ theorem y_not_cno : ¬ isLambdaCNO y_combinator := by
 def church_zero : LambdaTerm :=
   LAbs (LAbs (LVar 0))
 
-/-- Church encoding is a CNO for zero applied to zero -/
-example : BetaReduceStar (LApp church_zero church_zero) church_zero := by
-  sorry
+/-- Church encoding: (λf.λx.x) (λf.λx.x) →β λx.x →  via substitution -/
+example : BetaReduceStar (LApp church_zero church_zero) (LAbs (LVar 0)) := by
+  -- (λf.λx.x) (λf.λx.x) →β subst 0 (λf.λx.x) (λx.x) = λx.x
+  apply BetaReduceStar.beta_step
+  · exact BetaReduce.beta_app (LAbs (LVar 0)) church_zero
+  · unfold subst church_zero
+    simp
+    exact BetaReduceStar.beta_refl _
 
 /-! ## Eta Equivalence -/
 
@@ -180,7 +190,9 @@ theorem eta_expanded_id_is_cno :
   intro arg
   constructor
   · exists arg
-    sorry
+    -- Same design issue as lambda_id_is_cno: evaluatesTo requires
+    -- isNormalForm arg which can't be proven for arbitrary terms
+    sorry  -- BLOCKED: requires arg to be in normal form (design issue)
   · -- (λx. (λy.y) x) arg →* arg
     apply BetaReduceStar.beta_step
     · apply BetaReduce.beta_app

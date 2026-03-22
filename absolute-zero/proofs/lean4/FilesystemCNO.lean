@@ -289,13 +289,13 @@ axiom mkdir_idempotent (p : Path) :
 
 /-- Idempotent does NOT imply CNO -/
 example : ∃ op : FsOp, isIdempotent op ∧ ¬ isFsCNO op := by
-  exists (fun fs => mkdir "test" fs)
+  -- Use the witness from mkdir_not_identity
+  obtain ⟨p, fs, h_neq⟩ := mkdir_not_identity
+  exists (fun fs' => mkdir p fs')
   constructor
-  · exact mkdir_idempotent "test"
+  · exact mkdir_idempotent p
   · intro h
     unfold isFsCNO at h
-    obtain ⟨p, fs, h_neq⟩ := mkdir_not_identity
-    have := h fs
-    sorry  -- mkdir changes filesystem
+    exact h_neq (h fs)
 
 end FilesystemCNO

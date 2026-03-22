@@ -72,14 +72,14 @@ theorem quantum_state_eq_sym (ψ φ : QuantumState) :
   intro ⟨θ, h⟩
   exists (-θ)
   intro n
-  sorry  -- Requires complex arithmetic
+  exact (h n).symm
 
 theorem quantum_state_eq_trans (ψ φ χ : QuantumState) :
     ψ =q= φ → φ =q= χ → ψ =q= χ := by
   intro ⟨θ1, h1⟩ ⟨θ2, h2⟩
   exists (θ1 + θ2)
   intro n
-  sorry  -- Requires complex arithmetic
+  rw [h1 n]; exact h2 n
 
 /-! ## Quantum CNO Definition -/
 
@@ -114,7 +114,10 @@ theorem global_phase_is_cno (θ : ℝ) :
     isQuantumCNO (globalPhaseGate θ) := by
   unfold isQuantumCNO globalPhaseGate
   constructor
-  · sorry  -- Unitary
+  · -- globalPhaseGate θ is definitionally the identity function
+    unfold isUnitary
+    intro ψ φ
+    rfl
   constructor
   · intro ψ
     unfold quantumStateEq
@@ -177,7 +180,7 @@ theorem quantum_cno_composition (U V : QuantumGate) :
     -- U(V ψ) = U ψ (since V ψ = ψ) = ψ (since U ψ = ψ)
     apply quantum_state_eq_trans
     · exact hU_id (V ψ)
-    · sorry  -- Need to show U ψ =q= U (V ψ) when V ψ =q= ψ
+    · exact hV_id ψ
   · trivial
 
 /-! ## Quantum Information Theory -/

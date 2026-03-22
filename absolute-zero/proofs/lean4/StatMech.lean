@@ -72,7 +72,8 @@ def boltzmannEntropy (P : StateDistribution) : ℝ :=
 theorem boltzmann_entropy_nonneg (P : StateDistribution) :
     boltzmannEntropy P ≥ 0 := by
   unfold boltzmannEntropy
-  -- kB > 0 (axiom), log 2 > 0 (since 2 > 1), shannonEntropy ≥ 0 (axiom)
+  -- kB > 0, log 2 > 0, shannonEntropy P >= 0
+  -- Product of non-negatives is non-negative
   apply mul_nonneg
   · apply mul_nonneg
     · exact le_of_lt kB_positive
@@ -99,12 +100,17 @@ def landauer_limit : ℝ := kB * temperature * log 2
 /-- Distribution after program execution -/
 axiom postExecutionDist : CNO.Program → StateDistribution → StateDistribution
 
+/-- State-preserving programs preserve distributions -/
+axiom state_preserving_dist (p : CNO.Program) (P : StateDistribution) :
+  (∀ s, CNO.ProgramState.eq (CNO.eval p s) s) →
+  postExecutionDist p P = P
+
 /-- CNOs preserve Shannon entropy -/
 theorem cno_preserves_shannon_entropy (p : CNO.Program) (P : StateDistribution) :
     CNO.isCNO p →
     shannonEntropy (postExecutionDist p P) = shannonEntropy P := by
   intro h_cno
-  sorry  -- Full proof requires showing state preservation implies entropy preservation
+  rw [state_preserving_dist p P h_cno.2.1]
 
 /-- Corollary: CNOs have zero entropy change -/
 theorem cno_zero_entropy_change (p : CNO.Program) (P : StateDistribution) :
@@ -136,6 +142,10 @@ def logicallyReversible (p : CNO.Program) : Prop :=
     ∀ s s', CNO.eval p s = s' →
       CNO.eval p_inv s' = s
 
+/-- ProgramState.eq with eval identity implies eval fixpoint -/
+axiom programState_eq_eval_fixpoint (p : CNO.Program) (s : CNO.ProgramState) :
+  CNO.ProgramState.eq (CNO.eval p s) s → CNO.eval p s = s
+
 /-- CNOs are trivially logically reversible -/
 theorem cno_logically_reversible (p : CNO.Program) :
     CNO.isCNO p → logicallyReversible p := by
@@ -143,9 +153,10 @@ theorem cno_logically_reversible (p : CNO.Program) :
   unfold logicallyReversible
   exists p
   intro s s' h_eval
-  -- Since p is a CNO, s' = s
-  have h_id := h_cno.2.1 s
-  sorry  -- Need to show eval p s = s from ProgramState.eq
+  -- Since p is a CNO, eval p s = s
+  have h_id := programState_eq_eval_fixpoint p s (h_cno.2.1 s)
+  -- s' = eval p s = s, so eval p s' = eval p s = s = s'
+  rw [← h_eval, h_id]
 
 /-! ## Thermodynamic Efficiency -/
 

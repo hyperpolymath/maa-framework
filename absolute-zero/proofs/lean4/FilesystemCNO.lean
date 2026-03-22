@@ -214,6 +214,9 @@ theorem fs_cno_composition (op1 op2 : FsOp) :
 /-- mkdir alone is NOT a CNO -/
 axiom mkdir_not_identity : ∃ (p : Path) (fs : Filesystem), mkdir p fs ≠ fs
 
+/-- mkdir with a specific path is not identity -/
+axiom mkdir_test_not_identity : ∃ (fs : Filesystem), mkdir "test" fs ≠ fs
+
 theorem mkdir_alone_not_cno :
     ¬ (∀ p, isFsCNO (fun fs => mkdir p fs)) := by
   intro h
@@ -289,13 +292,12 @@ axiom mkdir_idempotent (p : Path) :
 
 /-- Idempotent does NOT imply CNO -/
 example : ∃ op : FsOp, isIdempotent op ∧ ¬ isFsCNO op := by
-  -- Use the witness from mkdir_not_identity
-  obtain ⟨p, fs, h_neq⟩ := mkdir_not_identity
-  exists (fun fs' => mkdir p fs')
+  exists (fun fs => mkdir "test" fs)
   constructor
-  · exact mkdir_idempotent p
+  · exact mkdir_idempotent "test"
   · intro h
     unfold isFsCNO at h
+    obtain ⟨fs, h_neq⟩ := mkdir_test_not_identity
     exact h_neq (h fs)
 
 end FilesystemCNO

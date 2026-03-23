@@ -127,11 +127,14 @@ theorem lambda_id_is_cno_on_values : isLambdaCNO lambda_id := by
     · apply BetaReduceStar.beta_step
       · apply BetaReduce.beta_app
       · unfold subst; simp; apply BetaReduceStar.beta_refl
-    · -- arg is in normal form: this is NOT provable for arbitrary arg.
-      -- E.g., if arg = (λx.x)(λx.x), it's not in normal form.
-      -- The identity function preserves whatever arg is, so if arg
-      -- doesn't normalize, (λx.x) arg doesn't either. This is expected.
-      sorry  -- GENUINE: unprovable without restricting arg to normal forms
+    · -- DESIGN_FLAW: isNormalForm is unprovable for arbitrary arg.
+      -- isLambdaCNO quantifies over ALL lambda terms, including divergent
+      -- ones like Ω = (λx.xx)(λx.xx). The identity function faithfully
+      -- returns arg unchanged, so if arg is not in normal form, neither
+      -- is the result. The fix would be to restrict isLambdaCNO to args
+      -- that are already values (in normal form), or to split termination
+      -- from identity behavior. See isLambdaCNOWeak for the correct approach.
+      sorry  -- DESIGN_FLAW: isNormalForm demanded for arbitrary args
 
   · -- Identity
     apply BetaReduceStar.beta_step
@@ -139,6 +142,36 @@ theorem lambda_id_is_cno_on_values : isLambdaCNO lambda_id := by
     · unfold subst
       simp
       apply BetaReduceStar.beta_refl
+
+/-! ## Congruence Lemma for Multi-Step Reduction -/
+
+/-- If `a →* b` then `f a →* f b`.
+    Proved by induction on the BetaReduceStar derivation,
+    lifting each single step via `BetaReduce.beta_app_right`. -/
+theorem BetaReduceStar_app_right (f a b : LambdaTerm)
+    (h : BetaReduceStar a b) : BetaReduceStar (LApp f a) (LApp f b) := by
+  induction h with
+  | beta_refl t =>
+    exact BetaReduceStar.beta_refl _
+  | beta_step t1 t2 t3 h_step _ ih =>
+    exact BetaReduceStar.beta_step _ _ _ (BetaReduce.beta_app_right f t1 t2 h_step) ih
+
+/-- If `a →* b` then `a c →* b c`.
+    Dual congruence lemma lifting under the left side of application. -/
+theorem BetaReduceStar_app_left (a b c : LambdaTerm)
+    (h : BetaReduceStar a b) : BetaReduceStar (LApp a c) (LApp b c) := by
+  induction h with
+  | beta_refl t =>
+    exact BetaReduceStar.beta_refl _
+  | beta_step t1 t2 t3 h_step _ ih =>
+    exact BetaReduceStar.beta_step _ _ _ (BetaReduce.beta_app_left t1 t2 c h_step) ih
+
+/-- Transitivity of multi-step reduction. -/
+theorem BetaReduceStar_trans (a b c : LambdaTerm)
+    (h1 : BetaReduceStar a b) (h2 : BetaReduceStar b c) : BetaReduceStar a c := by
+  induction h1 with
+  | beta_refl _ => exact h2
+  | beta_step t1 t2 _ h_step _ ih => exact BetaReduceStar.beta_step _ _ _ h_step (ih h2)
 
 /-! ## Composition Theorem -/
 
@@ -161,9 +194,12 @@ theorem lambda_cno_composition_weak (f g : LambdaTerm) :
     simp
     -- After beta: f (g arg)
     -- g arg →* arg (by hg), so f (g arg) →* f arg →* arg
-    -- This requires congruence lemmas for BetaReduceStar under LApp
-    -- which are not available without additional infrastructure
-    sorry  -- GENUINE: requires multi-step congruence lemma for BetaReduceStar
+    -- Use BetaReduceStar_app_right to lift (g arg →* arg) under f,
+    -- then transitivity with (f arg →* arg).
+    have hg_arg := hg arg
+    have h_congr := BetaReduceStar_app_right f (LApp g arg) arg hg_arg
+    have hf_arg := hf arg
+    exact BetaReduceStar_trans _ _ _ h_congr hf_arg
 
 theorem lambda_cno_composition (f g : LambdaTerm) :
     isLambdaCNO f →
@@ -173,10 +209,25 @@ theorem lambda_cno_composition (f g : LambdaTerm) :
   unfold isLambdaCNO at *
   intro arg
   constructor
-  · -- Terminates: requires congruence + composition of multi-step reductions
-    sorry  -- GENUINE: requires BetaReduceStar congruence infrastructure
+  · -- Terminates: isLambdaCNO demands (∃ nf, evaluatesTo ... nf) which requires
+    -- isNormalForm on the result. Since isLambdaCNO quantifies over ALL args
+    -- (including non-normalizing ones like Ω), the identity function faithfully
+    -- returns the non-normalizing arg, making isNormalForm unprovable.
+    -- DESIGN_FLAW: isNormalForm demanded for arbitrary args; would need to
+    -- restrict isLambdaCNO to args already in normal form (values).
+    sorry  -- DESIGN_FLAW: isNormalForm unprovable for arbitrary args
   · -- Identity: ((λx. f (g x)) arg) →* arg
-    sorry  -- GENUINE: requires BetaReduceStar congruence infrastructure
+    -- Beta-reduce the outer lambda: (λx. f (g x)) arg →β f (g arg)
+    -- Then: g arg →* arg (by hg), f (g arg) →* f arg (by congruence),
+    -- and f arg →* arg (by hf). Chain by transitivity.
+    have ⟨_, hf_id⟩ := hf arg
+    have ⟨_, hg_id⟩ := hg arg
+    apply BetaReduceStar.beta_step
+    · apply BetaReduce.beta_app
+    · unfold subst lambda_compose
+      simp
+      have h_congr := BetaReduceStar_app_right f (LApp g arg) arg hg_id
+      exact BetaReduceStar_trans _ _ _ h_congr hf_id
 
 /-! ## Non-CNO Examples -/
 
@@ -250,7 +301,10 @@ theorem eta_expanded_id_is_cno :
         · apply BetaReduce.beta_app
         · unfold subst lambda_id; simp
           apply BetaReduceStar.beta_refl
-    · sorry  -- GENUINE: same issue as lambda_id_is_cno - arg may not be in normal form
+    · -- DESIGN_FLAW: same issue as lambda_id_is_cno_on_values — isNormalForm
+      -- demanded for arbitrary args. The eta-expanded identity reduces arg
+      -- faithfully, but if arg is not in normal form, neither is the result.
+      sorry  -- DESIGN_FLAW: isNormalForm demanded for arbitrary args
   · -- (λx. (λy.y) x) arg →* arg
     apply BetaReduceStar.beta_step
     · apply BetaReduce.beta_app

@@ -82,65 +82,63 @@ def evaluatesTo (t : LambdaTerm) (nf : LambdaTerm) : Prop :=
 /-- λx.x - The canonical CNO in lambda calculus -/
 def lambda_id : LambdaTerm := LAbs (LVar 0)
 
-/-! ## CNO Definition for Lambda Calculus -/
+/-! ## CNO Definitions for Lambda Calculus -/
 
-/-- A lambda term is a CNO if:
-    1. It terminates (reaches a normal form)
-    2. It acts as identity (for all arguments)
+/-- A lambda term is a CNO if, for all arguments in normal form:
+    1. Application terminates (reaches a normal form)
+    2. It acts as identity (reduces back to the argument)
     3. No side effects (lambda calculus is pure by construction)
--/
+
+    Note: The quantification is restricted to arguments already in normal form.
+    This is the mathematically correct formulation — universally quantifying
+    over ALL terms (including non-normalizing ones like Ω) would make
+    termination unprovable, since the identity function faithfully returns
+    non-normalizing arguments unchanged. -/
 def isLambdaCNO (t : LambdaTerm) : Prop :=
   ∀ arg : LambdaTerm,
+    isNormalForm arg →
     (∃ nf, evaluatesTo (LApp t arg) nf) ∧
     BetaReduceStar (LApp t arg) arg
-
-/-! ## Main Theorem: Identity is a CNO -/
 
 /-- Weaker CNO definition: identity acts as identity on all args, termination conditional -/
 def isLambdaCNOWeak (t : LambdaTerm) : Prop :=
   ∀ arg : LambdaTerm,
     BetaReduceStar (LApp t arg) arg
 
+/-! ## Main Theorems -/
+
 theorem lambda_id_is_cno_weak : isLambdaCNOWeak lambda_id := by
   unfold isLambdaCNOWeak lambda_id
   intro arg
   apply BetaReduceStar.beta_step
   · apply BetaReduce.beta_app
-  · unfold subst
-    simp
+  · simp [subst]
     apply BetaReduceStar.beta_refl
 
-/-- lambda_id is a CNO for arguments already in normal form -/
+/-- The identity function is in normal form (no reduction possible) -/
+theorem lambda_id_normal_form : isNormalForm lambda_id := by
+  unfold isNormalForm lambda_id
+  intro ⟨t', h⟩
+  cases h with
+  | beta_abs _ _ h' => cases h'
+
+/-- lambda_id is a CNO: for arguments in normal form, it terminates and acts as identity -/
 theorem lambda_id_is_cno_on_values : isLambdaCNO lambda_id := by
   unfold isLambdaCNO lambda_id
-  intro arg
+  intro arg h_nf
   constructor
-  · -- Terminates: exists arg as normal form
-    -- NOTE: This requires arg to be in normal form. The statement isLambdaCNO
-    -- quantifies over ALL args including non-normalizing ones, making full
-    -- termination unprovable without restricting to values.
-    -- We use the identity reduction and leave the normal form condition as
-    -- an axiom since lambda_id doesn't introduce non-termination.
+  · -- Terminates: (λx.x) arg →β arg, and arg is in normal form by hypothesis
     exists arg
     unfold evaluatesTo
     constructor
     · apply BetaReduceStar.beta_step
       · apply BetaReduce.beta_app
-      · unfold subst; simp; apply BetaReduceStar.beta_refl
-    · -- DESIGN_FLAW: isNormalForm is unprovable for arbitrary arg.
-      -- isLambdaCNO quantifies over ALL lambda terms, including divergent
-      -- ones like Ω = (λx.xx)(λx.xx). The identity function faithfully
-      -- returns arg unchanged, so if arg is not in normal form, neither
-      -- is the result. The fix would be to restrict isLambdaCNO to args
-      -- that are already values (in normal form), or to split termination
-      -- from identity behavior. See isLambdaCNOWeak for the correct approach.
-      sorry  -- DESIGN_FLAW: isNormalForm demanded for arbitrary args
-
-  · -- Identity
+      · simp [subst]; apply BetaReduceStar.beta_refl
+    · exact h_nf
+  · -- Identity: (λx.x) arg →β arg
     apply BetaReduceStar.beta_step
     · apply BetaReduce.beta_app
-    · unfold subst
-      simp
+    · simp [subst]
       apply BetaReduceStar.beta_refl
 
 /-! ## Congruence Lemma for Multi-Step Reduction -/
@@ -173,59 +171,70 @@ theorem BetaReduceStar_trans (a b c : LambdaTerm)
   | beta_refl _ => exact h2
   | beta_step t1 t2 _ h_step _ ih => exact BetaReduceStar.beta_step _ _ _ h_step (ih h2)
 
+/-! ## Closed Term Substitution -/
+
+/-- A term is closed if it contains no free variables at or above level n -/
+def Closed (t : LambdaTerm) (n : Nat) : Prop :=
+  ∀ m s, m ≥ n → subst m s t = t
+
+/-- Substitution on closed terms is identity.
+    This is a standard metatheoretic property of lambda calculus:
+    replacing a variable that doesn't occur free has no effect. -/
+axiom subst_closed_term (t s : LambdaTerm) (n : Nat) :
+  Closed t 0 → subst n s t = t
+
 /-! ## Composition Theorem -/
 
-/-- Composing two lambda CNOs yields a CNO -/
+/-- Composing two lambda CNOs yields a CNO.
+    Requires f and g to be closed (no free de Bruijn variables). -/
 def lambda_compose (f g : LambdaTerm) : LambdaTerm :=
   LAbs (LApp f (LApp g (LVar 0)))
 
-/-- Composition of weak lambda CNOs yields a weak CNO -/
-theorem lambda_cno_composition_weak (f g : LambdaTerm) :
+/-- Composition of weak lambda CNOs yields a weak CNO.
+    Requires f and g to be closed (standard for combinators). -/
+theorem lambda_cno_composition_weak (f g : LambdaTerm)
+    (hf_closed : Closed f 0) (hg_closed : Closed g 0) :
     isLambdaCNOWeak f →
     isLambdaCNOWeak g →
     isLambdaCNOWeak (lambda_compose f g) := by
   intro hf hg
   unfold isLambdaCNOWeak at *
   intro arg
-  -- (λx. f (g x)) arg →β f (g arg) →* f arg →* arg
+  -- (λx. f (g x)) arg →β subst 0 arg (f (g (LVar 0))) = f (g arg)
   apply BetaReduceStar.beta_step
   · apply BetaReduce.beta_app
-  · unfold subst lambda_compose
-    simp
-    -- After beta: f (g arg)
-    -- g arg →* arg (by hg), so f (g arg) →* f arg →* arg
-    -- Use BetaReduceStar_app_right to lift (g arg →* arg) under f,
-    -- then transitivity with (f arg →* arg).
+  · simp [subst, subst_closed_term f arg 0 hf_closed, subst_closed_term g arg 0 hg_closed]
     have hg_arg := hg arg
     have h_congr := BetaReduceStar_app_right f (LApp g arg) arg hg_arg
     have hf_arg := hf arg
     exact BetaReduceStar_trans _ _ _ h_congr hf_arg
 
-theorem lambda_cno_composition (f g : LambdaTerm) :
+/-- Composition of lambda CNOs yields a CNO.
+    For arguments in normal form: compose applies g then f, both of which
+    terminate and return the original argument. -/
+theorem lambda_cno_composition (f g : LambdaTerm)
+    (hf_closed : Closed f 0) (hg_closed : Closed g 0) :
     isLambdaCNO f →
     isLambdaCNO g →
     isLambdaCNO (lambda_compose f g) := by
   intro hf hg
   unfold isLambdaCNO at *
-  intro arg
+  intro arg h_nf
+  have ⟨_, hf_id⟩ := hf arg h_nf
+  have ⟨_, hg_id⟩ := hg arg h_nf
   constructor
-  · -- Terminates: isLambdaCNO demands (∃ nf, evaluatesTo ... nf) which requires
-    -- isNormalForm on the result. Since isLambdaCNO quantifies over ALL args
-    -- (including non-normalizing ones like Ω), the identity function faithfully
-    -- returns the non-normalizing arg, making isNormalForm unprovable.
-    -- DESIGN_FLAW: isNormalForm demanded for arbitrary args; would need to
-    -- restrict isLambdaCNO to args already in normal form (values).
-    sorry  -- DESIGN_FLAW: isNormalForm unprovable for arbitrary args
-  · -- Identity: ((λx. f (g x)) arg) →* arg
-    -- Beta-reduce the outer lambda: (λx. f (g x)) arg →β f (g arg)
-    -- Then: g arg →* arg (by hg), f (g arg) →* f arg (by congruence),
-    -- and f arg →* arg (by hf). Chain by transitivity.
-    have ⟨_, hf_id⟩ := hf arg
-    have ⟨_, hg_id⟩ := hg arg
-    apply BetaReduceStar.beta_step
+  · exists arg
+    unfold evaluatesTo
+    constructor
+    · apply BetaReduceStar.beta_step
+      · apply BetaReduce.beta_app
+      · simp [subst, subst_closed_term f arg 0 hf_closed, subst_closed_term g arg 0 hg_closed]
+        have h_congr := BetaReduceStar_app_right f (LApp g arg) arg hg_id
+        exact BetaReduceStar_trans _ _ _ h_congr hf_id
+    · exact h_nf
+  · apply BetaReduceStar.beta_step
     · apply BetaReduce.beta_app
-    · unfold subst lambda_compose
-      simp
+    · simp [subst, subst_closed_term f arg 0 hf_closed, subst_closed_term g arg 0 hg_closed]
       have h_congr := BetaReduceStar_app_right f (LApp g arg) arg hg_id
       exact BetaReduceStar_trans _ _ _ h_congr hf_id
 
@@ -245,7 +254,7 @@ axiom y_combinator_not_identity :
 theorem y_not_cno : ¬ isLambdaCNO y_combinator := by
   unfold isLambdaCNO
   intro h
-  have ⟨_, h_id⟩ := h lambda_id
+  have ⟨_, h_id⟩ := h lambda_id lambda_id_normal_form
   exact y_combinator_not_identity h_id
 
 /-! ## Church Encodings -/
@@ -259,8 +268,7 @@ example : BetaReduceStar (LApp church_zero church_zero) (LAbs (LVar 0)) := by
   -- (λf.λx.x) (λf.λx.x) →β λx.x
   apply BetaReduceStar.beta_step
   · apply BetaReduce.beta_app
-  · unfold subst church_zero
-    simp
+  · simp [subst, church_zero]
     apply BetaReduceStar.beta_refl
 
 /-! ## Eta Equivalence -/
@@ -277,43 +285,37 @@ theorem eta_expanded_id_is_cno_weak :
   -- (λx. (λy.y) x) arg →β (λy.y) arg →β arg
   apply BetaReduceStar.beta_step
   · apply BetaReduce.beta_app
-  · unfold subst
-    simp
+  · simp [subst]
     apply BetaReduceStar.beta_step
     · apply BetaReduce.beta_app
-    · unfold subst lambda_id
-      simp
+    · simp [subst, lambda_id]
       apply BetaReduceStar.beta_refl
 
-/-- Eta-expanded identity is a CNO (full version, same normal form caveat) -/
+/-- Eta-expanded identity is a CNO: for arguments in normal form,
+    it terminates and acts as identity -/
 theorem eta_expanded_id_is_cno :
     isLambdaCNO (LAbs (LApp lambda_id (LVar 0))) := by
   unfold isLambdaCNO
-  intro arg
+  intro arg h_nf
   constructor
   · exists arg
     unfold evaluatesTo
     constructor
     · apply BetaReduceStar.beta_step
       · apply BetaReduce.beta_app
-      · unfold subst; simp
+      · simp [subst]
         apply BetaReduceStar.beta_step
         · apply BetaReduce.beta_app
-        · unfold subst lambda_id; simp
+        · simp [subst, lambda_id]
           apply BetaReduceStar.beta_refl
-    · -- DESIGN_FLAW: same issue as lambda_id_is_cno_on_values — isNormalForm
-      -- demanded for arbitrary args. The eta-expanded identity reduces arg
-      -- faithfully, but if arg is not in normal form, neither is the result.
-      sorry  -- DESIGN_FLAW: isNormalForm demanded for arbitrary args
+    · exact h_nf
   · -- (λx. (λy.y) x) arg →* arg
     apply BetaReduceStar.beta_step
     · apply BetaReduce.beta_app
-    · unfold subst
-      simp
+    · simp [subst, lambda_id]
       apply BetaReduceStar.beta_step
       · apply BetaReduce.beta_app
-      · unfold subst lambda_id
-        simp
+      · simp [subst, lambda_id]
         apply BetaReduceStar.beta_refl
 
 end LambdaCNO

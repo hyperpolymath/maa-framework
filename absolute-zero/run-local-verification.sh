@@ -26,6 +26,10 @@ PASSED_CHECKS=0
 FAILED_CHECKS=0
 SKIPPED_CHECKS=0
 
+# Create a secure temporary directory for check logs
+TMPDIR_CHECKS="$(mktemp -d)"
+trap 'rm -rf "${TMPDIR_CHECKS}"' EXIT
+
 # Function to check if command exists
 command_exists() {
     command -v "$1" >/dev/null 2>&1
@@ -34,18 +38,21 @@ command_exists() {
 # Function to run a check
 run_check() {
     local name="$1"
-    local command="$2"
+    shift
+    local check_cmd=("$@")
     TOTAL_CHECKS=$((TOTAL_CHECKS + 1))
 
-    echo -n "[$TOTAL_CHECKS] $name... "
-    if eval "$command" > /tmp/absolute-zero-check-$TOTAL_CHECKS.log 2>&1; then
+    local log_file="${TMPDIR_CHECKS}/check-${TOTAL_CHECKS}.log"
+
+    echo -n "[${TOTAL_CHECKS}] ${name}... "
+    if "${check_cmd[@]}" > "${log_file}" 2>&1; then
         echo -e "${GREEN}PASS${NC}"
         PASSED_CHECKS=$((PASSED_CHECKS + 1))
         return 0
     else
         echo -e "${RED}FAIL${NC}"
         FAILED_CHECKS=$((FAILED_CHECKS + 1))
-        echo "    Error log: /tmp/absolute-zero-check-$TOTAL_CHECKS.log"
+        echo "    Error log: ${log_file}"
         return 1
     fi
 }
@@ -56,7 +63,7 @@ skip_check() {
     local reason="$2"
     TOTAL_CHECKS=$((TOTAL_CHECKS + 1))
     SKIPPED_CHECKS=$((SKIPPED_CHECKS + 1))
-    echo -e "[$TOTAL_CHECKS] $name... ${YELLOW}SKIP${NC} ($reason)"
+    echo -e "[${TOTAL_CHECKS}] ${name}... ${YELLOW}SKIP${NC} (${reason})"
 }
 
 echo "==== Tool Availability Check ===="
@@ -112,9 +119,9 @@ echo "==== Running Verification ===="
 echo ""
 
 # Z3 SMT Verification
-if [ $Z3_AVAILABLE -eq 1 ]; then
+if [ "${Z3_AVAILABLE}" -eq 1 ]; then
     echo "---- Z3 SMT Solver ----"
-    run_check "Z3: CNO Properties" "z3 proofs/z3/cno_properties.smt2"
+    run_check "Z3: CNO Properties" z3 proofs/z3/cno_properties.smt2
     echo ""
 else
     skip_check "Z3: CNO Properties" "z3 not installed"
@@ -122,14 +129,14 @@ else
 fi
 
 # Coq Verification
-if [ $COQ_AVAILABLE -eq 1 ]; then
+if [ "${COQ_AVAILABLE}" -eq 1 ]; then
     echo "---- Coq Proof Assistant ----"
-    run_check "Coq: Phase 1 Core (CNO.v)" "coqc -Q proofs/coq/common CNO proofs/coq/common/CNO.v"
-    run_check "Coq: Statistical Mechanics" "coqc -Q proofs/coq/common CNO -Q proofs/coq/physics Physics proofs/coq/physics/StatMech.v"
-    run_check "Coq: Category Theory" "coqc -Q proofs/coq/common CNO -Q proofs/coq/category Category proofs/coq/category/CNOCategory.v"
-    run_check "Coq: Lambda Calculus" "coqc -Q proofs/coq/common CNO -Q proofs/coq/lambda Lambda proofs/coq/lambda/LambdaCNO.v"
-    run_check "Coq: Quantum CNO" "coqc -Q proofs/coq/common CNO -Q proofs/coq/quantum Quantum proofs/coq/quantum/QuantumCNO.v"
-    run_check "Coq: Filesystem CNO" "coqc -Q proofs/coq/common CNO -Q proofs/coq/filesystem Filesystem proofs/coq/filesystem/FilesystemCNO.v"
+    run_check "Coq: Phase 1 Core (CNO.v)" coqc -Q proofs/coq/common CNO proofs/coq/common/CNO.v
+    run_check "Coq: Statistical Mechanics" coqc -Q proofs/coq/common CNO -Q proofs/coq/physics Physics proofs/coq/physics/StatMech.v
+    run_check "Coq: Category Theory" coqc -Q proofs/coq/common CNO -Q proofs/coq/category Category proofs/coq/category/CNOCategory.v
+    run_check "Coq: Lambda Calculus" coqc -Q proofs/coq/common CNO -Q proofs/coq/lambda Lambda proofs/coq/lambda/LambdaCNO.v
+    run_check "Coq: Quantum CNO" coqc -Q proofs/coq/common CNO -Q proofs/coq/quantum Quantum proofs/coq/quantum/QuantumCNO.v
+    run_check "Coq: Filesystem CNO" coqc -Q proofs/coq/common CNO -Q proofs/coq/filesystem Filesystem proofs/coq/filesystem/FilesystemCNO.v
     echo ""
 else
     skip_check "Coq: All proofs" "coqc not installed"
@@ -137,10 +144,10 @@ else
 fi
 
 # Lean 4 Verification
-if [ $LEAN_AVAILABLE -eq 1 ]; then
+if [ "${LEAN_AVAILABLE}" -eq 1 ]; then
     echo "---- Lean 4 Proof Assistant ----"
     if [ -f "proofs/lean4/lakefile.lean" ]; then
-        run_check "Lean 4: Build all proofs" "cd proofs/lean4 && lake build"
+        run_check "Lean 4: Build all proofs" bash -c "cd proofs/lean4 && lake build"
     else
         skip_check "Lean 4: Build all proofs" "lakefile.lean not found"
     fi
@@ -151,9 +158,9 @@ else
 fi
 
 # Agda Verification
-if [ $AGDA_AVAILABLE -eq 1 ]; then
+if [ "${AGDA_AVAILABLE}" -eq 1 ]; then
     echo "---- Agda Proof Assistant ----"
-    run_check "Agda: CNO Core" "agda proofs/agda/CNO.agda"
+    run_check "Agda: CNO Core" agda proofs/agda/CNO.agda
     echo ""
 else
     skip_check "Agda: CNO Core" "agda not installed"
@@ -161,9 +168,9 @@ else
 fi
 
 # Isabelle Verification
-if [ $ISABELLE_AVAILABLE -eq 1 ]; then
+if [ "${ISABELLE_AVAILABLE}" -eq 1 ]; then
     echo "---- Isabelle/HOL ----"
-    run_check "Isabelle: CNO Theory" "isabelle build -d proofs/isabelle -b CNO"
+    run_check "Isabelle: CNO Theory" isabelle build -d proofs/isabelle -b CNO
     echo ""
 else
     skip_check "Isabelle: CNO Theory" "isabelle not installed"
@@ -175,22 +182,22 @@ echo "========================================"
 echo "Verification Summary"
 echo "========================================"
 echo ""
-echo "Total checks: $TOTAL_CHECKS"
-echo -e "${GREEN}Passed: $PASSED_CHECKS${NC}"
-echo -e "${RED}Failed: $FAILED_CHECKS${NC}"
-echo -e "${YELLOW}Skipped: $SKIPPED_CHECKS${NC}"
+echo "Total checks: ${TOTAL_CHECKS}"
+echo -e "${GREEN}Passed: ${PASSED_CHECKS}${NC}"
+echo -e "${RED}Failed: ${FAILED_CHECKS}${NC}"
+echo -e "${YELLOW}Skipped: ${SKIPPED_CHECKS}${NC}"
 echo ""
 
-if [ $FAILED_CHECKS -eq 0 ] && [ $PASSED_CHECKS -gt 0 ]; then
+if [ "${FAILED_CHECKS}" -eq 0 ] && [ "${PASSED_CHECKS}" -gt 0 ]; then
     echo -e "${GREEN}✓ All available verifications passed!${NC}"
     exit 0
-elif [ $PASSED_CHECKS -eq 0 ]; then
+elif [ "${PASSED_CHECKS}" -eq 0 ]; then
     echo -e "${YELLOW}⚠ No verification tools available locally${NC}"
     echo "Consider installing: coqc, z3, lean, agda, isabelle"
     echo "Or run: podman build -t absolute-zero . && podman run --rm absolute-zero ./verify-proofs.sh"
     exit 2
 else
     echo -e "${RED}✗ Some verifications failed${NC}"
-    echo "Check error logs in /tmp/absolute-zero-check-*.log"
+    echo "Check error logs in ${TMPDIR_CHECKS}/"
     exit 1
 fi

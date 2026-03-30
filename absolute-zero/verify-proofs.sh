@@ -31,21 +31,21 @@ SKIPPED_TESTS=0
 
 # Helper functions
 log_info() {
-    echo -e "${BLUE}[INFO]${NC} $1"
+    echo -e "${BLUE}[INFO]${NC} ${1}"
 }
 
 log_success() {
-    echo -e "${GREEN}[✓]${NC} $1"
+    echo -e "${GREEN}[✓]${NC} ${1}"
     ((PASSED_TESTS++))
 }
 
 log_failure() {
-    echo -e "${RED}[✗]${NC} $1"
+    echo -e "${RED}[✗]${NC} ${1}"
     ((FAILED_TESTS++))
 }
 
 log_skip() {
-    echo -e "${YELLOW}[SKIP]${NC} $1"
+    echo -e "${YELLOW}[SKIP]${NC} ${1}"
     ((SKIPPED_TESTS++))
 }
 
@@ -57,29 +57,34 @@ check_command() {
     fi
 }
 
+# Create a secure temporary directory for test output
+TMPDIR_VERIFY="$(mktemp -d)"
+trap 'rm -rf "${TMPDIR_VERIFY}"' EXIT
+
 run_test() {
     local test_name="$1"
-    local test_command="$2"
+    shift
+    local test_cmd=("$@")
     ((TOTAL_TESTS++))
+
+    local log_file="${TMPDIR_VERIFY}/test_output_${TOTAL_TESTS}.log"
 
     if $VERBOSE; then
         echo ""
-        log_info "Running: $test_name"
-        log_info "Command: $test_command"
+        log_info "Running: ${test_name}"
+        log_info "Command: ${test_cmd[*]}"
     fi
 
-    if eval "$test_command" &> /tmp/test_output_$$.log; then
-        log_success "$test_name"
+    if "${test_cmd[@]}" &> "${log_file}"; then
+        log_success "${test_name}"
         if $VERBOSE; then
-            cat /tmp/test_output_$$.log
+            cat "${log_file}"
         fi
-        rm -f /tmp/test_output_$$.log
         return 0
     else
-        log_failure "$test_name"
+        log_failure "${test_name}"
         echo "    Error output:"
-        sed 's/^/    /' /tmp/test_output_$$.log | head -20
-        rm -f /tmp/test_output_$$.log
+        sed 's/^/    /' "${log_file}" | head -20
         return 1
     fi
 }
@@ -107,10 +112,10 @@ if check_command coqc; then
     log_info "Coq found: $(coqc --version | head -1)"
 
     run_test "Coq: CNO.v (common)" \
-        "cd proofs/coq/common && coqc CNO.v"
+        bash -c "cd proofs/coq/common && coqc CNO.v"
 
     run_test "Coq: MalbolgeCore.v" \
-        "cd proofs/coq/malbolge && coqc -R ../common CNO MalbolgeCore.v"
+        bash -c "cd proofs/coq/malbolge && coqc -R ../common CNO MalbolgeCore.v"
 else
     log_skip "Coq not installed (coqc not found)"
     ((TOTAL_TESTS+=2))
@@ -129,11 +134,11 @@ if check_command z3; then
     # Check if verify.sh exists and is executable
     if [[ -x "proofs/z3/verify.sh" ]]; then
         run_test "Z3: CNO properties" \
-            "cd proofs/z3 && ./verify.sh"
+            bash -c "cd proofs/z3 && ./verify.sh"
     else
         # Run z3 directly
         run_test "Z3: CNO properties" \
-            "cd proofs/z3 && z3 cno_properties.smt2 | grep -q 'sat'"
+            bash -c "cd proofs/z3 && z3 cno_properties.smt2 | grep -q 'sat'"
     fi
 else
     log_skip "Z3 not installed (z3 not found)"
@@ -151,7 +156,7 @@ if check_command lean; then
     log_info "Lean found: $(lean --version | head -1)"
 
     run_test "Lean 4: CNO.lean" \
-        "cd proofs/lean4 && lake build"
+        bash -c "cd proofs/lean4 && lake build"
 else
     log_skip "Lean 4 not installed (lean not found)"
     ((TOTAL_TESTS+=1))
@@ -168,7 +173,7 @@ if check_command agda; then
     log_info "Agda found: $(agda --version | head -1)"
 
     run_test "Agda: CNO.agda" \
-        "cd proofs/agda && agda CNO.agda"
+        bash -c "cd proofs/agda && agda CNO.agda"
 else
     log_skip "Agda not installed (agda not found)"
     ((TOTAL_TESTS+=1))
@@ -185,7 +190,7 @@ if check_command isabelle; then
     log_info "Isabelle found: $(isabelle version)"
 
     run_test "Isabelle/HOL: CNO.thy" \
-        "isabelle build -D proofs/isabelle"
+        isabelle build -D proofs/isabelle
 else
     log_skip "Isabelle/HOL not installed (isabelle not found)"
     ((TOTAL_TESTS+=1))
@@ -201,14 +206,14 @@ echo "========================================"
 echo "  Verification Summary"
 echo "========================================"
 echo ""
-echo "Total tests:   $TOTAL_TESTS"
-echo -e "Passed:        ${GREEN}$PASSED_TESTS${NC}"
-echo -e "Failed:        ${RED}$FAILED_TESTS${NC}"
-echo -e "Skipped:       ${YELLOW}$SKIPPED_TESTS${NC}"
+echo "Total tests:   ${TOTAL_TESTS}"
+echo -e "Passed:        ${GREEN}${PASSED_TESTS}${NC}"
+echo -e "Failed:        ${RED}${FAILED_TESTS}${NC}"
+echo -e "Skipped:       ${YELLOW}${SKIPPED_TESTS}${NC}"
 echo ""
 
-if [[ $FAILED_TESTS -eq 0 ]]; then
-    if [[ $SKIPPED_TESTS -eq 0 ]]; then
+if [[ "${FAILED_TESTS}" -eq 0 ]]; then
+    if [[ "${SKIPPED_TESTS}" -eq 0 ]]; then
         echo -e "${GREEN}✓ All proofs verified successfully!${NC}"
         exit 0
     else

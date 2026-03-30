@@ -14,7 +14,7 @@ export GIT_DISCOVERY_ACROSS_FILESYSTEM=1
 cd "$(dirname "$0")"
 REPO_ROOT=$(pwd)
 
-echo "Repository root: $REPO_ROOT"
+echo "Repository root: ${REPO_ROOT}"
 echo ""
 
 # ============================================================================
@@ -75,11 +75,11 @@ echo "=== Step 3: Tool Availability ==="
 echo ""
 
 check_tool() {
-    if command -v $1 &> /dev/null; then
-        echo "✓ $1: $(command -v $1)"
+    if command -v "$1" &> /dev/null; then
+        echo "✓ $1: $(command -v "$1")"
         return 0
     else
-        echo "✗ $1: NOT FOUND"
+        echo "✗ ${1}: NOT FOUND"
         return 1
     fi
 }
@@ -117,7 +117,7 @@ fi
 
 echo ""
 
-if [ ${#MISSING_TOOLS[@]} -gt 0 ]; then
+if [ "${#MISSING_TOOLS[@]}" -gt 0 ]; then
     echo "❌ Missing REQUIRED tools: ${MISSING_TOOLS[*]}"
     echo ""
     echo "Install with:"
@@ -132,7 +132,7 @@ if [ ${#MISSING_TOOLS[@]} -gt 0 ]; then
     echo ""
 fi
 
-if [ ${#OPTIONAL_TOOLS[@]} -gt 0 ]; then
+if [ "${#OPTIONAL_TOOLS[@]}" -gt 0 ]; then
     echo "ℹ️  Missing OPTIONAL tools: ${OPTIONAL_TOOLS[*]}"
     echo ""
     echo "Install with:"
@@ -159,16 +159,16 @@ echo "Coq proofs:"
 COQC_TOTAL=$(find proofs/coq -name "*.v" -exec grep -h "^Theorem\|^Lemma\|^Corollary" {} \; 2>/dev/null | wc -l)
 COQC_ADMITTED=$(grep -r "Admitted\." proofs/coq/ 2>/dev/null | wc -l)
 COQC_PROVEN=$((COQC_TOTAL - COQC_ADMITTED))
-if [ $COQC_TOTAL -gt 0 ]; then
+if [ "${COQC_TOTAL}" -gt 0 ]; then
     COQC_PERCENT=$((COQC_PROVEN * 100 / COQC_TOTAL))
 else
     COQC_PERCENT=0
 fi
 
-echo "  Total theorems: $COQC_TOTAL"
-echo "  Proven: $COQC_PROVEN"
-echo "  Admitted: $COQC_ADMITTED"
-echo "  Completion: $COQC_PERCENT%"
+echo "  Total theorems: ${COQC_TOTAL}"
+echo "  Proven: ${COQC_PROVEN}"
+echo "  Admitted: ${COQC_ADMITTED}"
+echo "  Completion: ${COQC_PERCENT}%"
 echo ""
 
 # Count Lean theorems and sorry
@@ -176,26 +176,26 @@ echo "Lean 4 proofs:"
 LEAN_TOTAL=$(find proofs/lean4 -name "*.lean" -exec grep -h "^theorem\|^lemma" {} \; 2>/dev/null | wc -l)
 LEAN_SORRY=$(grep -r "sorry" proofs/lean4/ 2>/dev/null | wc -l)
 LEAN_PROVEN=$((LEAN_TOTAL - LEAN_SORRY))
-if [ $LEAN_TOTAL -gt 0 ]; then
+if [ "${LEAN_TOTAL}" -gt 0 ]; then
     LEAN_PERCENT=$((LEAN_PROVEN * 100 / LEAN_TOTAL))
 else
     LEAN_PERCENT=0
 fi
 
-echo "  Total theorems: $LEAN_TOTAL"
-echo "  Proven: $LEAN_PROVEN"
-echo "  Sorry: $LEAN_SORRY"
-echo "  Completion: $LEAN_PERCENT%"
+echo "  Total theorems: ${LEAN_TOTAL}"
+echo "  Proven: ${LEAN_PROVEN}"
+echo "  Sorry: ${LEAN_SORRY}"
+echo "  Completion: ${LEAN_PERCENT}%"
 echo ""
 
 # List files with Admitted/sorry
-if [ $COQC_ADMITTED -gt 0 ]; then
+if [ "${COQC_ADMITTED}" -gt 0 ]; then
     echo "Files with Admitted:"
     grep -r "Admitted\." proofs/coq/ 2>/dev/null | cut -d: -f1 | sort -u | sed 's/^/  - /'
     echo ""
 fi
 
-if [ $LEAN_SORRY -gt 0 ]; then
+if [ "${LEAN_SORRY}" -gt 0 ]; then
     echo "Files with sorry:"
     grep -r "sorry" proofs/lean4/ 2>/dev/null | cut -d: -f1 | sort -u | sed 's/^/  - /'
     echo ""
@@ -210,7 +210,7 @@ echo ""
 
 read -p "Run verification now? (y/n) " -n 1 -r
 echo ""
-if [[ $REPLY =~ ^[Yy]$ ]]; then
+if [[ "${REPLY}" =~ ^[Yy]$ ]]; then
     if command -v just &> /dev/null; then
         echo "Using justfile..."
         just verify-all
@@ -250,8 +250,8 @@ echo ""
 echo "Choose what you want to do:"
 echo ""
 echo "1. FIX ADMITTED PROOFS:"
-echo "   - $COQC_ADMITTED Coq proofs need completion"
-echo "   - $LEAN_SORRY Lean proofs need completion"
+echo "   - ${COQC_ADMITTED} Coq proofs need completion"
+echo "   - ${LEAN_SORRY} Lean proofs need completion"
 echo "   See files listed above"
 echo ""
 echo "2. VERIFY EXISTING PROOFS:"
@@ -305,13 +305,13 @@ Next Priority:
 EOF
 
 # Substitute actual values
-sed -i "s/{COQC_PROVEN}/$COQC_PROVEN/g" QUICKSTART.txt
-sed -i "s/{COQC_TOTAL}/$COQC_TOTAL/g" QUICKSTART.txt
-sed -i "s/{COQC_PERCENT}/$COQC_PERCENT/g" QUICKSTART.txt
-sed -i "s/{LEAN_PROVEN}/$LEAN_PROVEN/g" QUICKSTART.txt
-sed -i "s/{LEAN_TOTAL}/$LEAN_TOTAL/g" QUICKSTART.txt
-sed -i "s/{LEAN_PERCENT}/$LEAN_PERCENT/g" QUICKSTART.txt
-sed -i "s/{COQC_ADMITTED}/$COQC_ADMITTED/g" QUICKSTART.txt
+sed -i "s/{COQC_PROVEN}/${COQC_PROVEN}/g" QUICKSTART.txt
+sed -i "s/{COQC_TOTAL}/${COQC_TOTAL}/g" QUICKSTART.txt
+sed -i "s/{COQC_PERCENT}/${COQC_PERCENT}/g" QUICKSTART.txt
+sed -i "s/{LEAN_PROVEN}/${LEAN_PROVEN}/g" QUICKSTART.txt
+sed -i "s/{LEAN_TOTAL}/${LEAN_TOTAL}/g" QUICKSTART.txt
+sed -i "s/{LEAN_PERCENT}/${LEAN_PERCENT}/g" QUICKSTART.txt
+sed -i "s/{COQC_ADMITTED}/${COQC_ADMITTED}/g" QUICKSTART.txt
 
 echo "✓ Created QUICKSTART.txt with current status"
 echo ""

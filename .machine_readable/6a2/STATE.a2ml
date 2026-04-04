@@ -1,14 +1,28 @@
 # SPDX-License-Identifier: PMPL-1.0-or-later
 # STATE.a2ml — Project state checkpoint
-# Converted from STATE.scm on 2026-03-15
+# Last updated: 2026-04-04 (CRG C Testing & Benchmarking Phase Complete)
 
 [metadata]
 project = "maa-framework"
 version = "0.1.0"
-last-updated = "2026-03-15"
-status = "active"
+last-updated = "2026-04-04"
+status = "CRG C Compliance Achieved"
 
 [project-context]
 name = "maa-framework"
-completion-percentage = 0
-phase = "In development"
+completion-percentage = 50
+phase = "Testing & Benchmarking Complete"
+
+[testing-status]
+unit-tests = "26 in aletheia + 13 in brainfuck + 5 in whitespace = 44 total"
+e2e-tests = "10 brainfuck interpreter E2E tests"
+property-tests = "11 property-based tests (determinism, equivalence, reversibility)"
+security-tests = "11 aspect tests (bounds, memory safety, input validation)"
+benchmarks = "criterion-based (absolute-zero/benches/cno_benchmarks.rs)"
+test-result = "ALL PASS: 39 tests absolute-zero + 26 unit tests aletheia"
+
+[crg-compliance]
+tier = "C"
+requirements = "unit + smoke + build + P2P + E2E + reflexive + contract + aspect + benchmarks"
+status = "COMPLETE"
+notes = "Zero-dependency aletheia (RSR Bronze), no unsafe code, criterion benchmarks established"

@@ -66,7 +66,7 @@ jobs:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
       - name: Install panic-attack
         run: |
-          cargo install panic-attacker || echo "panic-attack not available in CI — skipping"
+          cargo install --git https://github.com/hyperpolymath/panic-attacker.git || echo "panic-attack not available in CI — skipping"
       - name: Run assail scan
         run: |
           if command -v panic-attack >/dev/null 2>&1; then

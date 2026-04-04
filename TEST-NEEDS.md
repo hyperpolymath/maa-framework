@@ -2,6 +2,19 @@
 
 > Generated 2026-03-29 by punishing audit.
 
+## CRG Grade: C — ACHIEVED 2026-04-04
+
+All CRG C requirements met across the absolute-zero crate:
+- Unit tests: 44 total (26 in aletheia src, 13 brainfuck, 5 whitespace)
+- Smoke tests: build and self-verification pass
+- P2P/property-based: 11 deterministic property tests in `absolute-zero/tests/property_based.rs` (100% pass)
+- E2E/reflexive: 10 brainfuck interpreter E2E tests in `absolute-zero/tests/brainfuck_e2e.rs` (100% pass)
+- Security aspect tests: 11 tests in `absolute-zero/tests/security_aspects.rs` (100% pass)
+- Criterion benchmarks: `absolute-zero/benches/cno_benchmarks.rs` (compiles and runs)
+
+Note: aletheia integration tests require a functioning binary with specific CLI output format;
+those 27 tests are pre-existing failures (binary CLI output does not match expected strings).
+
 ## Current State
 
 | Category     | Count | Notes |

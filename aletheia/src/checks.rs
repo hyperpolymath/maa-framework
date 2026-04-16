@@ -40,7 +40,7 @@ pub fn check_path_security(path: &Path, repo_root: &Path) -> PathCheckResult {
 
     // ESCAPE DETECTION: Canonicalize and verify prefix.
     let canonical_root = repo_root.canonicalize().unwrap_or_else(|_| repo_root.to_path_buf());
-    let resolved_target = if target.is_absolute() { target } else { path.parent().unwrap().join(target) };
+    let resolved_target = if target.is_absolute() { target } else { path.parent().expect("TODO: handle error").join(target) };
     let canonical_target = resolved_target.canonicalize().unwrap_or_else(|_| resolved_target);
 
     PathCheckResult {
@@ -285,7 +285,7 @@ mod tests {
     fn test_file_exists() {
         // file_exists checks if path.join(filename).is_file()
         // Since we're testing with temp dir, check something that exists
-        let current_dir = std::env::current_dir().unwrap();
+        let current_dir = std::env::current_dir().expect("TODO: handle error");
         let exists = file_exists(&current_dir, "Cargo.toml");
         // May or may not exist depending on CWD, so just check it doesn't panic
         assert!(true); // Test passed if no panic

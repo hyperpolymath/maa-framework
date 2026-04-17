@@ -121,4 +121,11 @@ htmlcov/
 # Temp
 /tmp/
 *.tmp
-*.bak
+*.baktarget/
+node_modules/
+_build/
+deps/
+.elixir_ls/
+.cache/
+build/
+dist/

@@ -80,3 +80,10 @@ htmlcov/
 
 # Crash recovery artifacts
 ai-cli-crash-capture/
+node_modules/
+_build/
+deps/
+.elixir_ls/
+.cache/
+build/
+dist/

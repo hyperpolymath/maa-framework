@@ -45,7 +45,7 @@ Supported Languages:
 This will create:
     - All required RSR Bronze documentation
     - .well-known directory with security.txt
-    - Build automation (justfile, flake.nix)
+    - Build automation (Justfile, flake.nix)
     - Basic CI/CD configuration
     - Source structure (src/, tests/)
     - License files (MIT + Apache-2.0)
@@ -303,7 +303,7 @@ create_build_system() {
 
     log_step "Creating build system files..."
 
-    # justfile
+    # Justfile
     case "$language" in
         rust)
             cat > "$project_name/justfile" <<EOF

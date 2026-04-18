@@ -80,7 +80,7 @@ absolute-zero/
 * [ ] **Language Policy Cleanup**
   - Remove outdated Python references from README
   - Document: Python is a TEST SUBJECT, not a dependency
-  - Update justfile to remove non-existent Python recipes
+  - Update Justfile to remove non-existent Python recipes
 
 * [ ] **Documentation Audit**
   - Clarify proof systems vs. test subjects

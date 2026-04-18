@@ -130,7 +130,7 @@ absolute-zero/
 │   └── whitespace/            # ❌ README mentions Python, doesn't exist
 │
 ├── package.json               # ⚠️ Only TypeScript compilation
-└── justfile                   # ⚠️ References Python that doesn't exist
+└── Justfile                   # ⚠️ References Python that doesn't exist
 ```
 
 === What Needs to Change
@@ -146,7 +146,7 @@ cargo new --lib interpreters/brainfuck-rs
 cargo new --lib interpreters/whitespace-rs
 
 # 3. Update README.adoc to reflect reality
-# 4. Update justfile recipes
+# 4. Update Justfile recipes
 ```
 
 **Option B: Keep as Test Subjects (Acceptable Exception)**
@@ -282,7 +282,7 @@ Once we prove CNO for mainstream languages:
 * [ ] **Remove outdated Python references** from README
 * [ ] **Clarify package.json** is for TypeScript only (minimal)
 * [ ] **Document**: Malbolge formalization in Coq (already done)
-* [ ] **Update justfile**: Remove Python interpreter recipes
+* [ ] **Update Justfile**: Remove Python interpreter recipes
 
 ### Near-term (v2.0)
 

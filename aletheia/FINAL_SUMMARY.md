@@ -361,7 +361,7 @@ Aletheia is itself RSR-compliant, demonstrating that the standards are achievabl
 - 10 extended (CLAUDE, FAQ, guides, etc.)
 
 **Configuration**: 8 files
-- Build (Cargo.toml, justfile, flake.nix)
+- Build (Cargo.toml, Justfile, flake.nix)
 - CI/CD (.gitlab-ci.yml)
 - Tooling (.rustfmt, .clippy, .editorconfig, rust-toolchain)
 

@@ -284,7 +284,7 @@ aletheia/
 ├── .github/workflows/       # 23 GitHub Actions workflows
 ├── Cargo.toml               # Zero dependencies, MSRV 1.80
 ├── Cargo.lock               # Lock file (commit this)
-├── justfile                 # Build automation
+├── Justfile                 # Build automation
 ├── flake.nix                # Nix reproducible builds
 ├── .gitlab-ci.yml           # CI/CD pipeline
 ├── .gitignore               # Git ignore patterns

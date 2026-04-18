@@ -74,7 +74,7 @@ absolute-zero/
 ├── papers/                  # Research paper drafts
 │   └── .latex/
 │
-├── justfile                 # Build automation
+├── Justfile                 # Build automation
 ├── Containerfile            # Containerized verification (Podman/Docker)
 ├── VERIFICATION.md          # Detailed verification status
 └── .gitlab-ci.yml           # CI/CD pipeline

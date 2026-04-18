@@ -212,7 +212,7 @@ read -p "Run verification now? (y/n) " -n 1 -r
 echo ""
 if [[ "${REPLY}" =~ ^[Yy]$ ]]; then
     if command -v just &> /dev/null; then
-        echo "Using justfile..."
+        echo "Using Justfile..."
         just verify-all
     else
         echo "Running manual verification..."

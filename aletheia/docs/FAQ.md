@@ -112,7 +112,7 @@ Minimal - typically <5MB RAM. Only stores check results in memory.
 Bronze requires:
 - ✅ 7 documentation files (README, LICENSE, SECURITY, etc.)
 - ✅ .well-known directory (security.txt, ai.txt, humans.txt)
-- ✅ Build system (justfile, flake.nix, CI/CD)
+- ✅ Build system (Justfile, flake.nix, CI/CD)
 - ✅ Source structure (src/, tests/)
 
 See [RSR-SPECIFICATION.md](RSR-SPECIFICATION.md) for details.

@@ -103,8 +103,8 @@ touch .well-known/ai.txt .well-known/humans.txt
 ### Missing Build Files
 
 ```bash
-# Create justfile
-cat > justfile << 'EOF'
+# Create Justfile
+cat > Justfile << 'EOF'
 build:
     cargo build
 test:
@@ -125,7 +125,7 @@ mkdir -p src tests
 mv *.rs src/  # Move source files
 ```
 
-## 🔧 Build Automation (justfile)
+## 🔧 Build Automation (Justfile)
 
 ```bash
 just                 # List all commands
@@ -191,7 +191,7 @@ Report vulnerabilities to: security@example.org
 See [.well-known/security.txt](.well-known/security.txt)
 ```
 
-### Minimal justfile
+### Minimal Justfile
 ```makefile
 build:
     cargo build

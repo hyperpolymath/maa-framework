@@ -31,7 +31,7 @@ This project maintains RSR Bronze-level compliance:
 - ✅ Offline-First: No network dependencies
 - ✅ Complete Documentation: All required docs present
 - ✅ Security: RFC 9116 compliant security.txt
-- ✅ Build System: justfile, flake.nix, CI/CD
+- ✅ Build System: Justfile, flake.nix, CI/CD
 - ✅ Testing: Comprehensive test suite
 
 Verify compliance:

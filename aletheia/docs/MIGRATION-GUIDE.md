@@ -70,7 +70,7 @@ Based on the output, create a checklist of missing items:
 - [ ] .well-known/humans.txt
 
 ### Build System
-- [ ] justfile
+- [ ] Justfile
 - [ ] flake.nix
 - [ ] .gitlab-ci.yml (or GitHub Actions)
 
@@ -301,10 +301,10 @@ EOF
 
 ## Build System
 
-### justfile
+### Justfile
 
 ```bash
-cat > justfile << 'EOF'
+cat > Justfile << 'EOF'
 # Build automation with Just
 
 default:
@@ -512,7 +512,7 @@ git commit -m "feat: achieve RSR Bronze-level compliance
 
 - Add complete documentation suite
 - Create .well-known directory with security.txt
-- Set up build automation (justfile, flake.nix)
+- Set up build automation (Justfile, flake.nix)
 - Add CI/CD pipeline
 - Organize source structure
 - Add comprehensive tests
@@ -571,8 +571,8 @@ def test_example():
     assert True
 EOF
 
-# Create justfile for Python
-cat > justfile << 'EOF'
+# Create Justfile for Python
+cat > Justfile << 'EOF'
 test:
     pytest
 
@@ -595,8 +595,8 @@ mkdir -p src tests
 mv *.ts src/ 2>/dev/null || true
 mv *.js src/ 2>/dev/null || true
 
-# Create justfile for Node
-cat > justfile << 'EOF'
+# Create Justfile for Node
+cat > Justfile << 'EOF'
 build:
     npm run build
 

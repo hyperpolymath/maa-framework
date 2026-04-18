@@ -81,7 +81,7 @@ Repository: /home/user/my-project
   ✅ humans.txt [Bronze]
 
 📋 Build System
-  ✅ justfile [Bronze]
+  ✅ Justfile [Bronze]
   ✅ flake.nix [Bronze]
   ✅ .gitlab-ci.yml [Bronze]
 
@@ -169,8 +169,8 @@ Maintainers: Your Team
 ### 3. Create Build System Files
 
 ```bash
-# Create justfile
-touch justfile
+# Create Justfile
+touch Justfile
 
 # Create flake.nix (for Nix users)
 touch flake.nix

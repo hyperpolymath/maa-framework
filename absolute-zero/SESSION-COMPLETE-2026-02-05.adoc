@@ -149,7 +149,7 @@ $ head -1 src/rust/main.rs
 **Changes**:
 * Built ECHIDNA from source (Rust + Julia)
 * Created `scripts/use-echidna.sh` wrapper
-* Added 6 justfile recipes
+* Added 6 Justfile recipes
 * Documented integration status
 
 ---

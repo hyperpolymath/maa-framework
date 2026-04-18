@@ -49,7 +49,7 @@ This document outlines the complete development roadmap for Aletheia.
 - [x] Verification timestamps (TOCTOU mitigation)
 - [x] LICENSE and LICENSE.txt acceptance
 - [x] README.adoc / README.md alternatives
-- [x] justfile / Justfile alternatives
+- [x] Justfile / Justfile alternatives
 - [x] Performance benchmarks
 - [x] Comprehensive documentation
 - [x] 7 .scm checkpoint files (STATE, META, ECOSYSTEM, HANDOVER, PLAYBOOK, AGENTIC, NEUROSYM)

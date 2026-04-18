@@ -758,7 +758,7 @@ Create a `.justfile.user` (not tracked by git):
 [source,just]
 ----
 # .justfile.user
-# Load main justfile
+# Load main Justfile
 import "justfile"
 
 # Override build-coq with custom flags
@@ -778,7 +778,7 @@ Recipes can use environment variables:
 
 [source,just]
 ----
-# In justfile:
+# In Justfile:
 build-coq-debug:
     COQ_DEBUG=1 coqc CNO.v
 ----

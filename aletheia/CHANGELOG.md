@@ -54,7 +54,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Core verification engine** for RSR Bronze-level compliance
 - **Documentation checks**: README.md, LICENSE.txt, SECURITY.md, CONTRIBUTING.md, CODE_OF_CONDUCT.md, MAINTAINERS.md, CHANGELOG.md
 - **Well-known directory checks**: `.well-known/security.txt`, `.well-known/ai.txt`, `.well-known/humans.txt`
-- **Build system checks**: justfile, flake.nix, .gitlab-ci.yml
+- **Build system checks**: Justfile, flake.nix, .gitlab-ci.yml
 - **Source structure checks**: src/ directory, tests/ directory
 - **Comprehensive test suite**: 5 unit tests with 100% pass rate
 - **Zero dependencies**: Only uses Rust standard library
@@ -73,7 +73,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - ai.txt (AI training policies)
   - humans.txt (human attribution)
 - **Build automation**:
-  - justfile with 20+ recipes
+  - Justfile with 20+ recipes
   - flake.nix for Nix reproducible builds
   - .gitlab-ci.yml for CI/CD pipeline
 - **Dual licensing**: MIT + Palimpsest v0.8
@@ -100,7 +100,7 @@ aletheia/
 │   ├── ai.txt          # AI training policies
 │   └── humans.txt      # Human attribution
 ├── Cargo.toml          # Zero dependencies
-├── justfile            # Build automation
+├── Justfile            # Build automation
 ├── flake.nix           # Nix reproducible builds
 ├── .gitlab-ci.yml      # CI/CD pipeline
 └── docs/               # Documentation

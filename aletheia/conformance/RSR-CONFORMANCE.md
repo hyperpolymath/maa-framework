@@ -46,7 +46,7 @@ This document records Aletheia's conformance to the [Rhodium Standard Repositori
 
 | Requirement | Status | Notes |
 |-------------|--------|-------|
-| justfile | ✅ Pass | Task automation |
+| Justfile | ✅ Pass | Task automation |
 | flake.nix | ✅ Pass | Reproducible builds |
 | CI/CD config | ✅ Pass | .gitlab-ci.yml |
 

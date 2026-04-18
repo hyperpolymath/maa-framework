@@ -311,8 +311,8 @@ CNO-specific tactics:
 ```bash
 cd ~/Documents/hyperpolymath-repos/absolute-zero
 
-# Create justfile recipe
-cat >> justfile <<'EOF'
+# Create Justfile recipe
+cat >> Justfile <<'EOF'
 
 # ============================================================================
 # ECHIDNA Neurosymbolic Integration

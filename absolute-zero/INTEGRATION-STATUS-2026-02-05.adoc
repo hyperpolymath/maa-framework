@@ -48,7 +48,7 @@
 **Infrastructure Setup**:
 * Built ECHIDNA from source (cargo build --release)
 * Created `scripts/use-echidna.sh` wrapper script
-* Added justfile recipes:
+* Added Justfile recipes:
   - `just echidna-list` - List Admitted proofs
   - `just echidna-suggest <file>` - Get tactic suggestions
   - `just echidna-complete <file>` - Auto-complete attempts

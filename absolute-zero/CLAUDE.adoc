@@ -64,7 +64,7 @@ absolute-zero/
 ├── README.md                 # Comprehensive research documentation
 ├── LICENSE          # PMPL-1.0-or-later license
 ├── LICENSE-PALIMPSEST.md     # Palimpsest 0.5 academic license
-├── justfile                  # Build automation (used on GitLab)
+├── Justfile                  # Build automation (used on GitLab)
 │
 ├── interpreters/
 │   └── rescript/

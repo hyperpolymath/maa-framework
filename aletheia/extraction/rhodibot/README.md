@@ -145,7 +145,7 @@ Rhodibot checks for these Bronze-level requirements:
 - .well-known/humans.txt
 
 ### Build System
-- justfile
+- Justfile
 - flake.nix
 - .gitlab-ci.yml
 

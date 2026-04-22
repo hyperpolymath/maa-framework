@@ -48,6 +48,9 @@ absolute-zero/
 │   │
 │   ├── z3/                  # Z3 SMT verification (automated)
 │   ├── agda/                # Agda proofs (dependent types)
+│   │   ├── CNO.agda         # Main Agda CNO file (in-progress)
+│   │   ├── EchoBridgeScaffold.agda # Echo/CNO adapter interface scaffold
+│   │   └── README.adoc      # Agda bridge status + integration plan
 │   ├── isabelle/            # Isabelle/HOL (production-grade)
 │   └── mizar/               # Mizar proofs (mathematical library)
 │
@@ -203,6 +206,11 @@ For maximum confidence, we verify CNO properties in **six independent proof syst
 | **Filesystem Operations** | Valence Shell integration, practical CNOs | 🟡 8 Qed, 6 Admitted | ✅ |
 
 See [VERIFICATION.md](VERIFICATION.md) for detailed status and [PROOF-INSIGHTS.md](PROOF-INSIGHTS.md) for proof engineering knowledge.
+
+Agda bridge note:
+
+* `proofs/agda/EchoBridgeScaffold.agda` is now present as a compile-safe adapter layer to connect CNO identity witnesses to the echo/fiber shape used in `echo-types`.
+* Concrete import-level integration with `CNO.agda` remains gated until unfinished holes in `CNO.agda` are closed.
 
 **Coq Proof Status** (2026-02-05): 81 Qed / 19 Admitted / 6 Defined / 63 Axioms across 10 files. 4 files fully complete (CNO.v, CNOCategory.v, StatMech.v, StatMech_helpers.v).
 

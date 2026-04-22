@@ -59,3 +59,4 @@ quantum verification, and standardization.
 * **ECHIDNA**: Security scanning - potential CNO verification integration
 * **Valence Shell**: Filesystem operations proved in FilesystemCNO.v
 * **echidnabot**: GitHub bot for automated proof checking in PRs
+* **echo-types**: Agda adapter scaffold now tracked at `proofs/agda/EchoBridgeScaffold.agda`; full cross-repo theorem alignment remains open

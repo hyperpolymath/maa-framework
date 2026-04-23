@@ -10,13 +10,19 @@
 
 module CNO where
 
-open import Data.Nat using (ℕ; zero; suc; _+_; _*_)
+open import Data.Nat using (ℕ; zero; suc; _+_; _*_; nonZero)
+open import Data.Nat.Base using (NonZero)
+open import Data.Nat.DivMod using (_%_)
 open import Data.List using (List; []; _∷_; _++_; length)
 open import Data.Product using (_×_; _,_; proj₁; proj₂; Σ; ∃)
 open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; trans; cong)
 open import Data.Bool using (Bool; true; false; if_then_else_)
 open import Data.Maybe using (Maybe; just; nothing)
 open import Function using (_∘_; id)
+
+instance
+  nonZero3 : NonZero 3
+  nonZero3 = nonZero
 
 ----------------------------------------------------------------------------
 -- Memory Model
@@ -293,6 +299,9 @@ state-eq-trans (m₁ , r₁ , i₁ , p₁) (m₂ , r₂ , i₂ , p₂) =
   trans i₁ i₂ ,
   trans p₁ p₂
 
+state-eq-cong-left : ∀ {s₁ s₂ s₃} → s₁ ≡ s₂ → state-eq s₂ s₃ → state-eq s₁ s₃
+state-eq-cong-left refl eq = eq
+
 -- Composition of CNOs is a CNO
 cno-composition : ∀ {p₁ p₂} → IsCNO p₁ → IsCNO p₂ → IsCNO (seq-comp p₁ p₂)
 cno-composition {p₁} {p₂} cno₁ cno₂ = record
@@ -300,8 +309,13 @@ cno-composition {p₁} {p₂} cno₁ cno₂ = record
   ; cno-identity = λ s →
       let eq₁ = IsCNO.cno-identity cno₁ s
           eq₂ = IsCNO.cno-identity cno₂ (eval p₁ s)
-      in {!!}  -- Requires more work with rewrite
-  ; cno-pure = λ s → {!!}
+      in state-eq-cong-left (eval-seq-comp p₁ p₂ s) (state-eq-trans eq₂ eq₁)
+  ; cno-pure = λ s →
+      let eq₁ = IsCNO.cno-identity cno₁ s
+          eq₂ = IsCNO.cno-identity cno₂ (eval p₁ s)
+          eq = state-eq-cong-left (eval-seq-comp p₁ p₂ s) (state-eq-trans eq₂ eq₁)
+          (m , _ , i , _) = eq
+      in sym i , (λ addr → sym (m addr))
   ; cno-reversible = λ s → refl
   }
 
@@ -311,16 +325,11 @@ cno-composition {p₁} {p₂} cno₁ cno₂ = record
 
 -- Ternary operations
 ternary-add : ℕ → ℕ → ℕ
-ternary-add a b = (a + b) Data.Nat.% 3
-  where
-    open import Data.Nat.DivMod using (_Data.Nat.%_)
-    -- Simplified for demonstration
+ternary-add a b = (a + b) % 3
 
 -- Crazy operation
 crazy-op : ℕ → ℕ → ℕ
-crazy-op a b = (a + b) Data.Nat.% 3
-  where
-    open import Data.Nat.DivMod using (_Data.Nat.%_)
+crazy-op a b = (a + b) % 3
 
 ----------------------------------------------------------------------------
 -- Absolute Zero

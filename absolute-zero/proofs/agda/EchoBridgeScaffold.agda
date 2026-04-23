@@ -16,6 +16,21 @@ open import Agda.Builtin.Unit using (⊤; tt)
 Echo : ∀ {a b} {A : Set a} {B : Set b} → (A → B) → B → Set (a ⊔ b)
 Echo {A = A} f y = Σ A (λ x → f x ≡ y)
 
+-- Relation-indexed fiber shape, useful when identity is stated up to
+-- a semantic relation instead of propositional equality.
+EchoRel :
+  ∀ {a b r} {A : Set a} {B : Set b} →
+  (A → B) → (B → B → Set r) → B → Set (a ⊔ r)
+EchoRel {A = A} f _≈_ y = Σ A (λ x → _≈_ (f x) y)
+
+echo-from-rel :
+  ∀ {a b r} {A : Set a} {B : Set b}
+  (f : A → B) (_≈_ : B → B → Set r)
+  (x : A) (y : B) →
+  _≈_ (f x) y →
+  EchoRel f _≈_ y
+echo-from-rel _ _ x _ rel = x , rel
+
 -- Minimal interface needed to connect a CNO model to echoes.
 record CNOModel {ℓs ℓo : Level} (State : Set ℓs) : Set (lsuc (ℓs ⊔ ℓo)) where
   field

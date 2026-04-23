@@ -211,7 +211,7 @@ Agda bridge note:
 
 * `proofs/agda/EchoBridgeScaffold.agda` is now present as a compile-safe adapter layer to connect CNO identity witnesses to the echo/fiber shape used in `echo-types`.
 * `proofs/agda/EchoBridgeCNO.agda` now provides a concrete `Program`/`eval` model instantiation into that scaffold.
-* This concrete bridge currently uses a function-extensionality parameter to convert `state-eq` into propositional equality for `Echo`.
+* The concrete bridge now exposes relation-based echoes over `state-eq` directly; function extensionality is only used for optional propositional `Echo` corollaries.
 
 **Coq Proof Status** (2026-02-05): 81 Qed / 19 Admitted / 6 Defined / 63 Axioms across 10 files. 4 files fully complete (CNO.v, CNOCategory.v, StatMech.v, StatMech_helpers.v).
 

@@ -1,7 +1,7 @@
 -- Concrete Echo/CNO instantiation against CNO.Program and CNO.eval.
 --
--- Note: CNO identity is phrased as state-eq, so we parameterize by
--- function extensionality to recover propositional equality of states.
+-- Primary bridge: use CNO.state-eq directly as the relation in EchoRel.
+-- Secondary bridge: recover propositional equality with extensionality.
 
 module EchoBridgeCNO where
 
@@ -11,7 +11,28 @@ open import Relation.Binary.PropositionalEquality using (_≡_; refl)
 open import Axiom.Extensionality.Propositional using (Extensionality)
 
 import CNO
-open import EchoBridgeScaffold using (CNOModel; Echo; echo-from-cno)
+open import EchoBridgeScaffold using
+  ( CNOModel
+  ; Echo
+  ; EchoRel
+  ; echo-from-cno
+  ; echo-from-rel
+  )
+
+echo-from-cno-program-rel :
+  (p : CNO.Program) →
+  CNO.IsCNO p →
+  (s : CNO.ProgramState) →
+  EchoRel (CNO.eval p) CNO.state-eq s
+echo-from-cno-program-rel p cno s =
+  echo-from-rel (CNO.eval p) CNO.state-eq s s
+    (CNO.IsCNO.cno-identity cno s)
+
+absolute-zero-echo-rel :
+  (s : CNO.ProgramState) →
+  EchoRel (CNO.eval CNO.absolute-zero) CNO.state-eq s
+absolute-zero-echo-rel s =
+  echo-from-cno-program-rel CNO.absolute-zero CNO.absolute-zero-is-cno s
 
 state-eq→≡ :
   Extensionality zero zero →
@@ -30,18 +51,18 @@ program-state-model ext = record
       state-eq→≡ ext (CNO.IsCNO.cno-identity cno s)
   }
 
-echo-from-cno-program :
+echo-from-cno-program-≡ :
   (ext : Extensionality zero zero) →
   (p : CNO.Program) →
   CNO.IsCNO p →
   (s : CNO.ProgramState) →
   Echo (CNO.eval p) s
-echo-from-cno-program ext p cno s =
+echo-from-cno-program-≡ ext p cno s =
   echo-from-cno (program-state-model ext) p cno s
 
-absolute-zero-echo :
+absolute-zero-echo-≡ :
   (ext : Extensionality zero zero) →
   (s : CNO.ProgramState) →
   Echo (CNO.eval CNO.absolute-zero) s
-absolute-zero-echo ext s =
-  echo-from-cno-program ext CNO.absolute-zero CNO.absolute-zero-is-cno s
+absolute-zero-echo-≡ ext s =
+  echo-from-cno-program-≡ ext CNO.absolute-zero CNO.absolute-zero-is-cno s

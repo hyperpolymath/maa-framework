@@ -26,8 +26,10 @@ This module imports `CNO.agda` and instantiates `CNOModel` concretely with:
 * `IsCNO = IsCNO`
 
 Because `CNO.cno-identity` is phrased as `state-eq` (with function-valued memory),
-the bridge takes a function-extensionality parameter to derive propositional
-state equality for `Echo`.
+the bridge provides two layers:
+
+* primary: relation-based echoes via `EchoRel ... CNO.state-eq` (no extensionality needed);
+* secondary: propositional `Echo` corollaries via a function-extensionality parameter.
 
 == Integration plan
 

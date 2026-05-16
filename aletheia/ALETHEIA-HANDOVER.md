@@ -118,7 +118,7 @@ Aletheia builds on **Absolute Zero** - formal verification of Certified Null Ope
 | TypeScript | ReScript |
 | Node.js/npm | Deno |
 | Go | Rust |
-| Python (general) | Rust/ReScript |
+| Python (general) | Rust/AffineScript |
 
 ### Key Files
 

@@ -199,7 +199,7 @@
      ((language . Go)
       (replacement . Rust))
      ((language . Python)
-      (replacement . "Rust/ReScript")
+      (replacement . "Rust/AffineScript")
       (exception . "SaltStack only")))))
 
 ;;; ============================================================================

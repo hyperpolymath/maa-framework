@@ -245,7 +245,7 @@ This is research-stage software. Contributions welcome in:
 * Formal proofs of reversibility properties
 * Minix syscall analysis
 * Reversibility literature survey
-* Rust/ReScript implementation
+* Rust/AffineScript implementation
 
 See link:CONTRIBUTING.md[CONTRIBUTING.md] for guidelines.
 

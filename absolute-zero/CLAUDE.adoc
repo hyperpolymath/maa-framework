@@ -62,7 +62,7 @@ A CNO is a program with the following formally proven properties:
 absolute-zero/
 │
 ├── README.md                 # Comprehensive research documentation
-├── LICENSE          # PMPL-1.0-or-later license
+├── LICENSE          # MPL-2.0 license
 ├── LICENSE-PALIMPSEST.md     # Palimpsest 0.5 academic license
 ├── Justfile                  # Build automation (used on GitLab)
 │
@@ -286,7 +286,7 @@ Malbolge's extreme complexity makes it an ideal testbed:
 
 This project is **dual-licensed** to support both open-source use and academic research:
 
-### PMPL-1.0-or-later (Primary License)
+### MPL-2.0 (Primary License)
 
 For general use, licensed under GNU Affero General Public License v3.0:
 - ✅ Freedom to use, modify, and distribute
@@ -318,10 +318,10 @@ See `LICENSE-PALIMPSEST.md` for full terms.
 
 ### Choosing a License
 
-- **Open-source projects**: Use PMPL-1.0-or-later
+- **Open-source projects**: Use MPL-2.0
 - **Academic papers**: Use Palimpsest 0.5
 - **Commercial use**: Contact author for arrangement
-- **When in doubt**: Use PMPL-1.0-or-later
+- **When in doubt**: Use MPL-2.0
 
 ## Research Context
 

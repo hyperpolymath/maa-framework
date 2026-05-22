@@ -3,7 +3,7 @@ name = "absolute-zero"
 version = "1.0.0"
 edition = "2021"
 description = "Certified Null Operation - A program that does absolutely nothing"
-license = "PMPL-1.0-or-later"
+license = "MPL-2.0"
 
 [workspace]
 members = ["src/brainfuck", "src/whitespace"]

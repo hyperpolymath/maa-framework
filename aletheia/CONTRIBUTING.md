@@ -52,4 +52,4 @@ Open an issue on GitHub with a clear description of the problem or suggestion.
 
 ## License
 
-Contributions are licensed under PMPL-1.0-or-later. See [CONTRIBUTING.adoc](CONTRIBUTING.adoc) for full details.
+Contributions are licensed under MPL-2.0. See [CONTRIBUTING.adoc](CONTRIBUTING.adoc) for full details.

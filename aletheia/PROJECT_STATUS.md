@@ -27,7 +27,7 @@ Aletheia is a zero-dependency Rust tool for verifying Rhodium Standard Repositor
 
 **Required Documentation**:
 - `README.adoc` - Project overview (AsciiDoc)
-- `LICENSE` - Palimpsest License (PMPL-1.0-or-later)
+- `LICENSE` - Palimpsest License (MPL-2.0)
 - `SECURITY.md` - Security policy and disclosure
 - `CONTRIBUTING.md` / `CONTRIBUTING.adoc` - Contribution guidelines
 - `CODE_OF_CONDUCT.md` - Community standards

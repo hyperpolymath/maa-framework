@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-License-Identifier: MPL-2.0
 = Absolute Zero: Updated Roadmap (v1.0 → v12.0)
 Jonathan D. A. Jewell <j.d.a.jewell@open.ac.uk>
 :toc: left
@@ -73,7 +73,7 @@ absolute-zero/
 
 ==== Tasks
 * [x] ✅ **License Migration** (COMPLETED 2026-02-05)
-  - PMPL-1.0-or-later implemented
+  - MPL-2.0 implemented
   - SPDX headers updated
   - README corrected
 

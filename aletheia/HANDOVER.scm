@@ -1,7 +1,7 @@
 ;;; HANDOVER.scm --- Aletheia Project Handover for Claude Code
 ;;;
 ;;; Copyright (C) 2025 Jonathan D. A. Jewell
-;;; SPDX-License-Identifier: PMPL-1.0-or-later
+;;; SPDX-License-Identifier: MPL-2.0
 ;;;
 ;;; For: AI assistants starting work on the Aletheia project
 ;;; Updated: 2026-02-05
@@ -167,7 +167,7 @@
      (description . "Hyperpolymath build/task automation"))
 
     (licensing
-     (primary . "PMPL-1.0-or-later")
+     (primary . "MPL-2.0")
      (file . "LICENSE"))))
 
 ;;; ============================================================================

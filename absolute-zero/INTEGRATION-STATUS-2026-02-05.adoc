@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-License-Identifier: MPL-2.0
 = Integration Status Report
 :toc:
 :sectnums:
@@ -10,7 +10,7 @@
 === ✅ 1. License Standardization
 
 **absolute-zero**:
-* Added LICENSE file (PMPL-1.0-or-later)
+* Added LICENSE file (MPL-2.0)
 * Updated README.adoc (removed AGPL references)
 * Fixed SPDX headers in all checkpoint files
 * Removed LICENSE-PALIMPS.md stub
@@ -22,7 +22,7 @@
 * Verified consistency across all files
 * Committed: 482892e
 
-**Status**: Both repos now consistently use PMPL-1.0-or-later ✅
+**Status**: Both repos now consistently use MPL-2.0 ✅
 
 ---
 
@@ -77,14 +77,14 @@
 ### Repository Health
 
 **absolute-zero**:
-* License: ✅ PMPL-1.0-or-later
+* License: ✅ MPL-2.0
 * Checkpoint files: ✅ Up to date
 * Documentation: ✅ Comprehensive (5 new docs)
 * ECHIDNA integration: ✅ Working
 * Proofs: ⏳ 27 Admitted remaining
 
 **echidna**:
-* License: ✅ PMPL-1.0-or-later
+* License: ✅ MPL-2.0
 * Build: ✅ Success (release mode)
 * Binary: ✅ ~/Documents/hyperpolymath-repos/echidna/target/release/echidna
 * Integration: ✅ Scripts created
@@ -179,7 +179,7 @@ just echidna-verify  # Run consensus check
 
 ## Success Criteria (v1.0)
 
-* [x] ✅ License: PMPL-1.0-or-later
+* [x] ✅ License: MPL-2.0
 * [x] ✅ Documentation: Comprehensive
 * [x] ✅ ECHIDNA: Integrated
 * [ ] 🎯 Proofs: 27 → 0 Admitted

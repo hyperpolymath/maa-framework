@@ -719,7 +719,7 @@ just check-tools         # Check dependencies
 
 This project is dual-licensed:
 
-* *PMPL-1.0-or-later*: For open-source use
+* *MPL-2.0*: For open-source use
 * *Palimpsest 0.5*: For academic research
 
 See `LICENSE` and `LICENSE-PALIMPSEST.md` for details.

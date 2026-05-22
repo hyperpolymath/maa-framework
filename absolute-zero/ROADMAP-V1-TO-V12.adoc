@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-License-Identifier: MPL-2.0
 = Absolute Zero: Roadmap to v12.0
 Jonathan D. A. Jewell <j.d.a.jewell@open.ac.uk>
 :toc: left
@@ -27,7 +27,7 @@ This roadmap charts Absolute Zero's evolution from a research prototype (current
 === Technical Debt ⚠️
 * Python interpreters (violates RSR language policy → migrate to Julia/Rust)
 * npm/package.json (violates Deno-only policy)
-* License inconsistencies (AGPL references → PMPL-1.0-or-later)
+* License inconsistencies (AGPL references → MPL-2.0)
 * Incomplete checkpoint files (ECOSYSTEM.scm needs detail)
 * Container verification not validated
 
@@ -82,7 +82,7 @@ This roadmap charts Absolute Zero's evolution from a research prototype (current
 
 ==== Critical Tasks
 * [ ] **License Migration**
-  - Replace all AGPL-3.0 references with PMPL-1.0-or-later
+  - Replace all AGPL-3.0 references with MPL-2.0
   - Update SPDX headers in all 500+ files
   - Create LICENSE and LICENSE-MPL-2.0 files
   - Remove LICENSE-PALIMPS.md stub

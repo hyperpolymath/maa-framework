@@ -220,7 +220,7 @@ This project (aletheia) will have the following structure when properly configur
 - Created via `repo-customiser`
 
 ### Licensing
-- **Primary**: Palimpsest License (PMPL-1.0-or-later)
+- **Primary**: Palimpsest License (MPL-2.0)
 
 ### Foundational Input
 - **Absolute Zero** - CNO proofs, reversibility theory, Landauer/Bennett thermodynamics

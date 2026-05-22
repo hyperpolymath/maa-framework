@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-License-Identifier: MPL-2.0
 = License Audit: Absolute Zero & ECHIDNA
 :toc:
 :sectnums:
@@ -19,10 +19,10 @@
 
 **Checkpoint files** (STATE.scm, ECOSYSTEM.scm, META.scm):
 ```scheme
-;; SPDX-License-Identifier: MPL-2.0-or-later  ⚠️ Should be PMPL-1.0-or-later
+;; SPDX-License-Identifier: MPL-2.0-or-later  ⚠️ Should be MPL-2.0
 ```
 
-**Expected**: PMPL-1.0-or-later (primary), MPL-2.0 (fallback)
+**Expected**: MPL-2.0 (primary), MPL-2.0 (fallback)
 
 === Required Actions
 
@@ -35,11 +35,11 @@ cp ~/Documents/hyperpolymath-repos/echidna/LICENSE .
 2. **Update SPDX headers**:
 ```bash
 # Fix checkpoint files
-sed -i 's/MPL-2.0-or-later/PMPL-1.0-or-later/' STATE.scm ECOSYSTEM.scm META.scm
+sed -i 's/MPL-2.0-or-later/MPL-2.0/' STATE.scm ECOSYSTEM.scm META.scm
 
 # Add to all source files
 find proofs -name "*.v" -o -name "*.lean" | while read f; do
-  echo "// SPDX-License-Identifier: PMPL-1.0-or-later" | cat - "$f" > temp && mv temp "$f"
+  echo "// SPDX-License-Identifier: MPL-2.0" | cat - "$f" > temp && mv temp "$f"
 done
 ```
 
@@ -47,9 +47,9 @@ done
 ```adoc
 == License
 
-SPDX-License-Identifier: PMPL-1.0-or-later
+SPDX-License-Identifier: MPL-2.0
 
-Primary License: Palimpsest-MPL License 1.0 or later (PMPL-1.0-or-later)
+Primary License: Palimpsest-MPL License 1.0 or later (MPL-2.0)
 
 Fallback (where required): Mozilla Public License 2.0 (MPL-2.0)
 
@@ -69,7 +69,7 @@ rm LICENSE-PALIMPS.md  # 0 bytes, not useful
 
 **LICENSE file** (line 1):
 ```
-SPDX-License-Identifier: PMPL-1.0-or-later  ✅ CORRECT
+SPDX-License-Identifier: MPL-2.0  ✅ CORRECT
 ```
 
 **Cargo.toml** (line 4):
@@ -81,7 +81,7 @@ license = "MIT OR Palimpsest-0.6"  ❌ OUTDATED
 ```rust
 // SPDX-License-Identifier: MIT OR Palimpsest-0.6  ❌ OUTDATED (some files)
 // SPDX-License-Identifier: PMPL-1.0              ✅ CORRECT (other files)
-// SPDX-License-Identifier: PMPL-1.0-or-later    ✅ CORRECT (LICENSE)
+// SPDX-License-Identifier: MPL-2.0    ✅ CORRECT (LICENSE)
 ```
 
 === Required Actions
@@ -92,7 +92,7 @@ license = "MIT OR Palimpsest-0.6"  ❌ OUTDATED
 license = "MIT OR Palimpsest-0.6"
 
 # After:
-license = "PMPL-1.0-or-later"
+license = "MPL-2.0"
 ```
 
 2. **Fix source file headers**:
@@ -101,14 +101,14 @@ cd ~/Documents/hyperpolymath-repos/echidna
 
 # Replace old SPDX
 find . -name "*.rs" -o -name "*.jl" -o -name "*.res" | while read f; do
-  sed -i 's#MIT OR Palimpsest-0.6#PMPL-1.0-or-later#g' "$f"
-  sed -i 's#PMPL-1.0$#PMPL-1.0-or-later#g' "$f"
+  sed -i 's#MIT OR Palimpsest-0.6#MPL-2.0#g' "$f"
+  sed -i 's#PMPL-1.0$#MPL-2.0#g' "$f"
 done
 ```
 
 3. **Verify consistency**:
 ```bash
-# Should all return PMPL-1.0-or-later
+# Should all return MPL-2.0
 grep "SPDX-License-Identifier" LICENSE
 grep "license =" Cargo.toml
 grep -r "SPDX-License-Identifier" --include="*.rs" | head -5
@@ -118,14 +118,14 @@ grep -r "SPDX-License-Identifier" --include="*.rs" | head -5
 
 == Hyperpolymath License Standard (Reminder)
 
-### Primary: PMPL-1.0-or-later
+### Primary: MPL-2.0
 
 **Use for**:
 * All original hyperpolymath code
 * Research projects (absolute-zero, echidna)
 * Libraries and tools
 
-**SPDX**: `PMPL-1.0-or-later`
+**SPDX**: `MPL-2.0`
 
 ### Fallback: MPL-2.0
 
@@ -149,22 +149,22 @@ grep -r "SPDX-License-Identifier" --include="*.rs" | head -5
 
 ### absolute-zero
 
-- [ ] LICENSE file created (PMPL-1.0-or-later full text)
+- [ ] LICENSE file created (MPL-2.0 full text)
 - [ ] LICENSE-MPL-2.0 file created (fallback)
 - [ ] Remove LICENSE-PALIMPS.md (0 bytes)
 - [ ] Update README.adoc license section
 - [ ] Fix SPDX in STATE.scm, ECOSYSTEM.scm, META.scm
 - [ ] Add SPDX headers to all proof files
 - [ ] Update .machine_readable/META.scm with license info
-- [ ] Commit with message: "fix: migrate to PMPL-1.0-or-later license"
+- [ ] Commit with message: "fix: migrate to MPL-2.0 license"
 
 ### echidna
 
 - [ ] Fix Cargo.toml license field
 - [ ] Update all source file SPDX headers
-- [ ] Verify LICENSE file is PMPL-1.0-or-later
+- [ ] Verify LICENSE file is MPL-2.0
 - [ ] Update README badges if any
-- [ ] Commit with message: "fix: standardize to PMPL-1.0-or-later"
+- [ ] Commit with message: "fix: standardize to MPL-2.0"
 
 ### echidnabot
 
@@ -173,7 +173,7 @@ grep -r "SPDX-License-Identifier" --include="*.rs" | head -5
 
 ### idris2-echidna
 
-- [ ] Verify license consistency (checked: ✅ PMPL-1.0-or-later in README)
+- [ ] Verify license consistency (checked: ✅ MPL-2.0 in README)
 - [ ] Update if needed
 
 ---

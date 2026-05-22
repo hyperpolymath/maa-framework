@@ -308,9 +308,9 @@ So the axiom is harmless — it exists only for conceptual completeness.
 
 ## License Status
 
-All proof files now use PMPL-1.0-or-later headers. The old AGPL references
+All proof files now use MPL-2.0 headers. The old AGPL references
 in StatMech.v were fixed in a previous session. LambdaCNO.v and
-CNOCategory.v headers were updated to PMPL-1.0-or-later.
+CNOCategory.v headers were updated to MPL-2.0.
 
 ---
 

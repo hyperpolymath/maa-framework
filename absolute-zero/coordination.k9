@@ -5,7 +5,7 @@
 Formal verification of Computational Non-reversible Operation (CNO) theory across multiple computational models.
 
 **Languages:** Coq, Rust, Deno, Just
-**License:** PMPL-1.0-or-later
+**License:** MPL-2.0
 **Build system:** just
 **Runtime:** deno
 

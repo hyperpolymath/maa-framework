@@ -295,7 +295,7 @@ aletheia/
 ├── MAINTAINERS.md           # Governance
 ├── CHANGELOG.md             # Version history
 ├── CLAUDE.md                # This file
-├── LICENSE                  # Palimpsest License (PMPL-1.0-or-later)
+├── LICENSE                  # Palimpsest License (MPL-2.0)
 ├── STATE.scm                # Current project state
 ├── ECOSYSTEM.scm            # Ecosystem connections
 └── META.scm                 # Project metadata and ADRs

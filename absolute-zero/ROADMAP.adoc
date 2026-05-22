@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-License-Identifier: MPL-2.0
 = Absolute Zero Roadmap
 Jonathan D. A. Jewell <j.d.a.jewell@open.ac.uk>
 :toc:
@@ -9,7 +9,7 @@ Jonathan D. A. Jewell <j.d.a.jewell@open.ac.uk>
 * **19 proofs remaining** (Admitted) across 6 modules
 * **4 modules fully complete**: CNO.v, CNOCategory.v, StatMech.v, StatMech_helpers.v
 * **6 proof systems**: Coq, Lean 4, Z3, Agda, Isabelle, Mizar (stub)
-* **License**: PMPL-1.0-or-later (migration from AGPL complete)
+* **License**: MPL-2.0 (migration from AGPL complete)
 
 == Immediate Priority: Proof Completion
 
@@ -32,7 +32,7 @@ See link:PROOF-INSIGHTS.md[PROOF-INSIGHTS.md] for detailed proof strategies.
 
 === v0.8.0 - Compliance Sprint
 * [ ] Complete 12-15 of 19 remaining proofs
-* [x] License migration to PMPL-1.0-or-later
+* [x] License migration to MPL-2.0
 * [ ] Migrate Python interpreters to Rust
 * [ ] Remove npm/package.json dependencies
 * [ ] Complete checkpoint files

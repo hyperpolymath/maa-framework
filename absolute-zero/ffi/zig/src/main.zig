@@ -6,7 +6,7 @@
 // The FFI provides a pure Zig implementation of the Brainfuck CNO verification
 // engine, callable from any language that supports the C ABI.
 //
-// SPDX-License-Identifier: PMPL-1.0-or-later
+// SPDX-License-Identifier: MPL-2.0
 // Copyright (c) 2026 Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 
 const std = @import("std");

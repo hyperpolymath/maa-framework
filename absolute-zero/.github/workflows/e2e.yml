@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: PMPL-1.0-or-later
+# SPDX-License-Identifier: MPL-2.0
 # E2E, aspect, benchmark, and panic-attack CI for Absolute Zero
 name: E2E + Aspect + Bench + Security
 

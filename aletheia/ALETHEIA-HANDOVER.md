@@ -100,7 +100,7 @@ Aletheia builds on **Absolute Zero** - formal verification of Certified Null Ope
 - `mustfile` - Hyperpolymath build/task automation
 
 ### Licensing
-- **Primary**: [Palimpsest License (PMPL-1.0-or-later)](LICENSE)
+- **Primary**: [Palimpsest License (MPL-2.0)](LICENSE)
 
 ## Quick Reference
 

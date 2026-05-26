@@ -1,0 +1,19 @@
+# SPDX-License-Identifier: MPL-2.0
+#
+# Estate-policy exemptions for legacy demonstration files vendored under
+# absolute-zero/ and aletheia/ subdirs. These pre-date the estate-wide
+# ReScript→AffineScript migration; they live in this monorepo only (not
+# in the standalone upstream repos) and are demonstration scaffolds, not
+# load-bearing code paths.
+#
+# TODO 2026-Q3: migrate these to AffineScript and drop the exemptions.
+
+cicd_rules/banned_language_file:absolute-zero/src/AuditTrail.res
+cicd_rules/banned_language_file:absolute-zero/interpreters/rescript/malbolgeInterpreter.res
+cicd_rules/banned_language_file:absolute-zero/examples/SafeDOMExample.res
+cicd_rules/banned_language_file:aletheia/examples/SafeDOMExample.res
+
+# Go-language demonstration of "nop" semantics in the absolute-zero
+# subdirectory. Mirrors the file in the standalone absolute-zero repo's
+# own .hypatia-ignore.
+cicd_rules/banned_language_file:absolute-zero/examples/go/nop.go

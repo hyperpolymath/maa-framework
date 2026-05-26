@@ -18,13 +18,14 @@ cicd_rules/banned_language_file:aletheia/examples/SafeDOMExample.res
 # own .hypatia-ignore.
 cicd_rules/banned_language_file:absolute-zero/examples/go/nop.go
 
-# Java/Kotlin demonstration files in the absolute-zero examples tree.
-# Same rationale as the .res/.go entries above — these are part of the
-# vendored language-demo subtree, not load-bearing code. Will collapse
-# to a single `absolute-zero/examples/**` file_pattern entry in
+# Java/Kotlin/Swift demonstration files in the absolute-zero examples
+# tree. Same rationale as the .res/.go entries above — these are part of
+# the vendored language-demo subtree, not load-bearing code. Will
+# collapse to a single `absolute-zero/examples/**` file_pattern entry in
 # .hypatia-baseline.json once standards#180 (file_pattern glob matching
 # in in_baseline()) merges.
 cicd_rules/banned_language_file:absolute-zero/examples/java/Nop.java
 cicd_rules/banned_language_file:absolute-zero/examples/java/BalancedOps.java
 cicd_rules/banned_language_file:absolute-zero/examples/kotlin/Nop.kt
 cicd_rules/banned_language_file:absolute-zero/examples/kotlin/BalancedOps.kt
+cicd_rules/banned_language_file:absolute-zero/examples/swift/Nop.swift

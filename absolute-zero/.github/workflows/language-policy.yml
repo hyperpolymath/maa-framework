@@ -1,17 +1,20 @@
 # SPDX-License-Identifier: MPL-2.0-or-later
 name: Language Policy Enforcement
 on: [push, pull_request]
+
+permissions: read-all
+
 jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - name: Enforce language policies
         run: |
           # Block new Python files (except SaltStack)
           NEW_PY=$(git diff --name-only --diff-filter=A HEAD~1 2>/dev/null | grep -E '\.py$' | grep -v 'salt' || true)
           if [ -n "$NEW_PY" ]; then
-            echo "❌ New Python files detected. Use Rust or AffineScript instead."
+            echo "❌ New Python files detected. Use Rust or ReScript instead."
             echo "$NEW_PY"
             exit 1
           fi

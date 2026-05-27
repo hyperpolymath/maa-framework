@@ -5,7 +5,7 @@
 
    Author: Jonathan D. A. Jewell
    Project: Absolute Zero
-   License: AGPL-3.0 / Palimpsest 0.5
+   License: MPL-2.0
 -/
 
 import CNO
@@ -58,27 +58,32 @@ axiom shannon_entropy_nonneg (P : StateDistribution) :
 axiom shannon_entropy_point_zero (s : CNO.ProgramState) :
   shannonEntropy (pointDist s) = 0
 
-/-- Change in entropy -/
-def entropyChange (P_initial P_final : StateDistribution) : ℝ :=
+/-- Change in entropy.
+    `noncomputable` because `shannonEntropy` is an axiom of type ℝ; Lean
+    cannot extract executable code for any definition that touches it. -/
+noncomputable def entropyChange (P_initial P_final : StateDistribution) : ℝ :=
   shannonEntropy P_final - shannonEntropy P_initial
 
 /-! ## Thermodynamic Entropy -/
 
-/-- Boltzmann entropy: S = kB ln(2) H -/
-def boltzmannEntropy (P : StateDistribution) : ℝ :=
+/-- Boltzmann entropy: S = kB ln(2) H.
+    `noncomputable` — uses `Real.log` (no executable code). -/
+noncomputable def boltzmannEntropy (P : StateDistribution) : ℝ :=
   kB * log 2 * shannonEntropy P
 
-/-- Boltzmann entropy is non-negative -/
+/-- Boltzmann entropy is non-negative.
+
+    `kB * log 2 * shannonEntropy P` is a product of three non-negative
+    reals: `kB > 0` (axiom), `log 2 > 0` (`Real.log_pos` since 1 < 2),
+    `shannonEntropy P ≥ 0` (axiom). -/
 theorem boltzmann_entropy_nonneg (P : StateDistribution) :
     boltzmannEntropy P ≥ 0 := by
   unfold boltzmannEntropy
-  -- kB > 0, log 2 > 0, shannonEntropy P >= 0
-  -- Product of non-negatives is non-negative
-  apply mul_nonneg
-  · apply mul_nonneg
-    · exact le_of_lt kB_positive
-    · exact le_of_lt (Real.log_pos (by norm_num : (1 : ℝ) < 2))
-  · exact shannon_entropy_nonneg P
+  have h_kB : (0 : ℝ) ≤ kB := le_of_lt kB_positive
+  have h_log2 : (0 : ℝ) ≤ Real.log 2 :=
+    le_of_lt (Real.log_pos (by norm_num : (1 : ℝ) < 2))
+  have h_H : (0 : ℝ) ≤ shannonEntropy P := shannon_entropy_nonneg P
+  exact mul_nonneg (mul_nonneg h_kB h_log2) h_H
 
 /-! ## Landauer's Principle -/
 
@@ -92,25 +97,37 @@ axiom landauer_principle (P_initial P_final : StateDistribution) :
   ΔS < 0 →
   energyDissipatedPhys P_initial P_final ≥ kB * temperature * log 2 * (-ΔS)
 
-/-- Landauer limit (energy per bit erased) -/
-def landauer_limit : ℝ := kB * temperature * log 2
+/-- Landauer limit (energy per bit erased).
+    `noncomputable` — `kB` and `temperature` are real-valued axioms. -/
+noncomputable def landauer_limit : ℝ := kB * temperature * log 2
 
 /-! ## CNO Thermodynamics -/
 
 /-- Distribution after program execution -/
 axiom postExecutionDist : CNO.Program → StateDistribution → StateDistribution
 
-/-- State-preserving programs preserve distributions -/
-axiom state_preserving_dist (p : CNO.Program) (P : StateDistribution) :
-  (∀ s, CNO.ProgramState.eq (CNO.eval p s) s) →
+/-- The mechanism connecting `postExecutionDist` to per-state semantics.
+    `postExecutionDist` is an axiom in this model — without an axiom
+    that ties it to actual program behaviour, no result of the form
+    "running a state-preserving program leaves the distribution alone"
+    can be proved. This axiom states the minimum required link:
+    a program that pointwise preserves states leaves the distribution
+    fixed. -/
+axiom postExecutionDist_id_of_state_preserving
+  (p : CNO.Program) (P : StateDistribution)
+  (h : ∀ s, CNO.ProgramState.eq (CNO.eval p s) s) :
   postExecutionDist p P = P
 
-/-- CNOs preserve Shannon entropy -/
+/-- CNOs preserve Shannon entropy.
+
+    With the `postExecutionDist_id_of_state_preserving` axiom, this is
+    a trivial rewrite: a CNO is state-preserving by definition, so the
+    distribution is unchanged, so its entropy is unchanged. -/
 theorem cno_preserves_shannon_entropy (p : CNO.Program) (P : StateDistribution) :
     CNO.isCNO p →
     shannonEntropy (postExecutionDist p P) = shannonEntropy P := by
   intro h_cno
-  rw [state_preserving_dist p P h_cno.2.1]
+  rw [postExecutionDist_id_of_state_preserving p P h_cno.2.1]
 
 /-- Corollary: CNOs have zero entropy change -/
 theorem cno_zero_entropy_change (p : CNO.Program) (P : StateDistribution) :
@@ -126,13 +143,16 @@ axiom reversible_zero_dissipation (P_initial P_final : StateDistribution) :
   shannonEntropy P_initial = shannonEntropy P_final →
   energyDissipatedPhys P_initial P_final = 0
 
-/-- Main Theorem: CNOs dissipate zero energy -/
+/-- Main Theorem: CNOs dissipate zero energy.
+    `reversible_zero_dissipation` wants `H P_initial = H P_final`;
+    `cno_preserves_shannon_entropy` gives the symmetric direction
+    `H (postExecutionDist p P) = H P`, so `.symm` flips it. -/
 theorem cno_zero_energy_dissipation (p : CNO.Program) (P : StateDistribution) :
     CNO.isCNO p →
     energyDissipatedPhys P (postExecutionDist p P) = 0 := by
   intro h_cno
   apply reversible_zero_dissipation
-  exact cno_preserves_shannon_entropy p P h_cno
+  exact (cno_preserves_shannon_entropy p P h_cno).symm
 
 /-! ## Bennett's Reversible Computing -/
 
@@ -142,21 +162,34 @@ def logicallyReversible (p : CNO.Program) : Prop :=
     ∀ s s', CNO.eval p s = s' →
       CNO.eval p_inv s' = s
 
-/-- ProgramState.eq with eval identity implies eval fixpoint -/
-axiom programState_eq_eval_fixpoint (p : CNO.Program) (s : CNO.ProgramState) :
-  CNO.ProgramState.eq (CNO.eval p s) s → CNO.eval p s = s
+/-- Lift `ProgramState.eq` (componentwise; uses `Memory.eq` pointwise on
+    the function field) to propositional equality on `ProgramState`.
+    Memory equality requires `funext` (Lean 4 admits it). -/
+theorem ProgramState_eq_of_state_eq (s1 s2 : CNO.ProgramState)
+    (h : CNO.ProgramState.eq s1 s2) : s1 = s2 := by
+  obtain ⟨hmem, hregs, hio, hpc⟩ := h
+  have hmem_fn : s1.memory = s2.memory := funext hmem
+  cases s1; cases s2
+  congr
 
-/-- CNOs are trivially logically reversible -/
+/-- CNOs are trivially logically reversible.
+
+    From `isCNO p` we have `ProgramState.eq (eval p s) s` for every `s`.
+    Lifting to propositional equality (via `funext` on the memory
+    function field) gives `eval p s = s`. Then
+    `eval p s' = eval p (eval p s) = eval p s = s`. -/
 theorem cno_logically_reversible (p : CNO.Program) :
     CNO.isCNO p → logicallyReversible p := by
   intro h_cno
-  unfold logicallyReversible
-  exists p
+  refine ⟨p, ?_⟩
   intro s s' h_eval
-  -- Since p is a CNO, eval p s = s
-  have h_id := programState_eq_eval_fixpoint p s (h_cno.2.1 s)
-  -- s' = eval p s = s, so eval p s' = eval p s = s = s'
-  rw [← h_eval, h_id]
+  -- Goal: eval p s' = s
+  rw [← h_eval]
+  -- Goal: eval p (eval p s) = s
+  have h_eq : CNO.eval p s = s :=
+    ProgramState_eq_of_state_eq _ _ (h_cno.2.1 s)
+  rw [h_eq]
+  exact h_eq
 
 /-! ## Thermodynamic Efficiency -/
 

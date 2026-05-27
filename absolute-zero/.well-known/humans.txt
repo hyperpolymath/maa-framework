@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: PMPL-1.0-or-later
+# humanstxt.org
+
+/* TEAM */
+Maintainer: Jonathan D. A. Jewell
+Contact: developer @ joshuajewell.dev
+Site: https://github.com/hyperpolymath/absolute-zero
+
+/* THANKS */
+Contributors: see git log + docs/MAINTAINERS.adoc
+
+/* SITE */
+Last update: 2026-05-25
+Standards: PMPL-1.0-or-later, RSR (Rhodium Standard Repository) compliant
+Components: Coq, Lean 4, Z3, Agda, Isabelle, Mizar, Idris2, ReScript, Rust

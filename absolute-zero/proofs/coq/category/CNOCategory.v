@@ -21,7 +21,7 @@ Require Import Coq.Logic.ProofIrrelevance.
 Require Import Coq.Program.Equality.
 Require Import Coq.Lists.List.
 Import ListNotations.
-Require Import CNO.
+Require Import CNO.CNO.
 
 (** ** Category Definition *)
 
@@ -99,18 +99,19 @@ Proof.
 Qed.
 
 (** Programs form a category *)
-Instance ProgramCategory : Category := {
-  Obj := ProgramState;
-  Hom := ProgramMorphism;
-  compose := @compose_morphisms;
-  id := id_morphism;
-}.
+Instance ProgramCategory : Category.
 Proof.
+  refine {|
+    Obj := ProgramState;
+    Hom := ProgramMorphism;
+    compose := @compose_morphisms;
+    id := id_morphism
+  |}.
   - (* compose_assoc: (f ++ g) ++ h = f ++ (g ++ h) *)
     intros A B C D h g f.
     apply morph_eq_ext.
     destruct f as [pf Hf], g as [pg Hg], h as [ph Hh].
-    simpl. apply app_assoc.
+    simpl. symmetry. apply app_assoc.
   - (* compose_id_left: p ++ [] = p *)
     intros A B f.
     apply morph_eq_ext.
@@ -157,20 +158,22 @@ Proof.
   - (* <- direction: Construct full CNO from termination + identity *)
     destruct H as [H_term H_id].
     unfold is_CNO.
-    repeat split.
+    split.
     + (* Termination *)
       exact H_term.
-    + (* Identity *)
-      exact H_id.
-    + (* Purity: follows from state equality *)
-      intros s s' H_eval.
-      assert (H_eq : s =st= s') by (apply H_id; assumption).
-      destruct H_eq as [H_mem [H_reg [H_io H_pc]]].
-      unfold pure, no_io, no_memory_alloc.
-      split; assumption.
-    + (* Thermodynamic reversibility: trivially true *)
-      unfold thermodynamically_reversible, energy_dissipated.
-      intros. reflexivity.
+    + split.
+      * (* Identity *)
+        exact H_id.
+      * split.
+        -- (* Purity: follows from state equality *)
+          intros s s' H_eval.
+          assert (H_eq : s =st= s') by (apply H_id; assumption).
+          destruct H_eq as [H_mem [H_reg H_io]].
+          unfold pure, no_io, no_memory_alloc.
+          split; assumption.
+        -- (* Thermodynamic reversibility: trivially true *)
+          unfold thermodynamically_reversible, energy_dissipated.
+          intros. reflexivity.
 Qed.
 
 (** ** Universal Property *)
@@ -200,12 +203,13 @@ Qed.
 
 (** A functor maps between categories, preserving structure *)
 Class Functor (C D : Category) := {
-  fobj : Obj -> Obj;
-  fmap : forall {A B : Obj}, Hom A B -> Hom (fobj A) (fobj B);
+  fobj : @Obj C -> @Obj D;
+  fmap : forall {A B : @Obj C}, @Hom C A B -> @Hom D (fobj A) (fobj B);
 
-  fmap_id : forall {A : Obj}, fmap (@id C A) = @id D (fobj A);
-  fmap_compose : forall {A B C : Obj} (g : Hom B C) (f : Hom A B),
-    fmap (g ∘ f) = fmap g ∘ fmap f;
+  fmap_id : forall {A : @Obj C}, fmap (@id C A) = @id D (fobj A);
+  fmap_compose : forall {A B E : @Obj C} (g : @Hom C B E) (f : @Hom C A B),
+    fmap (@compose C A B E g f) =
+    @compose D (fobj A) (fobj B) (fobj E) (fmap g) (fmap f);
 }.
 
 (** CNOs are preserved by functors *)
@@ -228,17 +232,19 @@ Qed.
 (** A natural transformation between functors *)
 Class NaturalTransformation (C D : Category)
   (F G : Functor C D) := {
-  component : forall (A : @Obj C), @Hom D (fobj A) (fobj A);
+  component : forall (A : @Obj C), @Hom D (@fobj C D F A) (@fobj C D G A);
 
   naturality : forall (A B : @Obj C) (f : @Hom C A B),
-    component B ∘ fmap f = fmap f ∘ component A;
+    @compose D _ _ _ (component B) (@fmap C D F A B f) =
+    @compose D _ _ _ (@fmap C D G A B f) (component A);
 }.
 
 (** Identity natural transformation *)
 Definition id_nat_trans (C D : Category) (F : Functor C D) :
   NaturalTransformation C D F F.
 Proof.
-  apply Build_NaturalTransformation with (component := fun A => id).
+  apply Build_NaturalTransformation with
+    (component := fun A => @id D (@fobj C D F A)).
   - intros A B f.
     rewrite compose_id_left.
     rewrite compose_id_right.
@@ -247,11 +253,11 @@ Defined.
 
 (** CNOs as natural transformations *)
 Theorem cno_as_nat_trans :
-  forall (C : Category) (F : Functor C C),
-    (forall A : @Obj C, @id C A = component A) ->
+  forall (C : Category) (F : Functor C C) (η : NaturalTransformation C C F F),
+    (forall A : @Obj C, @id C (@fobj C C F A) = @component C C F F η A) ->
     F = F.  (* Identity functor *)
 Proof.
-  intros C F H.
+  intros C F η H.
   (* CNOs correspond to identity natural transformations *)
   reflexivity.
 Qed.
@@ -265,7 +271,7 @@ Definition CNO_equivalent (C D : Category) : Prop :=
   exists (F : Functor C D) (G : Functor D C),
     forall (s : @Obj C) (m : @Hom C s s),
       is_CNO_categorical m <->
-      is_CNO_categorical (fmap (fmap m)).
+      is_CNO_categorical (@fmap D C G _ _ (@fmap C D F _ _ m)).
 
 (** Main Universal Theorem: CNO property is model-independent *)
 Theorem cno_model_independent :
@@ -273,11 +279,12 @@ Theorem cno_model_independent :
     CNO_equivalent C D ->
     forall (s : @Obj C) (m : @Hom C s s),
       is_CNO_categorical m ->
-      exists (m' : @Hom D (fobj s) (fobj s)),
+      exists (s' : @Obj D) (m' : @Hom D s' s'),
         is_CNO_categorical m'.
 Proof.
   intros C D [F [G H_equiv]] s m H_cno.
-  exists (fmap m).
+  exists (@fobj C D F s).
+  exists (@fmap C D F _ _ m).
   apply functor_preserves_cno.
   assumption.
 Qed.
@@ -332,10 +339,10 @@ Proof.
     apply compose_id_left.
   - (* Right identity for all morphisms implies CNO *)
     (* Take f = id, then m ∘ id = id *)
+    unfold is_CNO_categorical.
     specialize (H A id).
     rewrite compose_id_right in H.
-    symmetry.
-    assumption.
+    exact H.
 Qed.
 
 (** ** Summary *)

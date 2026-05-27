@@ -15,13 +15,13 @@
 
     Author: Jonathan D. A. Jewell
     Project: Absolute Zero (integrating Valence Shell)
-    License: AGPL-3.0 / Palimpsest 0.5
+    License: MPL-2.0
 *)
 
 Require Import Coq.Lists.List.
 Require Import Coq.Strings.String.
 Require Import Coq.Arith.Arith.
-Require Import CNO.
+Require Import CNO.CNO.
 
 Import ListNotations.
 
@@ -93,6 +93,10 @@ Parameter rename : Path -> Path -> Filesystem -> Filesystem.
 (** ** Filesystem State Equality *)
 
 (** Two filesystems are equal if they have the same structure and content *)
+(* AXIOM: fs_eq_dec; decidable equality over opaque FileContent — currently
+   §(c) NECESSARY AXIOM; promote to §(b) TRUSTED with property-test budget
+   when a concrete FileContent type lands. See docs/proof-debt.md and
+   docs/proof-debt-triage.md row FilesystemCNO.v:96. *)
 Axiom fs_eq_dec : forall (fs1 fs2 : Filesystem), {fs1 = fs2} + {fs1 <> fs2}.
 
 (** Filesystem equality is an equivalence relation *)
@@ -101,6 +105,8 @@ Notation "fs1 =fs= fs2" := (fs1 = fs2) (at level 70).
 (** ** Operation Axioms *)
 
 (** mkdir followed by rmdir is identity (if directory doesn't exist initially) *)
+(* AXIOM: mkdir_rmdir_inverse; POSIX-semantics specification (model-layer);
+   §(c) per docs/proof-debt.md. *)
 Axiom mkdir_rmdir_inverse :
   forall (p : Path) (fs : Filesystem),
     (* Precondition: p doesn't exist *)
@@ -111,6 +117,7 @@ Axiom mkdir_rmdir_inverse :
     rmdir p (mkdir p fs) =fs= fs.
 
 (** create followed by unlink is identity (if file doesn't exist initially) *)
+(* AXIOM: create_unlink_inverse; POSIX-semantics specification; §(c) per docs/proof-debt.md. *)
 Axiom create_unlink_inverse :
   forall (p : Path) (fs : Filesystem),
     (* Precondition: p doesn't exist *)
@@ -121,29 +128,34 @@ Axiom create_unlink_inverse :
     unlink p (create p fs) =fs= fs.
 
 (** read followed by write is identity (preserves filesystem) *)
+(* AXIOM: read_write_identity; POSIX-semantics specification; §(c) per docs/proof-debt.md. *)
 Axiom read_write_identity :
   forall (p : Path) (fs : Filesystem) (content : FileContent),
     read_file p fs = Some content ->
     write_file p content fs =fs= fs.
 
 (** chmod to current permissions is identity *)
+(* AXIOM: chmod_identity; POSIX-semantics specification; §(c) per docs/proof-debt.md. *)
 Axiom chmod_identity :
   forall (p : Path) (fs : Filesystem) (meta : FileMetadata),
     stat p fs = Some meta ->
     chmod p (permissions meta) fs =fs= fs.
 
 (** chown to current owner is identity *)
+(* AXIOM: chown_identity; POSIX-semantics specification; §(c) per docs/proof-debt.md. *)
 Axiom chown_identity :
   forall (p : Path) (fs : Filesystem) (meta : FileMetadata),
     stat p fs = Some meta ->
     chown p (owner meta) fs =fs= fs.
 
 (** rename to same path is identity *)
+(* AXIOM: rename_identity; POSIX-semantics specification; §(c) per docs/proof-debt.md. *)
 Axiom rename_identity :
   forall (p : Path) (fs : Filesystem),
     rename p p fs =fs= fs.
 
 (** rename A to B followed by rename B to A is identity *)
+(* AXIOM: rename_inverse; POSIX-semantics specification; §(c) per docs/proof-debt.md. *)
 Axiom rename_inverse :
   forall (p1 p2 : Path) (fs : Filesystem),
     p1 <> p2 ->
@@ -380,7 +392,7 @@ Qed.
 Definition transaction_rollback (ops : list fs_op) (rollback_ops : list fs_op) : Prop :=
   forall fs,
     fold_right (fun op acc => op acc) fs rollback_ops =fs=
-    fold_left (fun acc op => op acc) fs ops.
+    fold_left (fun acc op => op acc) ops fs.
 
 (** If each operation has an inverse, transaction is a CNO
 
@@ -398,7 +410,7 @@ Axiom transaction_cno :
   forall (ops rollback_ops : list fs_op),
     (forall i, valence_reversible (nth i ops fs_nop) (nth i rollback_ops fs_nop)) ->
     is_fs_CNO (fun fs =>
-      fold_right (fun op acc => op acc) (fold_left (fun acc op => op acc) fs ops) rollback_ops).
+      fold_right (fun op acc => op acc) (fold_left (fun acc op => op acc) ops fs) rollback_ops).
 
 (** ** Connection to Classical CNOs *)
 

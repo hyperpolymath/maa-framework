@@ -1,0 +1,27 @@
+# SPDX-License-Identifier: MPL-2.0
+#
+# Estate-policy exemptions for the absolute-zero language-demonstration
+# repo. This repo intentionally ships example files in many banned and
+# allowed languages — it is the canonical "what NOT to use, here is what
+# you'd get" exemplar. Each entry below is a language-demo file under
+# `examples/` or a one-off interpreter implementation, not load-bearing
+# code.
+#
+# After standards#180 (file_pattern glob support in in_baseline()) merges,
+# this whole file collapses to a single `examples/**` file_pattern entry
+# in .hypatia-baseline.json. Tracked in the standards repo as a follow-up.
+
+# ReScript demonstration files (banned 2026-04-30 — kept as historical
+# examples until the .res→.affine migration ships).
+cicd_rules/banned_language_file:src/AuditTrail.res
+cicd_rules/banned_language_file:interpreters/rescript/malbolgeInterpreter.res
+cicd_rules/banned_language_file:examples/SafeDOMExample.res
+
+# Banned-language example files used to demonstrate the cross-language
+# nop-semantics study. None are imported into the toolchain build.
+cicd_rules/banned_language_file:examples/go/nop.go
+cicd_rules/banned_language_file:examples/java/Nop.java
+cicd_rules/banned_language_file:examples/java/BalancedOps.java
+cicd_rules/banned_language_file:examples/kotlin/Nop.kt
+cicd_rules/banned_language_file:examples/kotlin/BalancedOps.kt
+cicd_rules/banned_language_file:examples/swift/Nop.swift

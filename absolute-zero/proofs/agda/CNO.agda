@@ -1,3 +1,5 @@
+{-# OPTIONS --safe --without-K #-}
+
 {- Certified Null Operations: Agda Formalization
 
    This file provides an Agda formalization of CNO theory.
@@ -10,19 +12,14 @@
 
 module CNO where
 
-open import Data.Nat using (ℕ; zero; suc; _+_; _*_; nonZero)
-open import Data.Nat.Base using (NonZero)
-open import Data.Nat.DivMod using (_%_)
+open import Data.Nat using (ℕ; zero; suc; _+_; _*_)
 open import Data.List using (List; []; _∷_; _++_; length)
 open import Data.Product using (_×_; _,_; proj₁; proj₂; Σ; ∃)
-open import Relation.Binary.PropositionalEquality using (_≡_; refl; sym; trans; cong)
+open import Relation.Binary.PropositionalEquality
+  using (_≡_; refl; sym; trans; cong; subst)
 open import Data.Bool using (Bool; true; false; if_then_else_)
 open import Data.Maybe using (Maybe; just; nothing)
 open import Function using (_∘_; id)
-
-instance
-  nonZero3 : NonZero 3
-  nonZero3 = nonZero
 
 ----------------------------------------------------------------------------
 -- Memory Model
@@ -299,23 +296,36 @@ state-eq-trans (m₁ , r₁ , i₁ , p₁) (m₂ , r₂ , i₂ , p₂) =
   trans i₁ i₂ ,
   trans p₁ p₂
 
-state-eq-cong-left : ∀ {s₁ s₂ s₃} → s₁ ≡ s₂ → state-eq s₂ s₃ → state-eq s₁ s₃
-state-eq-cong-left refl eq = eq
+-- Pointwise-transitive purity: agree on I/O and on memory.
+-- Uses `proj₁`/`proj₂` rather than pattern-matching on `_,_`
+-- because `pure` is a definitional `_×_` and the unifier sometimes
+-- declines to unfold it in pattern positions.
+pure-trans : ∀ {s₁ s₂ s₃} → pure s₁ s₂ → pure s₂ s₃ → pure s₁ s₃
+pure-trans p₁₂ p₂₃ =
+  trans (proj₁ p₁₂) (proj₁ p₂₃) ,
+  (λ addr → trans (proj₂ p₁₂ addr) (proj₂ p₂₃ addr))
 
--- Composition of CNOs is a CNO
+-- Composition of CNOs is a CNO. The two non-trivial fields
+-- (`cno-identity`, `cno-pure`) chain the per-program lemmas
+-- through `eval p₁ s` and transport along `eval-seq-comp` to the
+-- composite evaluation.
 cno-composition : ∀ {p₁ p₂} → IsCNO p₁ → IsCNO p₂ → IsCNO (seq-comp p₁ p₂)
 cno-composition {p₁} {p₂} cno₁ cno₂ = record
   { cno-terminates = λ s → terminates-always (seq-comp p₁ p₂) s
   ; cno-identity = λ s →
       let eq₁ = IsCNO.cno-identity cno₁ s
           eq₂ = IsCNO.cno-identity cno₂ (eval p₁ s)
-      in state-eq-cong-left (eval-seq-comp p₁ p₂ s) (state-eq-trans eq₂ eq₁)
+      in subst (λ x → state-eq x s) (sym (eval-seq-comp p₁ p₂ s))
+              (state-eq-trans eq₂ eq₁)
   ; cno-pure = λ s →
-      let eq₁ = IsCNO.cno-identity cno₁ s
-          eq₂ = IsCNO.cno-identity cno₂ (eval p₁ s)
-          eq = state-eq-cong-left (eval-seq-comp p₁ p₂ s) (state-eq-trans eq₂ eq₁)
-          (m , _ , i , _) = eq
-      in sym i , (λ addr → sym (m addr))
+      let pu₁ : pure s (eval p₁ s)
+          pu₁ = IsCNO.cno-pure cno₁ s
+          pu₂ : pure (eval p₁ s) (eval p₂ (eval p₁ s))
+          pu₂ = IsCNO.cno-pure cno₂ (eval p₁ s)
+          composed : pure s (eval p₂ (eval p₁ s))
+          composed = pure-trans {s₁ = s} {s₂ = eval p₁ s}
+                                {s₃ = eval p₂ (eval p₁ s)} pu₁ pu₂
+      in subst (pure s) (sym (eval-seq-comp p₁ p₂ s)) composed
   ; cno-reversible = λ s → refl
   }
 
@@ -323,13 +333,23 @@ cno-composition {p₁} {p₂} cno₁ cno₂ = record
 -- Malbolge-Specific
 ----------------------------------------------------------------------------
 
--- Ternary operations
-ternary-add : ℕ → ℕ → ℕ
-ternary-add a b = (a + b) % 3
+-- Ternary operations: addition mod 3 (Malbolge-flavoured).
+-- Local `mod3` is structural-recursive on its argument, so it
+-- terminates and stays inside `--safe --without-K` without pulling
+-- in `Data.Nat.DivMod._%_` (whose `NonZero` instance lookup adds
+-- noise that this helper does not need).
+mod3 : ℕ → ℕ
+mod3 zero                    = zero
+mod3 (suc zero)              = suc zero
+mod3 (suc (suc zero))        = suc (suc zero)
+mod3 (suc (suc (suc n)))     = mod3 n
 
--- Crazy operation
+ternary-add : ℕ → ℕ → ℕ
+ternary-add a b = mod3 (a + b)
+
+-- Crazy operation (Malbolge crazy op surface; placeholder semantics)
 crazy-op : ℕ → ℕ → ℕ
-crazy-op a b = (a + b) % 3
+crazy-op a b = mod3 (a + b)
 
 ----------------------------------------------------------------------------
 -- Absolute Zero

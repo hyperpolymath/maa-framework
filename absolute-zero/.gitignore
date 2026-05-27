@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: MPL-2.0
+# SPDX-License-Identifier: AGPL-3.0-or-later
 # RSR-compliant .gitignore
 
 # OS & Editor
@@ -80,11 +80,7 @@ htmlcov/
 
 # Crash recovery artifacts
 ai-cli-crash-capture/
-target/
-node_modules/
-_build/
-deps/
-.elixir_ls/
-.cache/
-build/
-dist/
+proofs/lean4/.lake/
+
+# Rust build outputs in subdirectories (e.g. fuzz/target/)
+**/target/

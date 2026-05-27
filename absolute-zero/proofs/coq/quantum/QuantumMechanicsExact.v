@@ -8,14 +8,17 @@
 
     Author: Jonathan D. A. Jewell
     Project: Absolute Zero - Exact Quantum Formulation
-    License: AGPL-3.0 / Palimpsest 0.5
+    License: MPL-2.0
 *)
 
 Require Import Coq.Reals.Reals.
 Require Import Coq.Reals.RIneq.
-Require Import Coq.Complex.Complex.
+(* Self-contained complex numbers — see proofs/coq/common/Complex.v and
+   PROOF-STATUS-2026-05-18.md. Replaces the non-existent
+   `Coq.Complex.Complex`; Coquelicot rejected (mathcomp2/HB/elpi weight). *)
+Require Import CNO.Complex.
 Require Import Coq.micromega.Psatz.
-Require Import CNO.
+Require Import CNO.CNO.
 
 Open Scope R_scope.
 Open Scope C_scope.
@@ -25,9 +28,8 @@ Open Scope C_scope.
 (** Complex numbers are already defined in Coq.Complex.Complex *)
 (** C = R + iR, with Cplus, Cmult, etc. *)
 
-(** Complex conjugate *)
-Definition Cconj (z : C) : C :=
-  (fst z, - snd z).
+(** Complex conjugate is provided by CNO.Complex (identical definition);
+    the previous local redefinition would clash. *)
 
 (** Complex modulus squared *)
 Definition Cmod2 (z : C) : R :=
@@ -53,7 +55,7 @@ Definition qubit_dim (n : nat) : nat := 2 ^ n.
 (** A quantum state is a vector in C^(2^n) *)
 (** We represent it as a function from basis indices to complex amplitudes *)
 Definition QuantumState (n : nat) : Type :=
-  {ψ : nat -> C | forall k, k >= qubit_dim n -> ψ k = C0}.
+  {ψ : nat -> C | forall k, (k >= qubit_dim n)%nat -> ψ k = C0}.
 
 (** Extract the amplitude function *)
 Definition amplitude {n : nat} (ψ : QuantumState n) : nat -> C :=
@@ -85,14 +87,16 @@ Definition is_normalized {n : nat} (ψ : QuantumState n) : Prop :=
 Definition ket_0 : QuantumState 1.
 Proof.
   exists (fun k => match k with 0 => C1 | _ => C0 end).
-  intros k Hk. destruct k. omega. destruct k. omega. reflexivity.
+  intros k Hk. unfold qubit_dim in Hk; simpl in Hk.
+  destruct k as [|[|k]]; [ lia | lia | reflexivity ].
 Defined.
 
 (** |1⟩ = (0, 1) *)
 Definition ket_1 : QuantumState 1.
 Proof.
   exists (fun k => match k with 1 => C1 | _ => C0 end).
-  intros k Hk. destruct k. omega. destruct k. omega. reflexivity.
+  intros k Hk. unfold qubit_dim in Hk; simpl in Hk.
+  destruct k as [|[|k]]; [ lia | lia | reflexivity ].
 Defined.
 
 (** ** Pauli Matrices (Exact 2x2 Matrices) *)
@@ -146,10 +150,10 @@ Definition identity_2 : Matrix2 :=
                  [1  -1]  *)
 Definition hadamard : Matrix2 :=
   fun i j => match i, j with
-             | 0, 0 => (1 / sqrt 2, 0)
-             | 0, 1 => (1 / sqrt 2, 0)
-             | 1, 0 => (1 / sqrt 2, 0)
-             | 1, 1 => (-1 / sqrt 2, 0)
+             | 0, 0 => ((1 / sqrt 2)%R, 0%R)
+             | 0, 1 => ((1 / sqrt 2)%R, 0%R)
+             | 1, 0 => ((1 / sqrt 2)%R, 0%R)
+             | 1, 1 => ((-1 / sqrt 2)%R, 0%R)
              | _, _ => C0
              end.
 
@@ -160,13 +164,14 @@ Definition apply_matrix_2 (M : Matrix2) (ψ : QuantumState 1) : QuantumState 1.
 Proof.
   exists (fun k =>
     match k with
-    | 0 => Cplus (Cmult (M 0 0) (amplitude ψ 0))
-                 (Cmult (M 0 1) (amplitude ψ 1))
-    | 1 => Cplus (Cmult (M 1 0) (amplitude ψ 0))
-                 (Cmult (M 1 1) (amplitude ψ 1))
+    | O => Cplus (Cmult (M 0%nat 0%nat) (amplitude ψ 0%nat))
+                 (Cmult (M 0%nat 1%nat) (amplitude ψ 1%nat))
+    | S O => Cplus (Cmult (M 1%nat 0%nat) (amplitude ψ 0%nat))
+                   (Cmult (M 1%nat 1%nat) (amplitude ψ 1%nat))
     | _ => C0
     end).
-  intros k Hk. destruct k. omega. destruct k. omega.
+  intros k Hk. unfold qubit_dim in Hk; simpl in Hk.
+  destruct k as [|[|k]]; [ lia | lia | ].
   simpl. reflexivity.
 Defined.
 
@@ -340,7 +345,7 @@ Proof.
     replace (sin 0) with 0 by (rewrite sin_0; reflexivity).
     unfold Cmult. simpl.
     destruct (amplitude ψ k) as [r i].
-    simpl. ring_simplify. reflexivity.
+    simpl. apply Cpair_eq; simpl; ring.
 Qed.
 
 (** ** Measurement and No-Cloning Theorem *)

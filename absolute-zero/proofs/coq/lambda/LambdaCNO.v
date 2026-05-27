@@ -14,6 +14,8 @@
 Require Import Coq.Lists.List.
 Require Import Coq.Arith.Arith.
 Require Import Coq.Bool.Bool.
+Require Import Lia.
+Require Import CNO.CNO.
 Import ListNotations.
 
 (** ** Lambda Calculus Syntax *)
@@ -351,6 +353,10 @@ Definition y_combinator : LambdaTerm :=
 
     This is a fundamental result in lambda calculus and is safely axiomatized.
 *)
+(* AXIOM: y_not_cno; non-termination claim about the Y combinator —
+   requires step-indexed semantics or coinduction to discharge within
+   the working logic. §(c) NECESSARY AXIOM per docs/proof-debt.md
+   (triage: docs/proof-debt-triage.md row LambdaCNO.v:356). *)
 Axiom y_not_cno : ~ is_lambda_CNO y_combinator.
 
 (** ** Practical Examples *)
@@ -371,6 +377,10 @@ Definition snd : LambdaTerm :=
 (** ** Eta Equivalence *)
 
 (** Eta reduction: (λx. f x) ≡ f *)
+(* AXIOM: eta_equivalence; η-equivalence is not derivable under β-only
+   reduction — requires an extra reduction rule or extensional equality.
+   §(c) NECESSARY AXIOM per docs/proof-debt.md (triage:
+   docs/proof-debt-triage.md row LambdaCNO.v:376). *)
 Axiom eta_equivalence :
   forall f : LambdaTerm,
     beta_reduce_star (LAbs (LApp f (LVar 0))) f.
@@ -403,6 +413,7 @@ Proof.
 Qed.
 
 (** ** Summary *)
+
 (** This module proves:
 
     1. Lambda calculus has CNOs (identity function)          [lambda_id_is_cno: Qed]
@@ -411,13 +422,14 @@ Qed.
     4. Connection to Church encodings
     5. Eta equivalence expands CNO class                     [eta_expanded_id_is_cno: Qed]
 
-    Proof status: 3 of 4 theorems fully proven (1 Axiom).
+    Proof status: 3 of 4 theorems fully proven (1 explicit axiom).
 
-    The Axiom (y_not_cno) represents a well-established result in
-    lambda calculus theory (Y f diverges for all f).
+    The remaining axiomatized result (y_not_cno) requires formal
+    non-termination reasoning, which is inherently difficult
+    in constructive type theory. The result itself is well-established
+    in lambda calculus theory (Y f diverges for all f).
 
     CONCLUSION: CNO theory is model-independent.
-*)
     The same mathematical structure appears in:
     - Imperative programs (our original model)
     - Functional programs (lambda calculus)

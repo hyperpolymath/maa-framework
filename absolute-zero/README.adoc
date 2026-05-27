@@ -2,13 +2,13 @@
 
 **Formal Verification of Certified Null Operations: When Doing Nothing Is Everything**
 
-image:https://img.shields.io/badge/License-PMPL_1.0-blue.svg[MPL-2.0]
+image:https://img.shields.io/badge/License-MPL_2.0-blue.svg[MPL-2.0]
 
 == License
 
 **SPDX-License-Identifier: MPL-2.0**
 
-Licensed under the Palimpsest-MPL License 1.0 or later. See `LICENSE` for full text. MPL-2.0 fallback where platform requires OSI-approved license.
+Licensed under the Mozilla Public License 2.0. See `LICENSE` for full text.
 
 > *"The universe tends toward maximum entropy. A Certified Null Operation is a pocket of perfect computational order—a program that resists the Second Law. It does nothing, but in doing nothing, it says everything about the structure of computation itself."*
 
@@ -48,9 +48,6 @@ absolute-zero/
 │   │
 │   ├── z3/                  # Z3 SMT verification (automated)
 │   ├── agda/                # Agda proofs (dependent types)
-│   │   ├── CNO.agda         # Main Agda CNO file (in-progress)
-│   │   ├── EchoBridgeScaffold.agda # Echo/CNO adapter interface scaffold
-│   │   └── README.adoc      # Agda bridge status + integration plan
 │   ├── isabelle/            # Isabelle/HOL (production-grade)
 │   └── mizar/               # Mizar proofs (mathematical library)
 │
@@ -206,12 +203,6 @@ For maximum confidence, we verify CNO properties in **six independent proof syst
 | **Filesystem Operations** | Valence Shell integration, practical CNOs | 🟡 8 Qed, 6 Admitted | ✅ |
 
 See [VERIFICATION.md](VERIFICATION.md) for detailed status and [PROOF-INSIGHTS.md](PROOF-INSIGHTS.md) for proof engineering knowledge.
-
-Agda bridge note:
-
-* `proofs/agda/EchoBridgeScaffold.agda` is now present as a compile-safe adapter layer to connect CNO identity witnesses to the echo/fiber shape used in `echo-types`.
-* `proofs/agda/EchoBridgeCNO.agda` now provides a concrete `Program`/`eval` model instantiation into that scaffold.
-* The concrete bridge now exposes relation-based echoes over `state-eq` directly; function extensionality is only used for optional propositional `Echo` corollaries.
 
 **Coq Proof Status** (2026-02-05): 81 Qed / 19 Admitted / 6 Defined / 63 Axioms across 10 files. 4 files fully complete (CNO.v, CNOCategory.v, StatMech.v, StatMech_helpers.v).
 

@@ -1,0 +1,14 @@
+# SPDX-License-Identifier: PMPL-1.0-or-later
+# AI agent discovery file for absolute-zero
+# See: https://github.com/hyperpolymath/absolute-zero/blob/main/0-AI-MANIFEST.a2ml
+
+User-Agent: *
+Manifest: /0-AI-MANIFEST.a2ml
+EntryPoint: /docs/CLAUDE.adoc
+State: /.machine_readable/6a2/STATE.a2ml
+Roadmap: /ROADMAP.adoc
+Allow: training-with-attribution
+Allow: documentation-summarisation
+Disallow: closed-source-redistribution
+License: PMPL-1.0-or-later
+Contact: developer@joshuajewell.dev

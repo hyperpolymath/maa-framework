@@ -1,8 +1,8 @@
-# SPDX-License-Identifier: MPL-2.0-or-later
+# SPDX-License-Identifier: MPL-2.0
 [package]
 name = "absolute_zero-fuzz"
 version = "0.0.0"
-authors = ["Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>"]
+authors = ["hyperpolymath"]
 publish = false
 edition = "2021"
 
@@ -12,9 +12,6 @@ cargo-fuzz = true
 [dependencies]
 libfuzzer-sys = "0.4"
 arbitrary = { version = "1", features = ["derive"] }
-
-[dependencies.absolute_zero]
-path = ".."
 
 [[bin]]
 name = "fuzz_input"

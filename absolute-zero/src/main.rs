@@ -1,24 +1,30 @@
-//! Certified Null Operation (CNO) in Rust.
-//!
-//! This module implements the theoretical "Absolute Zero" of computation: 
-//! a program that performs the minimal possible amount of work while still 
-//! being a valid, terminating executable.
-//!
-//! PROPERTIES:
-//! 1. DETERMINISM: Exit code is always 0.
-//! 2. SIDE-EFFECT FREE: No I/O, no network, no filesystem access.
-//! 3. MINIMAL RESOURCE USAGE: Zero heap allocations, zero threading overhead.
-//! 4. FORMAL BASE CASE: Used as the root reference for performance and behavior 
-//!    benchmarking within the MAA Framework.
+// SPDX-License-Identifier: MPL-2.0
+// Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
 
-#![forbid(unsafe_code)]
+//! Certified Null Operation in Rust
+//!
+//! A program that does absolutely nothing at the application level.
+//! Exits with code 0 (success) without any observable side effects.
+//!
+//! Properties:
+//! - Terminates immediately
+//! - No I/O operations
+//! - No heap allocations
+//! - Exit code 0
+//!
+//! Build: cargo build --release
+//! Run: ./target/release/absolute-zero
+
 fn main() {
-    // FORMAL DEFINITION:
-    // At the application level, the main function contains no instructions.
-    // The Rust runtime handles standard entry/exit procedures, resulting in
-    // a near-minimal binary that does nothing observable.
+    // Empty main - the minimal CNO in Rust
+    // At the application level, this computes nothing observable.
 }
 
-// VERIFICATION NOTES:
-// - Verified against the "Certified Null Operation" specification.
-// - Compliant with RSR Bronze tier standards.
+// Verification notes:
+// - Rust runtime is minimal (no GC, no runtime scheduler)
+// - No std library features used
+// - At application level: CNO
+// - At binary level: near-minimal executable
+//
+// This demonstrates Rust's zero-cost abstractions:
+// an empty main produces a minimal binary.

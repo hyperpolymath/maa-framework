@@ -7,13 +7,16 @@
 
     Author: Jonathan D. A. Jewell
     Project: Absolute Zero - Phase 1 Complete Derivation
-    License: AGPL-3.0 / Palimpsest 0.5
+    License: MPL-2.0
 *)
 
 Require Import Coq.Reals.Reals.
 Require Import Coq.Reals.RIneq.
 Require Import Coq.micromega.Psatz.
-Require Import CNO.
+Require Import Coq.Lists.List.
+Require Import Lia.
+Require Import CNO.CNO.
+Import ListNotations.
 
 Open Scope R_scope.
 
@@ -42,17 +45,19 @@ Axiom prob_normalized :
     exists (states : list ProgramState),
       fold_right (fun s acc => acc + P s) 0 states = 1.
 
+Axiom state_eq_dec : forall s1 s2 : ProgramState, {s1 = s2} + {s1 <> s2}.
+
 (** Point distribution (Dirac delta) *)
 Definition point_dist (s0 : ProgramState) : StateDistribution :=
   fun s => if state_eq_dec s s0 then 1 else 0.
-
-Axiom state_eq_dec : forall s1 s2 : ProgramState, {s1 = s2} + {s1 <> s2}.
 
 (** ** Shannon Entropy: Information-Theoretic Foundation *)
 
 (** Shannon entropy: H(P) = -Σ p_i log_2(p_i)
     Measured in bits *)
 Parameter shannon_entropy : StateDistribution -> R.
+
+Definition log2 (x : R) : R := ln x / ln 2.
 
 (** Shannon entropy axioms (from information theory) *)
 Axiom shannon_entropy_nonneg :
@@ -69,15 +74,15 @@ Axiom shannon_entropy_uniform_max :
     (forall s, In s states -> P s = 1 / INR n) ->
     shannon_entropy P = log2 (INR n).
 
+(** Product distribution (for independence) *)
+Parameter product_dist : StateDistribution -> StateDistribution -> StateDistribution.
+
 (** Entropy is additive for independent distributions *)
 Axiom shannon_entropy_additive :
   forall P Q : StateDistribution,
     (* For independent P and Q *)
     shannon_entropy (product_dist P Q) =
       shannon_entropy P + shannon_entropy Q.
-
-(** Product distribution (for independence) *)
-Parameter product_dist : StateDistribution -> StateDistribution -> StateDistribution.
 
 (** ** Boltzmann Entropy: Thermodynamic Foundation *)
 
@@ -96,11 +101,20 @@ Theorem boltzmann_entropy_nonneg :
 Proof.
   intro P.
   unfold boltzmann_entropy.
-  apply Rmult_le_pos.
-  - apply Rmult_le_pos.
-    + apply Rlt_le. apply kB_positive.
-    + apply Rlt_le. apply ln_2_pos.
-  - apply shannon_entropy_nonneg.
+  pose proof kB_positive as HkB.
+  pose proof ln_lt_2 as Hln_half.
+  assert (Hln : ln 2 > 0) by lra.
+  pose proof (shannon_entropy_nonneg P) as Hentropy.
+  unfold Rge in Hentropy.
+  unfold Rge.
+  destruct Hentropy as [Hentropy_pos | Hentropy_zero].
+  - left.
+    replace (kB * ln 2 * shannon_entropy P)%R
+      with ((kB * ln 2) * shannon_entropy P)%R by ring.
+    apply Rmult_lt_0_compat.
+    + apply Rmult_lt_0_compat; assumption.
+    + exact Hentropy_pos.
+  - right. rewrite Hentropy_zero. ring.
 Qed.
 
 (** ** Second Law of Thermodynamics *)
@@ -166,7 +180,7 @@ Definition erasure_final (s_final : ProgramState) : StateDistribution :=
 *)
 Axiom entropy_change_erasure :
   forall (n : nat) (s_final : ProgramState),
-    n > 0 ->
+    (n > 0)%nat ->
     boltzmann_entropy (erasure_initial n) -
     boltzmann_entropy (erasure_final s_final) =
     kB * ln 2 * INR n.
@@ -189,7 +203,7 @@ Axiom isothermal_work_bound :
 
 Theorem landauer_principle_derived :
   forall (n : nat) (s_final : ProgramState),
-    n > 0 ->
+    (n > 0)%nat ->
     work_dissipated (erasure_initial n) (erasure_final s_final) >=
       kB * temperature * ln 2 * INR n.
 Proof.
@@ -202,7 +216,10 @@ Proof.
   (* work ≥ T * ΔS *)
   (* work ≥ T * (k_B ln(2) * n) *)
   (* work ≥ k_B * T * ln(2) * n *)
-  lra.
+  rewrite H_entropy in H_work.
+  replace (kB * temperature * ln 2 * INR n)%R
+    with (temperature * (kB * ln 2 * INR n))%R by ring.
+  exact H_work.
 Qed.
 
 (** For erasing one bit (n = 1): *)
@@ -212,11 +229,10 @@ Corollary landauer_one_bit :
       kB * temperature * ln 2.
 Proof.
   intro s_final.
-  assert (H := landauer_principle_derived 1 s_final).
-  replace (INR 1) with 1 by (simpl; lra).
-  ring_simplify in H.
-  apply H.
-  omega.
+  replace (kB * temperature * ln 2)%R
+    with (kB * temperature * ln 2 * INR 1)%R by (simpl; ring).
+  apply landauer_principle_derived.
+  lia.
 Qed.
 
 (** At room temperature (300K): *)
@@ -224,15 +240,16 @@ Qed.
 
 (** ** Application to CNOs *)
 
+(** Finite-state carrier used by the simplified distribution model. *)
+Parameter all_states : list ProgramState.
+Parameter eval_to_dec : forall p s s', {eval p s s'} + {~ eval p s s'}.
+
 (** Distribution after program execution *)
 Definition post_execution_dist (p : Program) (P : StateDistribution) : StateDistribution :=
   fun s' =>
     (* Sum over all s that evaluate to s' *)
     fold_right Rplus 0
       (map (fun s => if eval_to_dec p s s' then P s else 0) all_states).
-
-Parameter all_states : list ProgramState.
-Parameter eval_to_dec : forall p s s', {eval p s s'} + {~ eval p s s'}.
 
 (** CNOs preserve Shannon entropy (key property)
 

@@ -1,0 +1,88 @@
+// SPDX-License-Identifier: MPL-2.0
+= Absolute Zero — Audit Trail
+Jonathan D. A. Jewell <developer@joshuajewell.dev>
+:toc:
+:sectnums:
+
+== Purpose
+
+Estate-wide audit log for absolute-zero. Records all axiom/postulate
+discharges, unsoundness findings, deletions of dead code, license
+audits, and other trust-boundary events.
+
+For architectural decisions (which are forward-looking design choices
+rather than backward-looking audit events), see
+`.machine_readable/META.scm` `architecture-decisions`.
+
+== Open Audit Items
+
+|===
+|ID |Date filed |Severity |Description |Issue
+
+|AUDIT-2026-05-20-A
+|2026-05-20
+|Medium
+|`src/abi/Types.idr` has 5 pre-existing errors blocking Idris2 0.8.0
+ typecheck (missing `Decidable.Equality` import; `%runElab` without
+ `ElabReflection`; `MkStateHandle ptr` doesn't supply the `nonNull`
+ auto-proof; `No absurd` lacks `Uninhabited` instances).
+|TBD (separate from #27)
+
+|===
+
+== Resolved Audit Items
+
+|===
+|ID |Date resolved |Description |Resolution commit
+
+|AUDIT-2026-05-20-B
+|2026-05-26
+|`.github/workflows/cflite_pr.yml` missing `actions/checkout` before
+ `build_fuzzers`. Added explicit checkout step pinned to v6.0.2 SHA.
+|PR #41 follow-up
+
+|AUDIT-2026-05-20-#27
+|2026-05-25
+|Unsound `alignmentMatchesPlatformWord` postulate (Idris2). The
+ universal-quantification claim could derive `So (1 mod 8 == 0)` from
+ the file's own `CNOResultLayout.alignment` since `HasAlignment t n`
+ carries no evidence about `n`. Companion `alignedSizeCorrect`
+ postulate isolated into shared `Proofs/DivMod.idr` for
+ cross-estate incremental discharge.
+|aac48b7, f0f9b8f, d2853ca (PR #41 / merged via #40)
+
+|AUDIT-2026-05-20-#24
+|2026-05-20
+|`eval_deterministic` discharged from Axiom → Theorem via
+ `step_deterministic_strong` helper. First post-T0 axiom audit win.
+|PR #24 (see META.scm ADR-007)
+
+|AUDIT-2026-05-20-#32
+|2026-05-20
+|Deleted unsound `eval_respects_state_eq_{left,right}` axioms;
+ weakened `logically_reversible` to observational reversibility
+ (`=st=`); re-proved `cno_eval_on_equal_states` +
+ `cno_logically_reversible` via `cno_terminates` +
+ `cno_preserves_state`.
+|PR #32 (see META.scm ADR-008)
+
+|AUDIT-2026-02-05
+|2026-02-05
+|License canonicalisation across the estate to PMPL-1.0-or-later
+ (79 files updated). Pre-existing AGPL references reconciled.
+|see docs/archive/LICENSE-AUDIT-2026-02-05.adoc
+|===
+
+== Audit categorisation
+
+Audit IDs follow `AUDIT-<YYYY-MM-DD>-<seq-or-PR>`:
+
+* PR-numbered IDs map directly to GitHub PRs that close the item.
+* Seq-numbered IDs (A, B, C…) are pre-PR findings that still need a
+  tracking issue or PR.
+
+== See also
+
+* `.machine_readable/META.scm` — forward-looking architecture decisions (ADR-001…N)
+* `docs/archive/` — historical session / audit artefacts (dated)
+* `RSR_COMPLIANCE.adoc` — Rhodium Standard Repository compliance status

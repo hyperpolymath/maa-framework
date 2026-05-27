@@ -1,0 +1,71 @@
+# SPDX-License-Identifier: PMPL-1.0-or-later
+# 0-AI-MANIFEST.a2ml — Absolute Zero AI assistant manifest
+# Schema: a2ml v1.0
+# Supersedes legacy AI.a2ml + AI.djot (deleted in repo tidy 2026-05-25)
+
+[metadata]
+project = "absolute-zero"
+repo = "github.com/hyperpolymath/absolute-zero"
+manifest-version = "1.0"
+last-updated = "2026-05-25"
+
+[scope]
+purpose = """
+  Formal verification of Certified Null Operations (CNOs) across multiple
+  proof systems (Coq, Lean 4, Z3, Agda, Isabelle, Mizar) plus an Idris2
+  ABI surface for FFI.
+"""
+
+[entry-points]
+# Where an AI agent should look first.
+root-context  = "docs/CLAUDE.adoc"
+project-state = ".machine_readable/6a2/STATE.a2ml"
+roadmap       = "ROADMAP.adoc"
+contributing  = "CONTRIBUTING.adoc"
+audit-trail   = "AUDIT.adoc"
+rsr-status    = "RSR_COMPLIANCE.adoc"
+
+[machine-readable]
+# Authoritative metadata artefacts; .a2ml format under 6a2/ supersedes
+# the older Guile-Scheme .scm format. Both kept side-by-side during the
+# migration window for legacy tooling compatibility.
+state     = ".machine_readable/6a2/STATE.a2ml"
+meta      = ".machine_readable/6a2/META.a2ml"
+ecosystem = ".machine_readable/6a2/ECOSYSTEM.a2ml"
+agentic   = ".machine_readable/6a2/AGENTIC.a2ml"
+neurosym  = ".machine_readable/6a2/NEUROSYM.a2ml"
+playbook  = ".machine_readable/6a2/PLAYBOOK.a2ml"
+
+legacy-scm-meta      = ".machine_readable/META.scm"
+legacy-scm-ecosystem = ".machine_readable/ECOSYSTEM.scm"
+legacy-scm-agentic   = ".machine_readable/AGENTIC.scm"
+legacy-scm-neurosym  = ".machine_readable/NEUROSYM.scm"
+legacy-scm-playbook  = ".machine_readable/PLAYBOOK.scm"
+
+[language-policy]
+# Single source of truth lives in docs/CLAUDE.adoc + .github/workflows/language-policy.yml.
+# Summary:
+allowed   = ["ReScript", "Deno", "Rust", "Tauri", "Dioxus", "Gleam", "Bash", "JavaScript (limited)", "Nickel", "Guile Scheme", "Julia", "OCaml", "Ada", "Idris2"]
+banned    = ["TypeScript", "Node.js", "npm", "Bun", "pnpm", "yarn", "Go", "Python", "Java", "Kotlin", "Swift", "React Native", "Flutter", "Dart", "Ruby", "Perl"]
+reference = "docs/CLAUDE.adoc#language-policy"
+
+[echidna-protocol]
+# All ECHIDNA invocations route through the echidna-llm-mcp BoJ cartridge.
+# Never call ECHIDNA directly.
+gateway = "boj-server/cartridges/echidna-llm-mcp"
+docs    = "docs/archive/ECHIDNA-2025-11-22.adoc"
+tools = [
+  "echidna_list_provers",
+  "echidna_prove",
+  "echidna_verify",
+  "echidna_verify_raw",
+  "echidna_suggest",
+  "echidna_suggest_tactics",
+  "echidna_search",
+  "echidna_session_create",
+]
+
+[delivery]
+commit-policy = "conventional commits; never amend published commits"
+state-update  = "update .machine_readable/6a2/STATE.a2ml whenever phase/progress changes"
+adr-tracking  = "architectural changes recorded in .machine_readable/META.scm `architecture-decisions`"

@@ -5,7 +5,7 @@
 
    Author: Jonathan D. A. Jewell
    Project: Absolute Zero
-   License: AGPL-3.0 / Palimpsest 0.5
+   License: MPL-2.0
 -/
 
 import Mathlib.Data.Real.Basic
@@ -67,19 +67,24 @@ theorem quantum_state_eq_refl (ψ : QuantumState) : ψ =q= ψ := by
   intro n
   rfl
 
-theorem quantum_state_eq_sym (ψ φ : QuantumState) :
-    ψ =q= φ → φ =q= ψ := by
-  intro ⟨θ, h⟩
-  exists (-θ)
-  intro n
-  exact (h n).symm
+/-- Symmetry of the (simplified) quantum-state equality.
 
+    The simplified `quantumStateEq` definition discards `θ`; equality is
+    purely pointwise on amplitudes. So `(-θ)` is just a placeholder phase
+    and what we actually need is `(h n).symm` for each component. -/
+theorem quantum_state_eq_sym (ψ φ : QuantumState) :
+    (ψ =q= φ) → (φ =q= ψ) := by
+  intro ⟨θ, h⟩
+  exact ⟨-θ, fun n => (h n).symm⟩
+
+/-- Transitivity of the (simplified) quantum-state equality.
+
+    With the placeholder phase, the transitive phase is just the sum and
+    the pointwise equalities chain via `Eq.trans`. -/
 theorem quantum_state_eq_trans (ψ φ χ : QuantumState) :
-    ψ =q= φ → φ =q= χ → ψ =q= χ := by
+    (ψ =q= φ) → (φ =q= χ) → (ψ =q= χ) := by
   intro ⟨θ1, h1⟩ ⟨θ2, h2⟩
-  exists (θ1 + θ2)
-  intro n
-  rw [h1 n, h2 n]
+  exact ⟨θ1 + θ2, fun n => (h1 n).trans (h2 n)⟩
 
 /-! ## Quantum CNO Definition -/
 
@@ -113,19 +118,15 @@ def globalPhaseGate (θ : ℝ) : QuantumGate :=
 theorem global_phase_is_cno (θ : ℝ) :
     isQuantumCNO (globalPhaseGate θ) := by
   unfold isQuantumCNO globalPhaseGate
-  constructor
-  · -- globalPhaseGate θ is definitionally the identity function,
-    -- so it trivially preserves inner products
-    unfold isUnitary
+  refine ⟨?_, ?_, trivial⟩
+  · -- isUnitary: in the simplified spec `globalPhaseGate θ` η-reduces to
+    -- the identity function `fun ψ => ψ`, so its image under
+    -- `innerProduct` matches `innerProduct ψ φ` definitionally.
     intro ψ φ
     rfl
-  constructor
   · intro ψ
     unfold quantumStateEq
-    exists θ
-    intro n
-    rfl
-  · trivial
+    exact ⟨θ, fun _ => rfl⟩
 
 /-! ## Non-CNO Gates -/
 
@@ -178,12 +179,11 @@ theorem quantum_cno_composition (U V : QuantumGate) :
   constructor
   · intro ψ
     unfold gateCompose
-    -- V ψ =q= ψ means ∀ n, V ψ n = ψ n, so V ψ = ψ by funext
-    have hV_eq : V ψ = ψ := by
-      funext n
-      exact (hV_id ψ).choose_spec n
-    rw [hV_eq]
-    exact hU_id ψ
+    -- Goal: U (V ψ) =q= ψ. Chain U(Vψ)=q=Vψ (hU_id (V ψ)) with Vψ=q=ψ (hV_id ψ).
+    -- The original proof-hole comment misdiagnosed the second goal: after
+    -- `apply quantum_state_eq_trans`, transitivity routes via `V ψ`, so
+    -- the second leg is just `hV_id ψ`, not a U-rewrite under =q=.
+    exact quantum_state_eq_trans (U (V ψ)) (V ψ) ψ (hU_id (V ψ)) (hV_id ψ)
   · trivial
 
 /-! ## Quantum Information Theory -/

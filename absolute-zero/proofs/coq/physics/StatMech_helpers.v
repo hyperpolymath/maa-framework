@@ -2,6 +2,10 @@
 
     Auxiliary lemmas needed for thermodynamic CNO proofs.
     These should eventually be integrated into CNO.v.
+
+    Author: Jonathan D. A. Jewell
+    Project: Absolute Zero
+    License: MPL-2.0
 *)
 
 Require Import CNO.
@@ -11,11 +15,10 @@ Lemma state_eq_sym :
   forall s1 s2 : ProgramState,
     s1 =st= s2 -> s2 =st= s1.
 Proof.
-  intros s1 s2 [H_mem [H_reg [H_io H_pc]]].
+  intros s1 s2 [H_mem [H_reg H_io]].
   unfold state_eq.
   repeat split.
   - unfold mem_eq in *. intro addr. symmetry. apply H_mem.
-  - symmetry. assumption.
   - symmetry. assumption.
   - symmetry. assumption.
 Qed.
@@ -25,14 +28,13 @@ Lemma state_eq_trans :
   forall s1 s2 s3 : ProgramState,
     s1 =st= s2 -> s2 =st= s3 -> s1 =st= s3.
 Proof.
-  intros s1 s2 s3 [H_mem12 [H_reg12 [H_io12 H_pc12]]] [H_mem23 [H_reg23 [H_io23 H_pc23]]].
+  intros s1 s2 s3 [H_mem12 [H_reg12 H_io12]] [H_mem23 [H_reg23 H_io23]].
   unfold state_eq.
   repeat split.
   - unfold mem_eq in *. intro addr.
     transitivity (state_memory s2 addr); [apply H_mem12 | apply H_mem23].
   - transitivity (state_registers s2); assumption.
   - transitivity (state_io s2); assumption.
-  - transitivity (state_pc s2); assumption.
 Qed.
 
 (** For CNOs, evaluation from any state leads back to that state *)

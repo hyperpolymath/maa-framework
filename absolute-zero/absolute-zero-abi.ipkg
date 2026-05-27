@@ -1,0 +1,16 @@
+-- SPDX-License-Identifier: PMPL-1.0-or-later
+package absolute-zero-abi
+version = 0.1.0
+
+authors = "Jonathan D. A. Jewell"
+license = "PMPL-1.0-or-later"
+
+opts = "--ignore-missing-ipkg"
+
+sourcedir = "src/abi"
+
+modules = AbsoluteZero.ABI.Types,
+          AbsoluteZero.ABI.Layout,
+          AbsoluteZero.ABI.Proofs.DivMod
+
+depends = base, contrib

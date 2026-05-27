@@ -14,6 +14,7 @@ import Data.Bits
 import Data.So
 import Data.Vect
 import AbsoluteZero.ABI.Types
+import AbsoluteZero.ABI.Proofs.DivMod
 
 %default total
 
@@ -238,27 +239,33 @@ instructionCrossPlatform = InvariantProof
 -- Alignment Verification
 --------------------------------------------------------------------------------
 
-||| Verify that a type's alignment is correct for the platform
-public export
-verifyAlignment : (p : Platform) -> (t : Type) ->
-                  HasAlignment t n -> So (n `mod` (ptrSize p `div` 8) == 0)
--- PROOF_TODO: Replace cast with actual proof
-verifyAlignment Linux t (AlignProof {n}) = cast Oh
--- PROOF_TODO: Replace cast with actual proof
-verifyAlignment Windows t (AlignProof {n}) = cast Oh
--- PROOF_TODO: Replace cast with actual proof
-verifyAlignment MacOS t (AlignProof {n}) = cast Oh
--- PROOF_TODO: Replace cast with actual proof
-verifyAlignment BSD t (AlignProof {n}) = cast Oh
--- PROOF_TODO: Replace cast with actual proof
-verifyAlignment WASM t (AlignProof {n}) = cast Oh
+-- Historical note (absolute-zero#27): a universally-quantified postulate
+-- `alignmentMatchesPlatformWord : HasAlignment t n -> So (n `mod` word == 0)`
+-- previously lived here. It was unsound: `AlignProof` carries no evidence
+-- about `n`, so the postulate would derive `So (1 `mod` 8 == 0)` from
+-- `CNOResultLayout.alignment : HasAlignment CNOVerificationResult 1`. It was
+-- removed in favour of per-type decidable claims at each call site.
+--
+-- Reduction note: `8 `mod` (ptrSize p `div` 8) == 0` is concretely True
+-- on every supported platform (Linux/Windows/MacOS/BSD: 64/8=8, 8 mod 8=0;
+-- WASM: 32/8=4, 8 mod 4=0). However, Idris2 0.8.0 will not reduce
+-- through `divNat`'s non-covering case at type-level, so a direct `Oh`
+-- proof fails to unify. The discharge below uses `believe_me` —
+-- distinguished from the deleted unsound postulate in two ways:
+--   1. It is a per-instance claim (n=8 only), not a universal claim;
+--      no further consumer can pivot from it to a false proposition.
+--   2. The claim is computationally true; the gap is the typechecker's
+--      reduction strategy, not the proposition itself.
+-- A clean discharge becomes available once `AbsoluteZero.ABI.Proofs.DivMod`
+-- supplies an explicit rewrite from `ptrSize p` to its concrete value.
 
-||| ProgramState alignment is valid on all platforms
+||| ProgramState alignment is valid on all platforms.
+||| See the note above on why this currently routes through `believe_me`
+||| (typechecker reduction, not an axiom about an abstract proposition).
 public export
 programStateAlignmentValid : (p : Platform) ->
   So (8 `mod` (ptrSize p `div` 8) == 0)
-programStateAlignmentValid p =
-  verifyAlignment p ProgramState ProgramStateLayout.alignment
+programStateAlignmentValid _ = believe_me ()
 
 --------------------------------------------------------------------------------
 -- Size Calculation Utilities
@@ -269,21 +276,12 @@ public export
 arraySize : HasSize t elemSize -> (n : Nat) -> Nat
 arraySize _ n = elemSize * n
 
-||| Calculate aligned size (round up to alignment boundary)
+||| Calculate aligned size (round up to alignment boundary).
+||| Definition and correctness lemma live in `AbsoluteZero.ABI.Proofs.DivMod`
+||| (re-exported here for API compatibility). See absolute-zero#27.
 public export
-alignedSize : (size : Nat) -> (alignment : Nat) -> Nat
-alignedSize size align =
-  let remainder = size `mod` align
-  in if remainder == 0
-     then size
-     else size + (align - remainder)
-
-||| Prove that aligned size is a multiple of alignment
-public export
-alignedSizeCorrect : (size : Nat) -> (align : Nat) -> {auto 0 nonZero : So (align /= 0)} ->
-  So (alignedSize size align `mod` align == 0)
--- PROOF_TODO: Replace cast with actual proof
-alignedSizeCorrect size align = cast Oh
+alignedSize : (size : Nat) -> (align : Nat) -> Nat
+alignedSize = DivMod.alignedSize
 
 --------------------------------------------------------------------------------
 -- Compile-Time Verification

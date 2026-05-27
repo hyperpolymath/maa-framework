@@ -7,7 +7,7 @@
 
     Author: Jonathan D. A. Jewell
     Project: Absolute Zero
-    License: AGPL-3.0 / Palimpsest 0.5
+    License: MPL-2.0
 *)
 
 Require Import CNO.CNO.
@@ -190,8 +190,14 @@ Theorem malbolge_nop_preserves_state :
 Proof.
   intros ms ms' H.
   inversion H; subst.
-  inversion H2; subst.
-  inversion H3; subst.
+  match goal with
+  | Hstep : malbolge_step _ MNop _ |- _ =>
+      inversion Hstep; subst; clear Hstep
+  end.
+  match goal with
+  | Hrest : malbolge_eval [] _ _ |- _ =>
+      inversion Hrest; subst; clear Hrest
+  end.
   repeat split; reflexivity.
 Qed.
 
@@ -207,8 +213,14 @@ Theorem malbolge_halt_is_cno :
 Proof.
   intros ms ms' H.
   inversion H; subst.
-  inversion H2; subst.
-  inversion H3; subst.
+  match goal with
+  | Hstep : malbolge_step _ MHlt _ |- _ =>
+      inversion Hstep; subst; clear Hstep
+  end.
+  match goal with
+  | Hrest : malbolge_eval [] _ _ |- _ =>
+      inversion Hrest; subst; clear Hrest
+  end.
   reflexivity.
 Qed.
 
@@ -265,7 +277,7 @@ Proof.
     - constructor.
   }
   specialize (H ms ms' H0).
-  destruct H as [_ [_ [_ HIO]]].
+  destruct H as [_ [_ [_ [_ HIO]]]].
   simpl in HIO.
   discriminate HIO.
 Qed.
@@ -297,12 +309,7 @@ Proof.
     rewrite HA, HC, HD.
     reflexivity.
   - (* I/O *)
-    apply HIO.
-  - (* PC *)
-    simpl.
-    (* C register is PC and is now preserved by strengthened CNO definition *)
-    rewrite HC.
-    reflexivity.
+    symmetry. apply HIO.
 Qed.
 
 (** ** The "Absolute Zero" Program *)

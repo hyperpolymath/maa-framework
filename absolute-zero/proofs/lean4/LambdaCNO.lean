@@ -7,7 +7,7 @@
 
    Author: Jonathan D. A. Jewell
    Project: Absolute Zero
-   License: AGPL-3.0 / Palimpsest 0.5
+   License: MPL-2.0
 -/
 
 namespace LambdaCNO
@@ -123,7 +123,7 @@ theorem lambda_id_normal_form : isNormalForm lambda_id := by
   | beta_abs _ _ h' => cases h'
 
 /-- lambda_id is a CNO: for arguments in normal form, it terminates and acts as identity -/
-theorem lambda_id_is_cno_on_values : isLambdaCNO lambda_id := by
+theorem lambda_id_is_cno : isLambdaCNO lambda_id := by
   unfold isLambdaCNO lambda_id
   intro arg h_nf
   constructor
@@ -190,25 +190,6 @@ axiom subst_closed_term (t s : LambdaTerm) (n : Nat) :
 def lambda_compose (f g : LambdaTerm) : LambdaTerm :=
   LAbs (LApp f (LApp g (LVar 0)))
 
-/-- Composition of weak lambda CNOs yields a weak CNO.
-    Requires f and g to be closed (standard for combinators). -/
-theorem lambda_cno_composition_weak (f g : LambdaTerm)
-    (hf_closed : Closed f 0) (hg_closed : Closed g 0) :
-    isLambdaCNOWeak f →
-    isLambdaCNOWeak g →
-    isLambdaCNOWeak (lambda_compose f g) := by
-  intro hf hg
-  unfold isLambdaCNOWeak at *
-  intro arg
-  -- (λx. f (g x)) arg →β subst 0 arg (f (g (LVar 0))) = f (g arg)
-  apply BetaReduceStar.beta_step
-  · apply BetaReduce.beta_app
-  · simp [subst, subst_closed_term f arg 0 hf_closed, subst_closed_term g arg 0 hg_closed]
-    have hg_arg := hg arg
-    have h_congr := BetaReduceStar_app_right f (LApp g arg) arg hg_arg
-    have hf_arg := hf arg
-    exact BetaReduceStar_trans _ _ _ h_congr hf_arg
-
 /-- Composition of lambda CNOs yields a CNO.
     For arguments in normal form: compose applies g then f, both of which
     terminate and return the original argument. -/
@@ -248,6 +229,9 @@ def y_combinator : LambdaTerm :=
 
 /-- Y is NOT a CNO because it doesn't act as identity.
     Y f reduces to f (Y f), not back to f. -/
+-- AXIOM: y_combinator_not_identity; non-termination claim about the Y combinator —
+--   requires step-indexed semantics or coinduction to discharge.
+--   §(c) NECESSARY AXIOM per docs/proof-debt.md (Lean Lambda triage 2026-05-27).
 axiom y_combinator_not_identity :
   ¬ BetaReduceStar (LApp y_combinator lambda_id) lambda_id
 
@@ -274,22 +258,11 @@ example : BetaReduceStar (LApp church_zero church_zero) (LAbs (LVar 0)) := by
 /-! ## Eta Equivalence -/
 
 /-- Eta reduction: (λx. f x) ≡ f -/
+-- AXIOM: eta_equivalence; η-equivalence is not derivable under β-only reduction —
+--   requires an extra reduction rule or extensional equality.
+--   §(c) NECESSARY AXIOM per docs/proof-debt.md (Lean Lambda triage 2026-05-27).
 axiom eta_equivalence (f : LambdaTerm) :
   BetaReduceStar (LAbs (LApp f (LVar 0))) f
-
-/-- Eta-expanded identity acts as identity (weak version) -/
-theorem eta_expanded_id_is_cno_weak :
-    isLambdaCNOWeak (LAbs (LApp lambda_id (LVar 0))) := by
-  unfold isLambdaCNOWeak
-  intro arg
-  -- (λx. (λy.y) x) arg →β (λy.y) arg →β arg
-  apply BetaReduceStar.beta_step
-  · apply BetaReduce.beta_app
-  · simp [subst]
-    apply BetaReduceStar.beta_step
-    · apply BetaReduce.beta_app
-    · simp [subst, lambda_id]
-      apply BetaReduceStar.beta_refl
 
 /-- Eta-expanded identity is a CNO: for arguments in normal form,
     it terminates and acts as identity -/

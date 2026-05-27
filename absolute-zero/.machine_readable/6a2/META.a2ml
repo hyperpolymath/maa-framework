@@ -2,9 +2,11 @@
 # Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
 #
 # META.a2ml — Absolute Zero meta-level information
+# Migrated from META.scm on 2026-04-17
+
 [metadata]
-version = "0.1.0"
-last-updated = "2026-04-11"
+version = "1.0.0"
+last-updated = "2026-05-27"
 
 [project-info]
 license = "MPL-2.0"
@@ -12,13 +14,44 @@ author = "Jonathan D.A. Jewell (hyperpolymath)"
 
 [architecture-decisions]
 decisions = [
-  # No ADRs recorded
+  { id = "ADR-001", status = "accepted", title = "ProofIrrelevance for morphism equality in category theory" },
+  { id = "ADR-002", status = "accepted", title = "Dual Landauer formalization: axiom (StatMech.v) + derivation (LandauerDerivation.v)" },
+  { id = "ADR-003", status = "accepted", title = "Lambda CNO = identity property only, not termination" },
+  { id = "ADR-004", status = "accepted", title = "post_execution_dist specialized for CNOs (identity on distributions)" },
+  { id = "ADR-005", status = "proposed", title = "Fix QuantumCNO.v Cexp: real exp -> complex phase factor" },
+  { id = "ADR-006", status = "accepted", title = "state_eq excludes state_pc — PC is control-flow bookkeeping, not observable side effect (2026-05-18 rescue)" },
+  { id = "ADR-007", status = "accepted", title = "Discharge eval_deterministic Axiom → Theorem via step_deterministic_strong helper (2026-05-20, PR #24); first post-T0 axiom audit win" },
+  { id = "ADR-008", status = "accepted", title = "Delete unsound eval_respects_state_eq_{left,right} axioms; weaken logically_reversible definition to use =st= (observational reversibility); re-prove cno_eval_on_equal_states + cno_logically_reversible via cno_terminates + cno_preserves_state (2026-05-20); rationale: under PC-excluding state_eq the strong axioms force a syntactically-identical eval result, which is unsound because eval propagates PC deterministically while =st= ignores it" },
+  { id = "ADR-009", status = "accepted", title = "Delete unsound alignmentMatchesPlatformWord Idris2 postulate; consolidate alignedSizeCorrect into shared AbsoluteZero.ABI.Proofs.DivMod module (PR #40, Refs #27)" },
+  { id = "ADR-010", status = "accepted", title = "Phase 1 per-axiom triage of 72 Coq Axioms per standards#203 trusted-base policy (2026-05-27, PR #58): 52 §c TRUSTED-BASE + 17 §a DISCHARGE backlog + 3 §b PROPERTY-TEST; canonical disposition in docs/proof-debt-triage.md" },
 ]
 
 [development-practices]
+code-style = "Coq proof engineering"
+testing = "Multi-prover cross-validation"
 versioning = "SemVer"
 documentation = "AsciiDoc"
+branching = "main for stable"
 build-tool = "just"
+
+[security]
+principle = "Defense in depth"
+
+[proof-methodology]
+rules = [
+  "Prefer Qed over Admitted",
+  "Axiomatize physical laws",
+  "Document all Admitted with rationale",
+  "Separate helpers into dedicated files",
+]
+
+[design-rationale]
+rationale = [
+  "CNOs are identity morphisms in categories",
+  "Multi-prover for maximum confidence",
+  "Thermodynamic grounding via Landauer/Bennett",
+  "Progressive: axiom -> theorem -> verified",
+]
 
 [maintenance-axes]
 scoping-first = true

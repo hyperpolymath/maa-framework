@@ -261,7 +261,7 @@ programStateSizeBytes = 40  -- Aligned to 8 bytes
 
 ||| Prove ProgramState has correct size
 public export
-programStateSize : HasSize ProgramState programStateSizeBytes
+programStateSize : HasSize ProgramState 40
 programStateSize = SizeProof
 
 ||| Prove ProgramState has 8-byte alignment
@@ -276,7 +276,7 @@ instructionSizeBytes = 16
 
 ||| Prove Instruction has correct size
 public export
-instructionSize : HasSize Instruction instructionSizeBytes
+instructionSize : HasSize Instruction 16
 instructionSize = SizeProof
 
 ||| Prove Instruction has 4-byte alignment
@@ -318,7 +318,11 @@ ptrSize WASM = 32
 ||| Pointer type for platform
 public export
 CPtr : Platform -> Type -> Type
-CPtr p _ = Bits (ptrSize p)
+CPtr Linux _ = Bits64
+CPtr Windows _ = Bits64
+CPtr MacOS _ = Bits64
+CPtr BSD _ = Bits64
+CPtr WASM _ = Bits32
 
 --------------------------------------------------------------------------------
 -- Verification Types

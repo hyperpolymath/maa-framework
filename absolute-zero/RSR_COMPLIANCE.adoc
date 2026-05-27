@@ -1,0 +1,100 @@
+// SPDX-License-Identifier: MPL-2.0
+= Absolute Zero — Rhodium Standard Repository (RSR) Compliance
+Jonathan D. A. Jewell <developer@joshuajewell.dev>
+:toc:
+:sectnums:
+
+== Purpose
+
+Tracks absolute-zero's conformance to the hyperpolymath estate-wide
+**Rhodium Standard Repository (RSR)** taxonomy, as defined by
+`hyperpolymath/rsr-template-repo`.
+
+For the RSR taxonomy itself (what the template prescribes), see
+`docs/RSR_OUTLINE.adoc`.
+
+== Compliance summary (as of 2026-05-25)
+
+|===
+|Category |Status |Notes
+
+|Root file hygiene
+|✅ Passing
+|Root reduced from 30 *.md/*.adoc/*.txt files to 7 canonical ones
+ in the 2026-05-25 tidy. Stray `AI.a2ml` / `AI.djot` consolidated into
+ `0-AI-MANIFEST.a2ml`.
+
+|RSR directory layout
+|🟡 Partial
+|Have: `.github/`, `.machine_readable/`, `.well-known/`, `docs/`,
+ `examples/`, `scripts/`, `src/`, `tests/`, `tools/`, `verification/`,
+ `proofs/` (multi-prover), `interpreters/`, `papers/`, `ffi/`, `fuzz/`,
+ `homepage/`, `wasm/`, `elm/`, `data/`, `css/`, `license/`, `contractiles/`,
+ `build/` (gitignored). Missing: `.devcontainer/`, `benches/`,
+ `container/` (consolidate `Containerfile` into a dir), `features/`,
+ `session/`.
+
+|Machine-readable artefacts
+|✅ Passing
+|`.machine_readable/6a2/{STATE,META,ECOSYSTEM,AGENTIC,NEUROSYM,PLAYBOOK}.a2ml`
+ + legacy `.scm` siblings during migration window.
+
+|`0-AI-MANIFEST.a2ml`
+|✅ Passing
+|Created 2026-05-25 (was missing; legacy `AI.a2ml` + `AI.djot` deleted).
+
+|`AUDIT.adoc`
+|✅ Passing
+|Created 2026-05-25; tracks open + resolved audit items by ID.
+
+|`.well-known/{security,ai,humans}.txt`
+|✅ Passing
+|Created 2026-05-25 per RFC-9116 (security.txt) and humanstxt.org.
+
+|Language policy
+|🟡 Partial
+|CLAUDE.adoc ban list enforced for new code via
+ `.github/workflows/language-policy.yml`. Banned-language `examples/`
+ (go, java, kotlin, swift, ruby, perl) deleted 2026-05-25.
+
+|Workflow security
+|❌ Failing (in progress)
+|Hypatia surfaces 14 unpinned action SHAs across `governance.yml`,
+ `jekyll-gh-pages.yml`, `language-policy.yml`, etc. Followup PR
+ will pin all to commit SHAs.
+
+|Test directory
+|🟡 Partial
+|`tests/` exists but is empty (placeholder). Hypatia "no_tests" finding
+ will clear once at least one test file lands. Existing test coverage
+ lives under `proofs/` (multi-prover verification), `fuzz/`, and
+ ReScript test runners in `interpreters/rescript/`.
+
+|License headers
+|🟡 Mostly passing
+|All new files (2026-05-25 batch) have SPDX-License-Identifier
+ PMPL-1.0-or-later. A repo-wide SPDX sweep remains open.
+
+|Container reproducibility
+|🟡 Partial
+|`Containerfile` exists at root; `guix.scm` planned per RSR template.
+|===
+
+== Migration roadmap
+
+. **Done 2026-05-25**: root tidy, doc consolidation, archive of dated
+  artefacts, `0-AI-MANIFEST.a2ml`, `AUDIT.adoc`, `.well-known/`, strict
+  banned-language sweep.
+. **Next**: pin action SHAs across workflows (Hypatia
+  `workflow_audit` findings); add `guix.scm`; populate `tests/` with
+  at least a smoke test; create `container/` dir and move
+  `Containerfile` in.
+. **Later**: `.devcontainer/`, `benches/`, `features/`, `session/` per
+  full RSR taxonomy. Each as a separate small PR.
+
+== See also
+
+* `docs/RSR_OUTLINE.adoc` — the RSR template's own README (what the standard prescribes)
+* `AUDIT.adoc` — audit trail for unsoundness/dead-code findings
+* `0-AI-MANIFEST.a2ml` — AI-agent entry-point manifest
+* `.machine_readable/6a2/STATE.a2ml` — live project state

@@ -1,9 +1,0 @@
-// SPDX-License-Identifier: MPL-2.0
-= tools/ — Developer tools
-
-RSR-conventional location for developer utilities (scripts that build,
-verify, or inspect the project but are not part of the published
-artefact).
-
-For per-language build entry points, see `Justfile` recipes.
-For verification scripts that act as test runners, see `verification/`.

@@ -17,29 +17,38 @@ enumerates the *specific* soundness-relevant escape hatches that the
 [`check-trusted-base.sh`](https://github.com/hyperpolymath/standards/blob/main/scripts/check-trusted-base.sh)
 CI gate detects in source.
 
-## Schema extension for maa-framework: §(e) VENDORED
+## Schema extension for maa-framework: §(e) SUBMODULE — estate-sibling
 
-maa-framework carries an in-tree copy of the sibling estate repo
-`hyperpolymath/absolute-zero` at `absolute-zero/`. The canonical home of
-those proof files is the standalone `absolute-zero` repo, which has its
-own `docs/proof-debt.md` (seeded under the same standards#203 chain).
+maa-framework mounts the sibling estate repo `hyperpolymath/absolute-zero`
+at `absolute-zero/` as a **git submodule** (pinned via `.gitmodules`).
+The canonical home of those proof files is the standalone
+`absolute-zero` repo, which has its own `docs/proof-debt.md` (seeded
+under the same standards#203 chain).
 
 To avoid double-counting (and double-discharging) the same markers, we
 extend the schema with a fifth disposition:
 
 | Disposition | Marker | Definition |
 | --- | --- | --- |
-| **(e) VENDORED — estate-sibling** | `// VENDORED: <canonical-repo>` | The marker lives in an in-tree copy of another estate repository. Disposition is **delegated** to the canonical repo's `docs/proof-debt.md`. Closing the marker upstream + re-vendoring is the close-out path. |
+| **(e) SUBMODULE — estate-sibling** | `// SUBMODULE: <canonical-repo>` | The marker lives in a directory mounted as a submodule pinned to another estate repository. Disposition is **delegated** to the canonical repo's `docs/proof-debt.md`. Closing the marker upstream + bumping the submodule pin is the close-out path. |
 
 `(e)` is **out of scope** for maa-framework's own proof-debt close-out
-budget. The maintainers' obligation is just to keep the vendored copy
-fresh (re-sync periodically) and to flag if a marker disappears upstream
-but persists here.
+budget. The maintainers' obligation is just to bump the submodule pin
+periodically (`git submodule update --remote absolute-zero` then commit
+the resulting pin advance) and to flag if a marker disappears upstream
+but persists here (cannot happen post-bump; can briefly happen between
+upstream-close and pin-bump).
 
 The `(e)` extension is documented inline here per the standards#203
 policy's guidance: "extend the schema; document the extension at the
 top of the file as a repo-specific note." If the pattern recurs across
 other estate repos, it will be promoted into the central policy.
+
+**Prior wording** (2026-05-27 → 2026-05-30): this section originally
+referred to a vendored in-tree copy that had drifted from upstream.
+PR #83 (re-vendor) re-aligned the trees; this conversion replaces the
+vendored snapshot with a submodule pin, resolving the open owner
+question below.
 
 ## Marker count (2026-05-27)
 
@@ -50,13 +59,14 @@ other estate repos, it will be promoted into the central policy.
   audit's "134" reflects a more inclusive regex; the audit excluded
   some comment/import false positives).
 - **All 13 files** live under `absolute-zero/proofs/{coq,lean4,agda}/`.
-- **All 13 files** are vendored from `hyperpolymath/absolute-zero` (the
-  sibling estate repo). File-header comparison + author/license headers
-  ("Author: Jonathan D. A. Jewell; Project: Absolute Zero") confirm
-  these are estate-owned but with canonical home in the sibling repo.
-- The two trees have drifted (e.g.
-  `proofs/coq/lambda/LambdaCNO.v` differs from the sibling-repo copy);
-  re-syncing is a follow-up.
+- **All 13 files** live in the `hyperpolymath/absolute-zero` submodule
+  pinned at the SHA recorded in `.gitmodules` + the index. File-header
+  author/license headers ("Author: Jonathan D. A. Jewell; Project:
+  Absolute Zero") confirm canonical home in the sibling repo.
+- The two trees are byte-equivalent at the pinned SHA (drift can only
+  appear once upstream advances past the pin — bump the pin to clear).
+- `check-trusted-base.sh` uses `find .` which walks submodule contents
+  naturally, so the 149/150 count is preserved post-conversion.
 
 Disposition split:
 
@@ -65,13 +75,13 @@ Disposition split:
 | (a) DISCHARGED | 0 | 0 | — |
 | (b) BUDGETED | 0 | 0 | — |
 | (c) NECESSARY AXIOM | 0 | 0 | (See §(e). The axioms in those files are mostly genuine §(c)-class — physical constants, no-cloning, function-extensionality — but the canonical home is the sibling repo.) |
-| (d) DEBT | 0 | 0 | (PROOF-NEEDS.md flags `y_not_cno` `Admitted` as a known gap — that's also (e) since it lives in the vendored subtree.) |
-| **(e) VENDORED — estate-sibling** | **13** | **150** | All under `absolute-zero/`; canonical home `hyperpolymath/absolute-zero`. |
+| (d) DEBT | 0 | 0 | (PROOF-NEEDS.md flags `y_not_cno` `Admitted` as a known gap — that's also (e) since it lives in the submodule subtree.) |
+| **(e) SUBMODULE — estate-sibling** | **13** | **150** | All under `absolute-zero/` (submodule); canonical home `hyperpolymath/absolute-zero` at the pinned SHA. |
 
 ## (a) DISCHARGED in this repo
 
 *(None — maa-framework itself contains no proof-bearing source outside
-the vendored `absolute-zero/` subtree.)*
+the `absolute-zero/` submodule.)*
 
 ## (b) BUDGETED — tested with a refutation budget
 
@@ -89,12 +99,12 @@ the sibling repo. See §(e).)*
 
 *(None — same reason as §(a). `PROOF-NEEDS.md` notes a known `Admitted`
 on `y_not_cno` in `proofs/coq/lambda/LambdaCNO.v`; that file is in the
-vendored subtree (§(e)), so the discharge happens upstream in
+submodule subtree (§(e)), so the discharge happens upstream in
 `hyperpolymath/absolute-zero`.)*
 
-## (e) VENDORED — estate-sibling
+## (e) SUBMODULE — estate-sibling
 
-All entries below have the form: `<vendored path> — <marker count> —
+All entries below have the form: `<submodule path> — <marker count> —
 <brief disposition rationale>`. The **canonical home** for every entry
 is `hyperpolymath/absolute-zero`; this file does not duplicate that
 repo's proof-debt classification.
@@ -140,24 +150,23 @@ the grep number for CI parity with `check-trusted-base.sh`.
 1. Re-run `bash scripts/check-trusted-base.sh .` (from standards#211)
    from the repo root.
 2. If markers in `absolute-zero/` change, the close-out path is to fix
-   the canonical `hyperpolymath/absolute-zero` repo and re-sync into
-   this subtree.
+   the canonical `hyperpolymath/absolute-zero` repo upstream and bump
+   the submodule pin here (`git submodule update --remote absolute-zero`
+   then commit).
 3. If a **new** proof-bearing file appears **outside** `absolute-zero/`
    (e.g. under `aletheia/` for the Rust verification pipeline, or under
    `contractiles/`), classify it into §(a)/(b)/(c)/(d) per the canonical
    schema. That would be load-bearing maa-framework debt.
 
-## Open owner question
+## Resolved owner questions
 
-1. **Vendoring policy**: should the `absolute-zero/` subtree be a git
-   submodule (so the canonical proof-debt.md is the single source of
-   truth) instead of a vendored copy? Current state is "in-tree copy
-   that has drifted from the sibling repo's main branch". Filed for
-   maintainer decision; this PR does not resolve it.
-2. **Re-sync cadence**: until the vendoring question is resolved,
-   maa-framework's vendored copies should be diffed against the
-   sibling repo before each minor release, and the diff annotated in
-   `CHANGELOG.adoc`.
+1. **~~Vendoring policy~~** (resolved 2026-05-30): the `absolute-zero/`
+   subtree is now a git submodule pinned to `hyperpolymath/absolute-zero`.
+   Canonical proof-debt.md is the single source of truth; this file
+   delegates via §(e) SUBMODULE.
+2. **~~Re-sync cadence~~** (resolved by above): submodule pin advances
+   are the re-sync mechanism. Bump on a release-driven schedule, or
+   when upstream lands a marker discharge that's worth pulling.
 
 ## Companion documents
 

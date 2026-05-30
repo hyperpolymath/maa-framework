@@ -1,10 +1,12 @@
 # SPDX-License-Identifier: MPL-2.0
 #
-# Estate-policy exemptions for legacy demonstration files vendored under
-# absolute-zero/ and aletheia/ subdirs. These pre-date the estate-wide
-# ReScript→AffineScript migration; they live in this monorepo only (not
-# in the standalone upstream repos) and are demonstration scaffolds, not
-# load-bearing code paths.
+# Estate-policy exemptions for legacy demonstration files under
+# absolute-zero/ (submodule, pinned to hyperpolymath/absolute-zero) and
+# aletheia/ subdirs. These pre-date the estate-wide
+# ReScript→AffineScript migration; the absolute-zero/ entries mirror
+# that repo's own .hypatia-ignore (kept here defensively in case
+# hypatia scans through the submodule boundary). They are
+# demonstration scaffolds, not load-bearing code paths.
 #
 # TODO 2026-Q3: migrate these to AffineScript and drop the exemptions.
 

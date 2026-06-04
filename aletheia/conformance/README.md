@@ -1,3 +1,7 @@
+<!--
+SPDX-License-Identifier: MPL-2.0
+Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+-->
 # Conformance Reports
 
 This folder contains conformance reports for Aletheia's compliance with various standards and verification systems.

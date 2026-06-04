@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MPL-2.0
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 //! Rhodibot CLI - RSR Compliance Bot
 //!
 //! A command-line tool for verifying Rhodium Standard Repository compliance.

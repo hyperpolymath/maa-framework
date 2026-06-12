@@ -1,3 +1,7 @@
+<!--
+SPDX-License-Identifier: MPL-2.0
+Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+-->
 # Palimpsest License Conformance Report
 
 [![Palimpsest License](https://img.shields.io/badge/License-Palimpsest%20v0.8-blue)](https://gitlab.com/hyperpolymath/palimpsest-license)

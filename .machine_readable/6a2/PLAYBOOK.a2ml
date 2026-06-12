@@ -6,14 +6,14 @@
 
 [metadata]
 version = "0.1.0"
-last-updated = "2026-03-16"
+last-updated = "2026-06-12"
 
 [deployment]
 # method = "gitops"
 # target = "container"
 
 [incident-response]
-# 1. Check .machine_readable/STATE.a2ml for current status
+# 1. Check .machine_readable/6a2/STATE.a2ml for current status
 # 2. Review recent commits and CI results
 # 3. Run just validate to check compliance
 

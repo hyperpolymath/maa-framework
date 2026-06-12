@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
-
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 = MAA Framework Roadmap
 :toc:
 :icons: font
@@ -8,9 +8,9 @@
 
 [NOTE]
 ====
-*Phase 0: Foundation* — Complete
+*Phase 0: Foundation* — Complete. *Phase 1: Specification* — Open (uploads pending).
 
-Infrastructure and governance established. Awaiting specification uploads and implementation commencement.
+Infrastructure and governance established. Implementation work has commenced ahead of the specification uploads: the Aletheia microkernel lives in-tree under `aletheia/`, the Certified Null Operation reference is pinned as the `absolute-zero/` git submodule (PR #89), and a CRG Tier-C test suite (unit, E2E, property, aspect, benchmarks) landed 2026-04-04. The 2026-06 estate standardization brought the governance layer (flat contractiles, bot directives, self-validation, Guix manifest) current. Specification document uploads remain the open Phase-1 work.
 ====
 
 == Development Phases

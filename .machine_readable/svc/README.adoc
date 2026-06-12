@@ -1,16 +1,17 @@
-= `.machine_readable/svc/` — Service components for maa-framework
+// SPDX-License-Identifier: MPL-2.0
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+= `.machine_readable/svc/` — Service components (relocated)
 :toc:
 
-Service-layer components that sit alongside the contractile trident
-but are not themselves verbs. Per **ADR-001 (2026-04-18)**, K9 lives
-here rather than under `contractiles/` so the contractile directory
-stays a pure six-verb set (intend, trust, must, bust, adjust, dust).
+The K9 self-validating templates and validators that lived here under
+`svc/k9/` moved to `.machine_readable/self-validating/` in the 2026-06
+estate standardization. This directory remains only as a pointer.
 
-== Contents
+The intent of **ADR-001 (2026-04-18)** — that K9 lives outside
+`contractiles/` so the contractile directory stays a pure verb set —
+is preserved by the new location.
 
-* `k9/` — K9 self-validating templates and validators.
+== Pointers
 
-== Pointer
-
-For the verb contractiles themselves, see
-`.machine_readable/contractiles/`.
+* K9 self-validation: `.machine_readable/self-validating/`
+* Verb contractiles: `.machine_readable/contractiles/`

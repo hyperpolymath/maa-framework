@@ -7,3 +7,14 @@ project = "maa-framework"
 author = "Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>"
 license = "MPL-2.0"
 standard = "RSR 2026"
+last-updated = "2026-06-12"
+
+[architecture-decisions]
+# ADR-001 (2026-04-18): K9 self-validation lives outside contractiles/ so the
+# contractile directory stays a pure verb set. Location updated by the
+# 2026-06 estate standardization: .machine_readable/self-validating/
+# (formerly .machine_readable/svc/k9/).
+# 2026-06 estate wave: Guix manifest.scm is the package entrypoint
+# (flake.nix removed in the estate-standardization merge).
+adr-001 = "K9 self-validation outside contractiles/; now at .machine_readable/self-validating/ per estate standardization"
+packaging = "Guix (guix.scm + manifest.scm); flake.nix removed in estate wave 2026-06"

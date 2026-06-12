@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
-
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 //! RSR Compliance Verification Kernel.
 //!
 //! This module implements the deterministic checks used by Aletheia to 

@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MPL-2.0
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 //! Bot integration module for CI/CD platforms
 //!
 //! This module provides integration with various CI/CD platforms:

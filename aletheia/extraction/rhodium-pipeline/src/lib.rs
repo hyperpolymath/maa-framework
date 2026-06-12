@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MPL-2.0
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 //! Rhodium Pipeline - CI/CD Pipeline Generator
 //!
 //! Generates RSR-compliant CI/CD configurations for various platforms.

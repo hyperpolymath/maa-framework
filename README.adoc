@@ -1,8 +1,10 @@
 // SPDX-License-Identifier: MPL-2.0
-
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 = MAA Framework
+image:https://img.shields.io/badge/OpenSSF-Best_Practices-green?logo=openssourcesecurity[OpenSSF Best Practices,link="https://www.bestpractices.dev/en/projects/new?repo_url=https://github.com/hyperpolymath/maa-framework"]
 
-image:[License: PMPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"]
+
+image:https://img.shields.io/badge/License-MPL--2.0-brightgreen.svg[License: MPL-2.0,link="https://www.mozilla.org/en-US/MPL/2.0/"]
 :toc: macro
 :toclevels: 3
 :icons: font
@@ -15,9 +17,9 @@ toc::[]
 
 [IMPORTANT]
 ====
-*Project Specification* — Implementation forthcoming.
+*Early implementation* — Specification uploads still pending (ROADMAP Phase 1).
 
-This repository currently serves as the official hub and governance center for the MAA Framework project. Source code, reference implementations, and detailed specifications will be uploaded as development progresses.
+This repository serves as the official hub and governance center for the MAA Framework project. Implementation work lives in-tree under `aletheia/` (the microkernel, Rust) and in the `absolute-zero/` git submodule (the Certified Null Operation, pinned to upstream). A CRG Tier-C test suite (unit, E2E, property, aspect, benchmarks) landed 2026-04-04. Detailed specification documents will be uploaded as development progresses.
 ====
 
 == Overview
@@ -64,9 +66,14 @@ The framework addresses the following domains:
 ├── .claude/CLAUDE.md      # Language policy (Hyperpolymath Standard)
 ├── .github/
 │   ├── CODEOWNERS         # Maintainer assignments
-│   └── workflows/         # Multi-forge synchronization
+│   └── workflows/         # CI wrappers + multi-forge synchronization
+├── .machine_readable/     # 6a2 metadata, contractiles, bot directives
+├── aletheia/              # Microkernel implementation (Rust)
+├── absolute-zero/         # CNO reference (git submodule, pinned)
+├── tests/                 # E2E, property, aspect tests
+├── GOVERNANCE.adoc        # Project governance
 ├── README.adoc            # This file
-├── README.md              # Brief description
+├── EXPLAINME.adoc         # Receipts backing README claims
 ├── ROADMAP.adoc           # Development phases
 └── SECURITY.md            # Vulnerability reporting policy
 ----
@@ -87,7 +94,7 @@ This project follows the *Hyperpolymath Standard* for technology choices.
 |===
 |Technology |Use Case
 
-|ReScript |Primary application code
+|AffineScript |Primary application code
 |Deno |Runtime & package management
 |Rust |Performance-critical, systems, WASM
 |Tauri 2.0+ / Dioxus |Mobile applications
@@ -115,7 +122,9 @@ See link:SECURITY.md[SECURITY.md] for:
 
 == License
 
-MPL-2.0
+This project is licensed under the Mozilla Public License, v. 2.0. See the `LICENSE` file for details.
+
+SPDX-License-Identifier: MPL-2.0
 
 == Contributing
 

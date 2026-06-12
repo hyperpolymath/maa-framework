@@ -1,0 +1,46 @@
+# SPDX-License-Identifier: MPL-2.0
+# Bustfile — Breakage / rollback contract for maa-framework
+# Author: Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+#
+# BUST defines what to do when something breaks: named failure scenarios
+# with their rollback procedures, the escalation ladder, and durable
+# backup points.
+#
+# Provenance: created 2026-06-12 (governance checkpoint), porting the former
+# nested .machine_readable/contractiles/bust/Bustfile.a2ml (Nickel-style
+# record, removed by the estate-standardization merge) into TOML-A2ML in
+# the flat estate layout. Content unchanged in substance; it is if anything
+# MORE accurate post-PR #89, since absolute-zero/ is now a real submodule.
+
+[metadata]
+repo = "maa-framework"
+version = "2.0.0"
+format = "a2ml"
+last-updated = "2026-06-12"
+description = "Rollback procedures when something breaks in the meta-repo"
+
+[scenarios]
+bad-pointer-bump = "git revert <bump-commit> in meta-repo; child repo itself untouched"
+submodule-pointer-points-at-missing-sha = "git submodule update --init --checkout <path> resets child to parent-recorded SHA; OR revert the stale bump commit"
+submodule-orphan-after-local-only-commit = "roll back locally with git reset to before the stranded commit; fix remote situation before re-attempting"
+accidental-private-repo-content-leaked-to-public-submodule = "hard-rotate the leaked secret immediately; git-filter-repo or BFG on the submodule's own history; public re-publication only after rotation complete"
+bad-estate-merge = "git revert -m 1 <merge-commit> on the meta-repo branch; re-attempt with path-level conflict resolution toward origin/main"
+
+[escalation-ladder]
+steps = [
+  "1. revert the meta-repo commit (reversible, low blast radius)",
+  "2. reset the local submodule clone (affects only local workspace)",
+  "3. force-push to main — PROHIBITED without explicit user confirmation (violates branch protection)",
+  "4. registry-level (delete/archive the GitHub repo) — human-only action, never by AI",
+]
+
+[backup-points]
+points = [
+  "GitHub serves as the durable backup for every submodule's own history",
+  "Meta-repo history on origin/main is the durable backup for pointer state",
+  "Local backup tags (backup/pre-<operation>-<date>) retained on risky rewrites",
+]
+
+[not-applicable]
+database-restore = { status = "not-applicable", reason = "no databases or stateful services in this repo" }
+deployment-rollback = { status = "not-applicable", reason = "nothing is deployed from this repo; it is a governance + source monorepo" }

@@ -1,0 +1,25 @@
+# SPDX-License-Identifier: MPL-2.0
+# hypatia.a2ml — Hypatia scanner directives for maa-framework
+# Per-repo directives for the Hypatia security/policy scanner.
+
+[metadata]
+repo = "maa-framework"
+last-updated = "2026-06-12"
+owner = "hyperpolymath"
+
+[scanner]
+ignore-file = ".hypatia-ignore"  # present at repo root
+workflow = ".github/workflows/hypatia-scan.yml"  # thin wrapper of hyperpolymath/standards hypatia-scan-reusable.yml (standards#191), weekly cron + push/PR
+report-format = "logtalk"  # per 6a2/NEUROSYM.a2ml [hypatia-config]
+
+[accepted-findings]
+# Known, deliberate exemptions — mirrored from .hypatia-ignore with reasons.
+banned-language-absolute-zero-demos = "cicd_rules/banned_language_file entries for absolute-zero/ (.res/.go/.java/.kt/.swift demo files): absolute-zero/ is a submodule pinned to hyperpolymath/absolute-zero; the entries mirror that repo's own .hypatia-ignore and are kept defensively in case hypatia scans through the submodule boundary. Demonstration scaffolds, not load-bearing code (see #71)."
+stale-aletheia-safedom-entry = "the aletheia/examples/SafeDOMExample.res entry is STALE — the file was deleted in PR #74; entry retained pending an ignore-file prune (TODO 2026-Q3 in .hypatia-ignore)."
+glob-collapse-pending = "per .hypatia-ignore: the per-file absolute-zero/examples/** entries will collapse to a single file_pattern entry once standards#180 (glob matching in in_baseline()) merges."
+
+[prohibited-actions]
+auto-delete-branches = false
+auto-merge = false
+modify-workflows = false
+escalation = "open an issue, do not spam PR comments"

@@ -1,3 +1,7 @@
+<!--
+SPDX-License-Identifier: MPL-2.0
+Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+-->
 # Aletheia Roadmap: MVP to v10.0.0
 
 This document outlines the complete development roadmap for Aletheia, from the current MVP to the long-term vision of v10.0.0.

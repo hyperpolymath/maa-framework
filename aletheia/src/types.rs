@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
-
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 //! Aletheia — Core Domain Types and Models.
 //!
 //! This module defines the formal data structures used throughout the 

@@ -1,3 +1,7 @@
+<!--
+SPDX-License-Identifier: MPL-2.0
+Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+-->
 # Migration Guide: Making Your Repository RSR-Compliant
 
 This guide helps you migrate an existing repository to RSR Bronze-level compliance.

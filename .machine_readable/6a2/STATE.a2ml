@@ -1,17 +1,17 @@
 # SPDX-License-Identifier: MPL-2.0
 # STATE.a2ml — Project state checkpoint
-# Last updated: 2026-04-04 (CRG C Testing & Benchmarking Phase Complete)
+# Last updated: 2026-06-12 (governance checkpoint; previous: 2026-04-04 CRG C complete)
 
 [metadata]
 project = "maa-framework"
 version = "0.1.0"
-last-updated = "2026-04-04"
-status = "CRG C Compliance Achieved"
+last-updated = "2026-06-12"
+status = "CRG C compliance achieved; estate-standardized governance layer landed"
 
 [project-context]
 name = "maa-framework"
 completion-percentage = 50
-phase = "Testing & Benchmarking Complete"
+phase = "Governance & estate standardization (post-CRG-C; spec/implementation phases per ROADMAP.adoc still open)"
 
 [testing-status]
 unit-tests = "26 in aletheia + 13 in brainfuck + 5 in whitespace = 44 total"
@@ -19,10 +19,32 @@ e2e-tests = "10 brainfuck interpreter E2E tests"
 property-tests = "11 property-based tests (determinism, equivalence, reversibility)"
 security-tests = "11 aspect tests (bounds, memory safety, input validation)"
 benchmarks = "criterion-based (absolute-zero/benches/cno_benchmarks.rs)"
-test-result = "ALL PASS: 39 tests absolute-zero + 26 unit tests aletheia"
+test-result = "ALL PASS as of 2026-04-04 CRG C checkpoint: 39 tests absolute-zero + 26 unit tests aletheia"
+note = "absolute-zero/ is a git submodule since PR #89; its tests run in the upstream repo"
 
 [crg-compliance]
 tier = "C"
 requirements = "unit + smoke + build + P2P + E2E + reflexive + contract + aspect + benchmarks"
 status = "COMPLETE"
 notes = "Zero-dependency aletheia (RSR Bronze), no unsafe code, criterion benchmarks established"
+
+[recent-work]
+# Summarized from `git log --since=2026-04-04 origin/main` (51 commits, 2026-05-13..2026-06-04)
+# plus the 2026-06-12 estate-standardization merge.
+license-migration = "PMPL-1.0-or-later -> MPL-2.0 estate-wide sweep (commit e4e3db0)"
+ci-canonicalization = "hypatia-scan/mirror/secret-scanner/scorecard converted to thin wrappers of hyperpolymath/standards reusables (PRs #52, #54, #73, #76, #77, #80); concurrency-cancel guards (#56, #58); scorecard-enforcer OSSF run-step fix (#87); scorecard job-level permissions (#90); CI/CD fix campaigns C001-C005"
+absolute-zero-submodule = "re-vendored subtree to upstream HEAD (#83), then converted absolute-zero/ to a git submodule pinned to upstream (#89, closes #84)"
+language-policy = "ReScript guidance retired -> AffineScript (#53 Item 9); stale SafeDOMExample.res fixture deleted (#74); CLAUDE.md flip per 2026-05-25 estate policy (#88)"
+docs = "CHANGELOG.md seeded, Keep-a-Changelog format (#81); docs-template/ skeleton adopted (#79); tech-debt audit recorded 2026-05-26 (#75); proof-debt.md seeded per standards#203 (#82)"
+dependabot = "actions bumps #59-#69, #92-#96 (checkout, artifacts, codeql-action, rust-toolchain, trufflehog, cache, pages)"
+estate-standardization = "2026-06-12: merged estate-standardization-20260607 — 6a2 manifest + README, anchors/ -> 6a2/anchor/, agent_instructions/ -> bot_directives/, flat contractiles, svc/k9 -> self-validating/, GOVERNANCE.adoc, Guix manifest.scm replaces flake.nix; codeql cron weekly -> monthly cherry-picked (standards#288)"
+
+[blockers]
+spec-uploads = "ROADMAP Phase 1 (specification documents for framework, Oblibeny, Aletheia) not yet uploaded"
+proof-debt = "upstream proof debt recorded in docs/proof-debt.md and docs/tech-debt-2026-05-26.md (80 Coq Axiom/Admitted + 54 Lean sorry/axiom markers across 25 files, all vendored/submodule scope)"
+root-justfile = "root Justfile build/test/fmt/lint recipes are placeholders; real builds live in aletheia/ (cargo)"
+
+[next-actions]
+changelog-automation = "adopt changelog-reusable.yml (standards#206) so CHANGELOG.md stays in sync"
+hypatia-ignore-prune = "drop stale aletheia/examples/SafeDOMExample.res entry (file deleted in #74); migrate demo exemptions per .hypatia-ignore TODO 2026-Q3"
+submodule-docs = "document `git submodule update --init` for absolute-zero/ in QUICKSTART-DEV"

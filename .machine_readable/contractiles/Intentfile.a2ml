@@ -1,99 +1,98 @@
 # SPDX-License-Identifier: MPL-2.0
-# Intentfile (A2ML Canonical) — north-star contractile for rsr-template-repo
+# Intentfile (A2ML Canonical) — north-star contractile for maa-framework
 # Author: Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 #
-# Paired runner: intend.ncl
-# Verb:          intend
+# Semantics: north-star contractile. Declares BOTH concrete committed
+# next-actions AND horizon aspirations:
+#   [[intents]] — "we WILL do this; track progress"
+#                 status: declared -> in_progress -> done | deferred | retired
+#   [[wishes]]  — "we WISH this were true; revisit later"
+#                 status: declared -> in_progress -> achieved | abandoned
+#                 horizon: near / mid / far
+# Non-gating — this is a report, not a gate. See Mustfile.a2ml for hard gates.
 #
-# Semantics: North-star contractile. Declares BOTH concrete committed
-#            next-actions AND horizon aspirations the project wishes to
-#            become. Two sections share one file because they answer
-#            the same question at different ranges:
-#              [[intents]] — "we WILL do this; track progress"
-#                            status: declared → in_progress → done |
-#                                    deferred | retired
-#              [[wishes]]  — "we WISH this were true; revisit later"
-#                            status: declared → in_progress → achieved |
-#                                    abandoned
-#                            grouped by horizon: near / mid / far.
-#            Non-gating — this is a report, not a gate. See the `must`
-#            contractile for hard gates.
+# Provenance: written 2026-06-12 (governance checkpoint) from README.adoc,
+# EXPLAINME.adoc and ROADMAP.adoc. The former root INTENT.contractile's
+# purpose/anti-purpose fields were unfilled {{...}} placeholders, so no
+# repo-specific content existed there to port; this file supplies the real
+# purpose for the first time.
 
-@abstract:
-North-star contractile for rsr-template-repo. This repository is the
-canonical template for Rhodium Standard Repository compliance. It provides
-the scaffold that all hyperpolymath repos should copy and customize.
-@end
+[metadata]
+repo = "maa-framework"
+version = "2.0.0"
+format = "a2ml"
+last-updated = "2026-06-12"
 
-## Purpose
+[purpose]
+text = """
+Hub and governance centre for the MAA Framework: a full-stack, open-source
+paradigm for building verifiably-compliant, secure, and sustainable systems.
+The monorepo coordinates three components — the MAA Framework itself (the
+paradigm and governance rules), Oblibeny (the reference language, developed
+in its own repo), and Aletheia (the microkernel trusted execution base,
+in-tree under aletheia/). The formal anchor is the Certified Null Operation
+(CNO) in absolute-zero/ (git submodule): every system operation must have a
+well-defined inverse whose composition with the operation is provably
+equivalent to the CNO.
+"""
 
-The rsr-template-repo serves as the master template for all hyperpolymath
-repositories. It contains the complete set of contractile files, machine-readable
-specifications, and governance documentation that define the Rhodium Standard.
+[anti-purpose]
+text = [
+  "NOT a single deployable binary — the components are coordinated design decisions, not one artifact",
+  "NOT the home of the Oblibeny language — that lives in hyperpolymath/oblibeny",
+  "NOT the home of CNO development — absolute-zero/ is a pinned submodule; changes go upstream",
+  "NOT a general-purpose project template — rsr-template-repo serves that role",
+]
 
-Every new repository in the hyperpolymath estate should be initialized by
-copying this template and substituting the placeholder values with
-repo-specific content.
+[if-in-doubt]
+ask-before-touching = [
+  ".machine_readable/ contractile definitions",
+  "governance documents (GOVERNANCE.adoc, MAINTAINERS.adoc, CODEOWNERS)",
+  "the absolute-zero submodule pointer",
+  "license policy documents",
+]
 
-## Anti-Purpose
+[[intents]]
+name = "phase-1-specification"
+description = "Upload MAA Framework specification documents; document Aletheia architecture; define API boundaries (ROADMAP Phase 1)"
+status = "declared"
 
-This repository is NOT:
-- A general-purpose project scaffold for external use (hyperpolymath-only)
-- A replacement for per-repo customization (all files must be bespoke)
-- A static template that never changes (evolves with RSR spec)
-- A runtime library or framework (build-time only)
+[[intents]]
+name = "changelog-automation"
+description = "Adopt changelog-reusable.yml (standards#206) so CHANGELOG.md stays in sync with conventional commits"
+status = "declared"
 
-## If In Doubt
+[[intents]]
+name = "root-justfile-wiring"
+description = "Wire root Justfile build/test/fmt/lint recipes to the real aletheia/ cargo targets (currently placeholders)"
+status = "declared"
 
-If you are unsure whether a change is in scope, ask. Sensitive areas:
-- .machine_readable/ contractile definitions
-- RSR specification files
-- Governance templates
-- License policy documents
+[[intents]]
+name = "crg-c-compliance"
+description = "CRG Tier C: unit + smoke + build + P2P + E2E + reflexive + contract + aspect + benchmarks"
+status = "done"
+notes = "Achieved 2026-04-04; see 6a2/STATE.a2ml [crg-compliance]"
 
-## Committed Next-Actions
+[[intents]]
+name = "estate-standardization"
+description = "Adopt the estate-standardization layout (6a2 manifest, flat contractiles, bot_directives, self-validating, GOVERNANCE.adoc, Guix manifest.scm)"
+status = "done"
+notes = "Merged 2026-06-12 from estate-standardization-20260607"
 
-### repo-initialization
-- description: Provide just copy-and-substitute template for new repos
-- probe: test -f scripts/init-repo.sh
-- status: done
-- notes: Run with source scripts/init-repo.sh <new-repo-name>
+[[wishes]]
+name = "toolchain-bootstrap"
+description = "Oblibeny lexer/parser, initial type system, REPL, Guix/Nix build integration (ROADMAP Phase 2)"
+horizon = "mid"
+status = "declared"
 
-### contractile-completeness
-- description: Every RSR contractile has an a2ml and ncl implementation
-- probe: ls .machine_readable/contractiles/*.a2ml | wc -l | grep -q "^6$"
-- status: in_progress
-- notes: Currently 6 contractile verbs: intend, must, trust, adjust, bust, dust
+[[wishes]]
+name = "proof-debt-zero"
+description = "Eliminate recorded proof debt (docs/proof-debt.md: Coq Axiom/Admitted + Lean sorry markers in vendored/submodule scope)"
+horizon = "mid"
+status = "declared"
 
-### automation-scripts
-- description: All repetitive tasks have just recipes
-- probe: grep -c "^# " Justfile | grep -q "^[6-9][0-9]*$"
-- status: in_progress
-
-## Wishes
-
-### Near Horizon
-
-#### cross-repo-validation
-- description: Tooling to validate all repos against RSR spec
-- horizon: near
-- status: declared
-
-#### automated-substitution
-- description: Script to automate repo-specific substitution in template
-- horizon: near
-- status: declared
-
-### Mid Horizon
-
-#### formal-verification
-- description: Idris2 proofs for all critical contractile invariants
-- horizon: mid
-- status: declared
-
-### Far Horizon
-
-#### ecosystem-visualization
-- description: Interactive graph of all hyperpolymath repos and dependencies
-- horizon: far
-- status: declared
+[[wishes]]
+name = "risc-v-support"
+description = "Aletheia on open RISC-V hardware with minimal trusted computing base"
+horizon = "far"
+status = "declared"

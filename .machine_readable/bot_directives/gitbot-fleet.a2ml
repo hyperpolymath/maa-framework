@@ -1,0 +1,55 @@
+# SPDX-License-Identifier: MPL-2.0
+# gitbot-fleet.a2ml — gitbot fleet directives for maa-framework
+# Per-repo directives for the hyperpolymath gitbot fleet.
+
+[metadata]
+repo = "maa-framework"
+last-updated = "2026-06-12"
+owner = "hyperpolymath"
+
+[fleet]
+bots = ["rhodibot", "echidnabot", "sustainabot", "glambot", "seambot", "finishbot"]
+rhodibot = "git operations"
+echidnabot = "code quality"
+sustainabot = "dependency updates"
+glambot = "documentation"
+seambot = "integration"
+finishbot = "task completion"
+
+[branch-policy]
+working-branch-pattern = "bot/<bot-name>/<topic>"
+draft-PRs-only = true
+ci-green-before-merge = true
+never-touch = [
+  ".claude/CLAUDE.md",
+  ".gitmodules",
+  "absolute-zero",          # submodule pointer — bumps are deliberate human acts (PR #89)
+  ".github/workflows/",
+  "LICENSE",
+  "LICENSES/",
+]
+
+[per-bot.rhodibot]
+allow = ["branch create", "rebase of own bot branches"]
+deny = ["submodule pointer bumps", "force-push to shared branches"]
+
+[per-bot.sustainabot]
+allow = ["dependency-update PRs for aletheia/Cargo.toml"]
+deny = ["GitHub Actions version bumps"]
+note = "Actions bumps are handled by dependabot in this repo (see PRs #59-#69, #92-#96); duplicating them creates conflicting PRs."
+
+[per-bot.echidnabot]
+allow = ["lint/format suggestions on aletheia/ and tests/"]
+deny = ["edits under .machine_readable/ without maintainer review"]
+
+[per-bot.glambot]
+allow = ["docs/ and README/EXPLAINME currency fixes as draft PRs"]
+deny = ["governance docs (GOVERNANCE.adoc, MAINTAINERS.adoc) edits"]
+
+[per-bot.seambot]
+allow = ["integration metadata under .machine_readable/integrations/"]
+deny = ["workflow wiring changes"]
+
+[per-bot.finishbot]
+allow = ["closing checklists, marking task completion in PR descriptions"]
+deny = ["merging PRs (humans merge after CI green)"]

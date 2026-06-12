@@ -1,18 +1,28 @@
-# ⚓ ANCHOR: maa-framework
+# SPDX-License-Identifier: MPL-2.0
+# ANCHOR: maa-framework
 # This is the canonical authority for the maa-framework repository.
+# Converted from the YAML-style authority record to TOML-A2ML on 2026-06-12
+# (field content preserved); realignment entries follow estate convention.
 
-id: "org.hyperpolymath.maa-framework"
-version: "1.0.0"
-clade: "unknown"
-status: "active"
+[metadata]
+id = "org.hyperpolymath.maa-framework"
+version = "1.0.0"
+clade = "unknown"
+status = "active"
+last-updated = "2026-06-12"
 
 # SSG Configuration (Unified boj-server build)
-ssg:
-  engine: "casket"
-  output_dir: "public"
-  boj_trigger: true
-  cartridge: "ssg-mcp"
+[ssg]
+engine = "casket"
+output_dir = "public"
+boj_trigger = true
+cartridge = "ssg-mcp"
 
-# Relationships
-parents:
-  - "org.hyperpolymath.boj-server"
+[relationships]
+parents = ["org.hyperpolymath.boj-server"]
+
+[[realignments]]
+date = "2026-06-12"
+what = "Estate standardization + governance checkpoint: merged estate-standardization-20260607 (6a2 manifest/README, anchors/ -> 6a2/anchor/, agent_instructions/ -> bot_directives/, flat contractiles, svc/k9 -> self-validating/, GOVERNANCE.adoc, Guix manifest.scm replacing flake.nix); cherry-picked codeql cron weekly -> monthly (standards#288); refreshed 6a2 STATE/META; wrote repo-true flat Mustfile/Trustfile/Adjustfile/Intentfile and ported nested dust/bust into flat Dustfile/Bustfile; added bot_directives trio (hypatia, gitbot-fleet, git-private-farm)."
+why = "Adopt the newer estate standard (landed in echo-types main via PR #185) and bring machine-readable metadata current with the 2026-04-04..2026-06-04 work (PRs #48-#96)."
+evidence = "merge of origin/estate-standardization-20260607; cherry-pick of origin/cicd/codeql-cron-monthly; git log --since=2026-04-04"

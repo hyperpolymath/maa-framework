@@ -1,72 +1,126 @@
 # SPDX-License-Identifier: MPL-2.0
-# Adjustfile — Drift-tolerance contract for rsr-template-repo
+# Adjustfile — Drift-tolerance and accessibility contract for maa-framework
 # Author: Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 #
-# Cumulative-drift catchment: tolerance bands + corrective actions.
-# Authority: advisory (Yard) — continue-with-warnings; auto_fix where deterministic.
-# Run with: adjust check
-# Fix with: adjust fix (applies deterministic patches; advisory otherwise)
+# Cumulative-drift catchment (tolerance bands + corrective actions) PLUS the
+# accessibility invariants. Authority: advisory (Yard) — continue-with-warnings;
+# auto_fix where deterministic. Unlike MUST (hard gate), ADJUST warns and
+# trends; it does not block — except that accessibility invariants are
+# implicitly MUST per the contractile family rules.
+#
+# Provenance: rewritten 2026-06-12 (governance checkpoint). The accessibility
+# section ports the former root .machine_readable/ADJUST.contractile
+# ("Accessibility & Digital Justice for Universal Software & Technology",
+# WCAG 2.2 AA, removed by the estate-standardization merge); the drift
+# section adapts the estate Adjustfile shape to maa-framework reality.
 
-@abstract:
-Drift tolerances and corrective actions for rsr-template-repo. Unlike
-MUST (hard gate), ADJUST tracks cumulative drift against tolerance bands
-and proposes corrective actions. Advisory — it warns and trends, it does
-not block.
-@end
+[metadata]
+repo = "maa-framework"
+version = "2.0.0"
+format = "a2ml"
+last-updated = "2026-06-12"
+accessibility-standard = "WCAG-2.2-AA"
+accessibility-full-name = "Accessibility & Digital Justice for Universal Software & Technology"
 
-## Template Drift
+[documentation-drift]
+readme-completeness = { description = "README documents the repo's actual contents (aletheia/, absolute-zero submodule, governance layer)", tolerance = "no claims contradicted by the tree", corrective = "update README.adoc sections", severity = "advisory" }
+example-accuracy = { description = "code examples in docs match actual content", tolerance = "all examples accurate", corrective = "audit and fix examples (EXPLAINME.adoc receipts)", severity = "advisory" }
+roadmap-currency = { description = "ROADMAP.adoc status reflects landed work", tolerance = "status note current within one checkpoint", corrective = "refresh Current Status note", severity = "advisory" }
 
-### placeholder-drift
-- description: Template placeholders should be replaced when copied
-- tolerance: 0 placeholder markers in copied repos
-- corrective: Search and replace all {{PLACEHOLDER}} markers
-- severity: advisory
-- notes: This check only applies to repos that copied from this template
+[structural-drift]
+no-broken-symlinks = { description = "no broken symbolic links", tolerance = "0 broken symlinks", corrective = "remove or re-point", severity = "advisory" }
+submodule-pointer-current = { description = "absolute-zero submodule pointer should not lag upstream by more than a release", tolerance = "pointer within one upstream release", corrective = "deliberate pointer bump PR", severity = "advisory" }
+changelog-sync = { description = "CHANGELOG.md tracks conventional commits", tolerance = "Unreleased section current", corrective = "adopt changelog-reusable.yml (standards#206)", severity = "advisory" }
 
-### template-version-drift
-- description: Template version should match RSR spec version
-- tolerance: Template version matches current RSR spec
-- corrective: Update template to match latest RSR spec
-- severity: advisory
+[style-drift]
+adoc-not-md = { description = "prose docs prefer AsciiDoc", tolerance = "new prose docs are *.adoc", corrective = "convert new *.md to *.adoc", severity = "advisory" }
+spdx-header-consistency = { description = "all files have SPDX-License-Identifier headers", tolerance = "0 files missing headers", corrective = "add headers per format comment style", severity = "advisory" }
 
-## Documentation Drift
+[accessibility.visual]
+invariants = [
+  "colour-contrast-ratio >= 4.5:1 for normal text",
+  "colour-contrast-ratio >= 3:1 for large text (18pt+ or 14pt+ bold)",
+  "no information conveyed by colour alone",
+  "no flashing or strobing content (3 flashes/second max)",
+  "text resizable to 200% without loss of content or function",
+  "focus indicators visible on all interactive elements",
+]
 
-### readme-completeness
-- description: README should document all template features
-- tolerance: README covers all contractiles and directory structure
-- corrective: Update README.adoc with missing sections
-- severity: advisory
+[accessibility.keyboard]
+invariants = [
+  "all interactive elements reachable via keyboard (Tab/Shift+Tab)",
+  "no keyboard traps — user can always Tab away",
+  "skip navigation link present on pages with repeated blocks",
+  "logical focus order follows visual reading order",
+]
 
-### example-accuracy
-- description: Examples in documentation should match actual template content
-- tolerance: All code examples in docs are accurate
-- corrective: Audit and fix examples in documentation
-- severity: advisory
+[accessibility.screen-reader]
+invariants = [
+  "all images have meaningful alt text (or alt='' if decorative)",
+  "all form inputs have associated labels",
+  "ARIA landmarks used for page regions (main, nav, banner, etc.)",
+  "dynamic content updates announced via aria-live regions",
+  "semantic HTML used (headings, lists, tables) — not div soup",
+]
 
-## Structural Drift
+[accessibility.interactive]
+invariants = [
+  "touch targets minimum 44x44px on mobile/touch interfaces",
+  "error messages identify the field and describe the error",
+  "error messages not conveyed by colour or position alone",
+  "form validation provides suggestions for correction",
+]
 
-### contractile-sync
-- description: All contractiles should have matching a2ml and ncl implementations
-- tolerance: Every .a2ml has a corresponding .ncl
-- corrective: Generate missing .ncl files from .a2ml
-- severity: advisory
+[accessibility.media]
+invariants = [
+  "video has captions (closed or open)",
+  "audio-only content has text transcript",
+  "no autoplay of media with sound",
+]
 
-### no-broken-symlinks
-- description: No broken symbolic links in template structure
-- tolerance: 0 broken symlinks
-- corrective: Run symlink-check script
-- severity: advisory
+[accessibility.motion]
+invariants = [
+  "animations respect prefers-reduced-motion media query",
+  "no content depends on motion to convey meaning",
+]
 
-## Accessibility Drift
+[accessibility.cli-tui]
+invariants = [
+  "CLI output must not rely solely on colour (use symbols: [OK] [FAIL])",
+  "TUI must support high-contrast mode",
+  "all CLI commands support --help with plain-text output",
+  "error messages written in plain language, not jargon or codes alone",
+]
 
-### adoc-not-md
-- description: Template docs should prefer AsciiDoc
-- tolerance: New prose docs are *.adoc
-- corrective: Convert any new *.md to *.adoc
-- severity: advisory
+[accessibility.documentation]
+invariants = [
+  "docs use clear language, short sentences, logical structure",
+  "code examples include comments explaining non-obvious steps",
+  "diagrams have text descriptions or alt text",
+]
 
-### spdx-header-consistency
-- description: All template files have correct SPDX headers
-- tolerance: 0 files missing SPDX-License-Identifier
-- corrective: Add SPDX headers to files that need them
-- severity: advisory
+[accessibility.i18n]
+invariants = [
+  "all user-facing strings externalisable for translation",
+  "no hardcoded English in error messages — use message keys",
+  "date/time/number formats locale-aware",
+  "RTL (right-to-left) layout support where applicable",
+  "Unicode handled correctly throughout (UTF-8 everywhere)",
+]
+
+[accessibility.related-resources]
+lol = "standards/lol — multilingual NLP corpus (linguistic data, translation coverage, i18n validation)"
+polyglot-i18n = "polyglot-i18n — i18n framework and WASM translation engine"
+
+[accessibility.enforcement]
+ci = "accessibility linting in the estate quality workflow where a web UI exists"
+pr-block = "PR blocked if accessibility regression detected"
+tools = ["axe-core or pa11y for automated checks on web UI", "CLI output inspected for colour-only signalling"]
+manual = "manual screen reader test before major releases"
+
+[accessibility.notes]
+text = [
+  "These are MINIMUM requirements. Exceeding them (AAA) is encouraged.",
+  "When in doubt about an accessibility decision, ask — don't guess.",
+  "Accessibility is not optional polish — it is a structural requirement.",
+]

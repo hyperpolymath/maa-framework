@@ -11,7 +11,7 @@ enabled = true
 workflow = ".github/workflows/instant-sync.yml"  # present; fires on push to main/master and on published releases
 target = "hyperpolymath/.git-private-farm"
 event-type = "propagate"
-secret = "FARM_DISPATCH_TOKEN"  # secret NAME only — value lives in GitHub Actions secrets
+secret-name = "FARM_DISPATCH_TOKEN"  # secret NAME only — value lives in GitHub Actions secrets
 presence-gated = false  # the dispatch step runs unconditionally; no `if:` presence gate on the secret in the current workflow
 
 [never-propagate]

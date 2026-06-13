@@ -19,7 +19,7 @@ toc::[]
 ====
 *Early implementation* — Specification uploads still pending (ROADMAP Phase 1).
 
-This repository serves as the official hub and governance center for the MAA Framework project. Implementation work lives in-tree under `aletheia/` (the microkernel, Rust) and in the `absolute-zero/` git submodule (the Certified Null Operation, pinned to upstream). A CRG Tier-C test suite (unit, E2E, property, aspect, benchmarks) landed 2026-04-04. Detailed specification documents will be uploaded as development progresses.
+This repository serves as the official hub and governance center for the MAA Framework project. Implementation work lives in-tree under `aletheia/` (the microkernel, Rust); the Certified Null Operation is the standalone `hyperpolymath/absolute-zero` repository, coordinated here (referenced, not vendored as a submodule). A CRG Tier-C test suite (unit, E2E, property, aspect, benchmarks) landed 2026-04-04. Detailed specification documents will be uploaded as development progresses.
 ====
 
 == Overview
@@ -69,7 +69,6 @@ The framework addresses the following domains:
 │   └── workflows/         # CI wrappers + multi-forge synchronization
 ├── .machine_readable/     # 6a2 metadata, contractiles, bot directives
 ├── aletheia/              # Microkernel implementation (Rust)
-├── absolute-zero/         # CNO reference (git submodule, pinned)
 ├── tests/                 # E2E, property, aspect tests
 ├── GOVERNANCE.adoc        # Project governance
 ├── README.adoc            # This file

@@ -73,7 +73,7 @@ impl Config {
         let config_path = repo_path.join(".aletheia.toml");
 
         if config_path.is_file() {
-            if let Ok(content) = fs::read_to_string(&config_path) {
+            if let Ok(mut file) = fs::File::open(&config_path) { use std::io::Read; let mut content = String::new(); if file.take(1024 * 1024).read_to_string(&mut content).is_ok() {
                 return Self::parse_from_string(&content);
             }
         }

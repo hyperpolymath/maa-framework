@@ -68,7 +68,7 @@ fn create_fully_compliant_repo(name: &str) -> PathBuf {
     create_file(
         &repo,
         "src/main.rs",
-        "// SPDX-License-Identifier: MIT\nfn main() {}",
+        "// SPDX-License-Identifier: MPL-2.0\nfn main() {}",
     );
     create_file(&repo, "tests/test.rs", "#[test] fn test() {}");
 
@@ -591,12 +591,12 @@ fn test_spdx_header_detection() {
     create_file(
         &repo,
         "src/main.rs",
-        "// SPDX-License-Identifier: MIT\nfn main() {}",
+        "// SPDX-License-Identifier: MPL-2.0\nfn main() {}",
     );
     create_file(
         &repo,
         "src/lib.rs",
-        "// SPDX-License-Identifier: MIT\npub fn hello() {}",
+        "// SPDX-License-Identifier: MPL-2.0\npub fn hello() {}",
     );
 
     let output = Command::new("cargo")

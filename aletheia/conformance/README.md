@@ -1,5 +1,5 @@
 <!--
-SPDX-License-Identifier: MPL-2.0
+SPDX-License-Identifier: CC-BY-SA-4.0
 Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 -->
 # Conformance Reports
@@ -11,7 +11,7 @@ This folder contains conformance reports for Aletheia's compliance with various 
 | Report | Status | Description |
 |--------|--------|-------------|
 | [RSR-CONFORMANCE.md](RSR-CONFORMANCE.md) | ![Bronze](https://img.shields.io/badge/RSR-Bronze-cd7f32) | Rhodium Standard Repository compliance |
-image:https://img.shields.io/badge/License-PMPL--1.0-blue.svg[License: PMPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"]
+image:https://img.shields.io/badge/License-MPL--2.0-blue.svg[License: PMPL-1.0,link="https://github.com/hyperpolymath/palimpsest-license"]
 | [OIKOS-CONFORMANCE.md](OIKOS-CONFORMANCE.md) | ![Pending](https://img.shields.io/badge/Oikos-Pending-lightgrey) | Economic/ecological validation |
 | [ECHIDNA-CONFORMANCE.md](ECHIDNA-CONFORMANCE.md) | ![Pending](https://img.shields.io/badge/Echidna-Pending-lightgrey) | Formal proof verification |
 

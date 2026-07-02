@@ -21,9 +21,11 @@ secure, and sustainable systems.
 > This repository serves as the official hub and governance center for
 > the MAA Framework project. Implementation work lives in-tree under
 > `aletheia/` (the microkernel, Rust); the Certified Null Operation is
-> the standalone `hyperpolymath/absolute-zero` repository, coordinated
-> here (referenced, not vendored as a submodule). A CRG Tier-C test
-> suite (unit, E2E, property, aspect, benchmarks) landed 2026-04-04.
+> developed in the standalone `hyperpolymath/absolute-zero` repository and
+> pinned here as a git submodule under `absolute-zero/` (PR #89) — CNO
+> development happens upstream, and this pointer is bumped deliberately. A
+> CRG Tier-C test suite (unit, E2E, property, aspect, benchmarks) landed
+> 2026-04-04.
 > Detailed specification documents will be uploaded as development
 > progresses.
 

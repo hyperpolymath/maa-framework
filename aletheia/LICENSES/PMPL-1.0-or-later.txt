@@ -1,12 +1,5 @@
-Code is licensed under Palimpsest Public License Version 1.0 (PMPL-1.0-or-later).
-Documentation is licensed under Creative Commons Attribution-ShareAlike 4.0 International (CC-BY-SA-4.0).
-
-See LICENSES/ directory for full license texts.
-
----
-
 SPDX-License-Identifier: PMPL-1.0-or-later
-SPDX-FileCopyrightText: 2024-2025 Palimpsest Stewardship Council
+SPDX-FileCopyrightText: 2025 Palimpsest Stewardship Council
 
 ================================================================================
 PALIMPSEST-MPL LICENSE VERSION 1.0
@@ -152,8 +145,17 @@ See separate files:
 - EXHIBIT-B-QUANTUM-SAFE.txt
 
 --------------------------------------------------------------------------------
-END OF PALIMPSEST-MPL LICENSE VERSION 1.0
+END OF PALIMPSEST-MPL-1.0 LICENSE TEXT
 --------------------------------------------------------------------------------
+
+For exhibits, specifications, provenance rules, and governance:
+https://github.com/hyperpolymath/palimpsest-license
+
+For legal frameworks and jurisdictional analysis:
+See /legal/frameworks/
+
+For provenance and audit tooling:
+See /tools/ and /spec/PROVENANCE-SPEC.adoc
 
 For questions about this License:
 - Repository: https://github.com/hyperpolymath/palimpsest-license

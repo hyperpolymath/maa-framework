@@ -142,7 +142,7 @@ cargo install my-project
 
 ## License
 
-Dual-licensed under MIT OR Apache-2.0
+Code is under MPL-2.0 and docs are under CC-BY-SA-4.0.
 ```
 
 ## Custom Badges

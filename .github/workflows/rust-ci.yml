@@ -1,0 +1,104 @@
+# SPDX-License-Identifier: MPL-2.0
+# Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
+#
+# rust-ci.yml — Build and test the Aletheia microkernel (Rust).
+#
+# WHY THIS LIVES AT THE REPOSITORY ROOT
+# ------------------------------------
+# `aletheia/` is vendored as plain tracked files, not a submodule. GitHub Actions
+# only reads workflows from `.github/workflows/` at the repository root, so the 16
+# workflow files under `aletheia/.github/workflows/` have never executed — see
+# `aletheia/.github/workflows/README.md`. Until this file landed, ~962 lines of Rust
+# had no build, test, or format gate of any kind, and `main` sat uncompilable for
+# over a month (broken 2026-06-17 by b5322c2, fixed in this change).
+#
+# SCOPE OF THIS GATE — read before trusting a green tick
+# -----------------------------------------------------
+# Gated here (all genuinely passing, all blocking):
+#   * debug + release build
+#   * the 26 unit tests
+#   * `cargo fmt --check`
+#
+# NOT gated here, because they are genuinely red today and a passing-but-hollow
+# job is worse than no job:
+#   * `tests/integration_tests.rs` — 27 of 29 fail; they exercise a CLI surface
+#     (--help, --version, --format=, --badge, --html, --init-hook) that `src/main.rs`
+#     does not implement.
+#   * `cargo clippy -- -D warnings` — 25 findings, mostly dead code from modules
+#     that `main.rs` never wires up.
+# Both are tracked as issues. Add them here as blocking jobs once they pass; do not
+# add them with `continue-on-error`.
+name: Rust CI
+
+on:
+  pull_request:
+    branches: ['**']
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: rust-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    working-directory: aletheia
+
+jobs:
+  build:
+    name: Build (debug + release)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          submodules: false
+
+      - name: Show toolchain
+        run: cargo --version && rustc --version
+
+      - name: Verify zero dependencies (RSR Bronze constraint)
+        run: |
+          if cargo tree --depth 1 | tail -n +2 | grep -q '[a-z]'; then
+            echo "::error::Aletheia must have zero dependencies (see aletheia/CLAUDE.md)"
+            cargo tree --depth 1
+            exit 1
+          fi
+          echo "Zero dependencies confirmed"
+
+      - name: Build (debug)
+        run: cargo build --locked --verbose
+
+      - name: Build (release)
+        run: cargo build --locked --release --verbose
+
+  test:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          submodules: false
+
+      - name: Run unit tests
+        run: cargo test --locked --bins --verbose
+
+  format:
+    name: Formatting
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          submodules: false
+
+      - name: cargo fmt --check
+        run: cargo fmt --all --check

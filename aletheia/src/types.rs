@@ -2,8 +2,8 @@
 // Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 //! Aletheia — Core Domain Types and Models.
 //!
-//! This module defines the formal data structures used throughout the 
-//! compliance verification engine. It establishes the schema for 
+//! This module defines the formal data structures used throughout the
+//! compliance verification engine. It establishes the schema for
 //! audit results, security warnings, and RSR compliance tiers.
 
 use std::path::PathBuf;
@@ -15,7 +15,10 @@ use std::time::SystemTime;
 /// - **Gold/Platinum**: Reserved for deep formal verification.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ComplianceLevel {
-    Bronze, Silver, Gold, Platinum,
+    Bronze,
+    Silver,
+    Gold,
+    Platinum,
 }
 
 /// CHECK RESULT: The outcome of a single deterministic verification item.

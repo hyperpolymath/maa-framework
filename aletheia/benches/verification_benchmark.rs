@@ -238,7 +238,10 @@ fn main() {
     } else if avg_ms < 10.0 {
         println!("\n  Status: ✅ TARGET MET ({:.2}ms < 10ms)", avg_ms);
     } else {
-        println!("\n  Status: ⚠️  NEEDS IMPROVEMENT ({:.2}ms >= 10ms)", avg_ms);
+        println!(
+            "\n  Status: ⚠️  NEEDS IMPROVEMENT ({:.2}ms >= 10ms)",
+            avg_ms
+        );
     }
 
     // Memory info (if available on Linux)

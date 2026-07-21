@@ -2,9 +2,9 @@
 // Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 //! Aletheia — Authoritative RSR Compliance Verification.
 //!
-//! Named after the Greek concept of "unconcealment," Aletheia is the 
-//! gatekeeper for the Rhodium Standard Repository (RSR) ecosystem. 
-//! It provides automated, deterministic audits of repository state to 
+//! Named after the Greek concept of "unconcealment," Aletheia is the
+//! gatekeeper for the Rhodium Standard Repository (RSR) ecosystem.
+//! It provides automated, deterministic audits of repository state to
 //! ensure adherence to safety, security, and documentation standards.
 //!
 //! COMPLIANCE DIMENSIONS:
@@ -70,7 +70,7 @@ fn main() {
         Err(e) => {
             eprintln!("Error: {}", e);
             process::exit(1);
-        }
+        },
     };
 
     // 2. ENVIRONMENT VALIDATION
@@ -93,7 +93,11 @@ fn main() {
     }
 
     // 5. EXIT POLICY
-    let exit_code = if report.checks.iter().any(|c| !c.passed && c.required_for == ComplianceLevel::Bronze) {
+    let exit_code = if report
+        .checks
+        .iter()
+        .any(|c| !c.passed && c.required_for == ComplianceLevel::Bronze)
+    {
         exit_codes::COMPLIANCE_FAILED
     } else if report.warnings.iter().any(|w| w.level == "critical") {
         exit_codes::SECURITY_WARNING

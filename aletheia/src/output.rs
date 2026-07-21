@@ -2,25 +2,25 @@
 // Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 //! Aletheia Output and Reporting Engine.
 //!
-//! This module implements the presentation layer for compliance audits. 
-//! It provides multiple serialization formats (JSON, SARIF, HTML) and 
+//! This module implements the presentation layer for compliance audits.
+//! It provides multiple serialization formats (JSON, SARIF, HTML) and
 //! a high-fidelity human-readable CLI report.
 //!
-//! ZERO-DEPENDENCY DESIGN: To maintain RSR Bronze compliance, this module 
-//! implements its own timestamp formatting and string escaping rather than 
+//! ZERO-DEPENDENCY DESIGN: To maintain RSR Bronze compliance, this module
+//! implements its own timestamp formatting and string escaping rather than
 //! pulling in external crates like `chrono` or `serde_json`.
 
-use std::time::SystemTime;
 use crate::types::*;
+use std::time::SystemTime;
 
 /// The current version of the Aletheia tool.
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 
 /// EXIT STRATEGY: Standardized exit codes for CI/CD integration.
 pub mod exit_codes {
-    pub const SUCCESS: i32 = 0;           // Bronze compliance achieved.
+    pub const SUCCESS: i32 = 0; // Bronze compliance achieved.
     pub const COMPLIANCE_FAILED: i32 = 1; // Mandatory checks failed.
-    pub const SECURITY_WARNING: i32 = 2;  // Critical security issues (e.g. symlink escape).
+    pub const SECURITY_WARNING: i32 = 2; // Critical security issues (e.g. symlink escape).
 }
 
 /// ALGORITHM: Manual timestamp formatter.
@@ -40,7 +40,7 @@ pub fn format_timestamp(time: SystemTime) -> String {
                 "{:04}-{:02}-{:02}T{:02}:{:02}:{:02}Z",
                 year, month, day, hour, minute, second
             )
-        }
+        },
         Err(_) => "2026-02-21T00:00:00Z".to_string(),
     }
 }
@@ -137,8 +137,14 @@ pub fn print_report(report: &ComplianceReport) {
 pub fn print_json_report(report: &ComplianceReport) {
     println!("{{");
     println!("  \"version\": \"{}\",", VERSION);
-    println!("  \"repository\": \"{}\",", report.repository_path.display());
-    println!("  \"timestamp\": \"{}\",", format_timestamp(report.verified_at));
+    println!(
+        "  \"repository\": \"{}\",",
+        report.repository_path.display()
+    );
+    println!(
+        "  \"timestamp\": \"{}\",",
+        format_timestamp(report.verified_at)
+    );
     println!("  \"checks\": [");
 
     for (i, check) in report.checks.iter().enumerate() {
@@ -146,7 +152,10 @@ pub fn print_json_report(report: &ComplianceReport) {
         println!("      \"category\": \"{}\",", check.category);
         println!("      \"item\": \"{}\",", check.item);
         println!("      \"passed\": {}", check.passed);
-        println!("    }}{}", if i < report.checks.len() - 1 { "," } else { "" });
+        println!(
+            "    }}{}",
+            if i < report.checks.len() - 1 { "," } else { "" }
+        );
     }
 
     println!("  ],");

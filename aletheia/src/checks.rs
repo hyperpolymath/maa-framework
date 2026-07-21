@@ -2,8 +2,8 @@
 // Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 //! RSR Compliance Verification Kernel.
 //!
-//! This module implements the deterministic checks used by Aletheia to 
-//! audit repository state. It performs physical filesystem analysis to 
+//! This module implements the deterministic checks used by Aletheia to
+//! audit repository state. It performs physical filesystem analysis to
 //! validate documentation, build system files, and security configurations.
 
 use std::fs;
@@ -20,7 +20,7 @@ pub fn glob_match(pattern: &str, text: &str) -> bool {
 }
 
 /// SECURITY: Validates that a path does not contain malicious symlinks.
-/// Specifically checks if a symlink "escapes" the repository root, which 
+/// Specifically checks if a symlink "escapes" the repository root, which
 /// is a critical safety invariant for air-gapped or verified builds.
 pub fn check_path_security(path: &Path, repo_root: &Path) -> PathCheckResult {
     let metadata = match fs::symlink_metadata(path) {
@@ -29,19 +29,36 @@ pub fn check_path_security(path: &Path, repo_root: &Path) -> PathCheckResult {
     };
 
     if !metadata.file_type().is_symlink() {
-        return PathCheckResult { exists: true, ..Default::default() };
+        return PathCheckResult {
+            exists: true,
+            ..Default::default()
+        };
     }
 
     // RESOLUTION: Determine the absolute target of the symlink.
     let target = match fs::read_link(path) {
         Ok(t) => t,
-        Err(_) => return PathCheckResult { exists: true, is_symlink: true, ..Default::default() },
+        Err(_) => {
+            return PathCheckResult {
+                exists: true,
+                is_symlink: true,
+                ..Default::default()
+            }
+        },
     };
 
     // ESCAPE DETECTION: Canonicalize and verify prefix.
-    let canonical_root = repo_root.canonicalize().unwrap_or_else(|_| repo_root.to_path_buf());
-    let resolved_target = if target.is_absolute() { target } else { path.parent().expect("TODO: handle error").join(target) };
-    let canonical_target = resolved_target.canonicalize().unwrap_or_else(|_| resolved_target);
+    let canonical_root = repo_root
+        .canonicalize()
+        .unwrap_or_else(|_| repo_root.to_path_buf());
+    let resolved_target = if target.is_absolute() {
+        target
+    } else {
+        path.parent().expect("TODO: handle error").join(target)
+    };
+    let canonical_target = resolved_target
+        .canonicalize()
+        .unwrap_or_else(|_| resolved_target);
 
     PathCheckResult {
         exists: true,
@@ -85,11 +102,8 @@ pub fn check_spdx_headers(report: &mut ComplianceReport, repo_path: &Path) {
                     if path.extension().map_or(false, |ext| ext == "rs") {
                         checked += 1;
                         if let Ok(content) = fs::read_to_string(&path) {
-                            let first_10_lines: String = content
-                                .lines()
-                                .take(10)
-                                .collect::<Vec<_>>()
-                                .join("\n");
+                            let first_10_lines: String =
+                                content.lines().take(10).collect::<Vec<_>>().join("\n");
                             if first_10_lines.contains("SPDX-License-Identifier") {
                                 valid += 1;
                             }
@@ -121,7 +135,10 @@ pub fn check_workflow_pins(report: &mut ComplianceReport, repo_path: &Path) {
             for entry in entries {
                 if let Ok(entry) = entry {
                     let path = entry.path();
-                    if path.extension().map_or(false, |ext| ext == "yml" || ext == "yaml") {
+                    if path
+                        .extension()
+                        .map_or(false, |ext| ext == "yml" || ext == "yaml")
+                    {
                         checked_files += 1;
                         if let Ok(content) = fs::read_to_string(&path) {
                             // Check if all 'uses:' lines have SHA pinning (40 hex chars)

@@ -28,8 +28,6 @@ jobs:
       - name: Build release
         run: cargo build --release
 
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarqube-scan-action@master
   security:
     runs-on: ubuntu-latest
     timeout-minutes: 15

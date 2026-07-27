@@ -45,8 +45,6 @@ jobs:
             exit 1
           fi
 
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarqube-scan-action@master
   test:
     name: Test
     runs-on: ubuntu-latest

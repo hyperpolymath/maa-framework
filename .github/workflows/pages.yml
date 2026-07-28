@@ -1,13 +1,17 @@
 # SPDX-License-Identifier: MPL-2.0
+<<<<<<< HEAD
 # Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
 #
 # pages.yml — GitHub Pages deployment via Ddraig SSG.
+=======
+>>>>>>> 5c04edd (fix(ci): add missing SPDX header to pages.yml)
 name: GitHub Pages (Ddraig SSG)
 on:
   push:
     branches: [main, master]
   workflow_dispatch:
 permissions:
+  actions: read
   contents: read
   pages: write
   id-token: write

@@ -8,25 +8,60 @@ import? "contractile.just"
 default:
     @just --list
 
-# Build the project
+# These recipes mirror the root `.github/workflows/rust-ci.yml` gate exactly, so
+# `just check` locally means the same thing as CI. They MUST fail loudly — a recipe
+# that echoes and exits 0 is a fake gate (issue #99 was exactly that).
+
+# Build aletheia (debug + release, locked)
 build:
-    @echo "Build not configured yet"
+    cd aletheia && cargo build --locked --all-targets
+    cd aletheia && cargo build --locked --release
 
-# Run tests
+# Run aletheia's unit tests (--bins only; see #124 note in recipe)
 test:
-    @echo "Tests not configured yet"
+    # `--bins` is deliberate. The integration suite is a specification for a CLI
+    # that has not been built yet — 27 of 29 fail by design (issue #124).
+    # Do NOT add `--tests` here to make the bar look green.
+    cd aletheia && cargo test --locked --bins
 
-# Format code
+# Check formatting (does not modify files)
 fmt:
-    @echo "Formatting not configured yet"
+    cd aletheia && cargo fmt --check
 
-# Lint code
+# Apply formatting
+fmt-fix:
+    cd aletheia && cargo fmt
+
+# Lint aletheia (not yet -D warnings — issue #125)
 lint:
-    @echo "Linting not configured yet"
+    # 23 findings remain, mostly dead code that exists because the CLI is
+    # unwired (#124). When #125 closes, add `-- -D warnings` here AND to
+    # rust-ci.yml in the same change, so local and CI never disagree about
+    # what "lint passes" means.
+    cd aletheia && cargo clippy --locked --all-targets
+
+# Enforce the zero-dependency RSR Bronze constraint (mirrors rust-ci.yml)
+deps-check:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    cd aletheia
+    if cargo tree --depth 1 | tail -n +2 | grep -q '[a-z]'; then
+      echo "ERROR: Aletheia must have zero dependencies (see aletheia/CLAUDE.md)"
+      cargo tree --depth 1
+      exit 1
+    fi
+    echo "OK: zero dependencies"
+
+# Everything the root CI gate runs, in the same order
+check: build test fmt deps-check
+
+# Self-verify: run aletheia against this repository
+self-verify:
+    cd aletheia && cargo run --locked --quiet -- ..
 
 # Clean build artifacts
 clean:
-    @echo "Clean not configured yet"
+    cd aletheia && cargo clean
 
 # Run panic-attacker pre-commit scan
 assail:

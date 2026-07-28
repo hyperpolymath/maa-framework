@@ -1,5 +1,5 @@
 ; SPDX-License-Identifier: MPL-2.0
-;; guix.scm — GNU Guix package definition for squisher-corpus
+;; guix.scm — GNU Guix package definition for maa-framework
 ;; Usage: guix shell -f guix.scm
 
 (use-modules (guix packages)
@@ -7,12 +7,12 @@
              (guix licenses))
 
 (package
-  (name "squisher-corpus")
+  (name "maa-framework")
   (version "0.1.0")
   (source #f)
   (build-system gnu-build-system)
-  (synopsis "squisher-corpus")
-  (description "squisher-corpus — part of the hyperpolymath ecosystem.")
-  (home-page "https://github.com/hyperpolymath/squisher-corpus")
-  (license ((@@ (guix licenses) license) "PMPL-1.0-or-later"
+  (synopsis "maa-framework")
+  (description "maa-framework — part of the hyperpolymath ecosystem.")
+  (home-page "https://github.com/hyperpolymath/maa-framework")
+  (license ((@@ (guix licenses) license) "MPL-2.0"
              "https://github.com/hyperpolymath/palimpsest-license")))

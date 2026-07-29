@@ -129,3 +129,8 @@ deps/
 .cache/
 build/
 dist/
+
+# Claude Code worktrees — local scratch, never tracked.
+# A worktree committed as a gitlink has no .gitmodules entry, which breaks
+# every `git submodule update` and recursive checkout (see PR #145).
+.claude/worktrees/

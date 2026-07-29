@@ -1,3 +1,7 @@
+<!--
+SPDX-License-Identifier: CC-BY-SA-4.0
+Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+-->
 # Claude Development Documentation
 
 This document provides guidance for Claude (AI assistant) when working on the Aletheia project.
@@ -45,15 +49,24 @@ Aletheia maintains **zero unsafe blocks** for RSR compliance.
 
 ## Architecture Principles
 
-### Single-File Implementation
+### Module Layout (updated 2026-07-27 — this section was stale)
 
-All core logic lives in `src/main.rs` (~950 lines). This design is intentional:
+> **This file used to say "all core logic lives in `src/main.rs` (~950 lines)" and
+> "don't split into modules unless >1000 lines". Both were out of date.** The crate has
+> been split for some time. Measured 2026-07-27:
 
-**Benefits**:
-- Easy to audit (one file to read)
-- Minimal complexity
-- Clear code flow
-- No hidden abstractions
+| File | Lines | Contents |
+|---|---|---|
+| `src/main.rs` | 121 | CLI entry, arg parsing, `verify_repository`, exit policy |
+| `src/checks.rs` | 316 | `check_documentation`, `check_spdx_headers`, `check_workflow_pins`, `check_path_security`, glob matching |
+| `src/config.rs` | 243 | `.aletheia.toml` loading, hand-rolled TOML parse |
+| `src/output.rs` | 226 | human / JSON / SARIF report printing, date+time formatting |
+| `src/types.rs` | 89 | `ComplianceLevel`, `CheckResult`, `ComplianceReport`, … |
+| **total** | **995** | |
+
+The single-file rationale still applies *in spirit* — prefer few, auditable files over
+deep abstraction — but do not "restore" the single-file layout, and do not treat 1000
+lines as a threshold that has not yet been crossed.
 
 **When to add more files**:
 - Integration tests in `tests/` directory
@@ -61,9 +74,30 @@ All core logic lives in `src/main.rs` (~950 lines). This design is intentional:
 - Documentation in `docs/` directory
 
 **When NOT to add files**:
-- Don't split into modules unless >1000 lines
 - Don't create abstractions prematurely
 - Don't add utility files for one-off functions
+
+### Known gap: the CLI is unfinished (issues #124 / #125)
+
+`main.rs` parses only `<repo-path>` plus `--json` / `--sarif`, and wires **three**
+checks. `tests/integration_tests.rs` is 806 lines / 32 tests describing a much larger
+tool (16 Bronze checks plus Silver, `--help`, `--version`, `--verbose`, `--badge`,
+`--init-hook`, `--format=`, HTML output). **2 pass, 27 fail.**
+
+Two things to know before touching it:
+
+1. **Those tests assert on stdout substrings**, e.g.
+   `assert!(stdout.contains("Bronze-level RSR compliance: ACHIEVED"))`. They pin the
+   *wording* of the report and say nothing about what the checks must verify — so they
+   can be satisfied by checks that verify nothing. Treat them as a UI contract, not a
+   specification.
+2. **A definition of RSR conformance already exists** elsewhere in the estate (hypatia's
+   `rsr-conformance` oracle). Writing checks to satisfy these strings risks creating a
+   second, divergent definition. Resolve the source-of-truth question first.
+
+Most of the clippy findings in #125 are dead code that exists *because* those modules
+are unwired. **Do not silence them with `#![allow(dead_code)]`** — the root Rust CI
+header forbids it, and that dead code is the specification of the missing feature.
 
 ### Type Safety First
 
@@ -270,10 +304,14 @@ When making changes, ensure these remain true:
 
 ```
 aletheia/
-├── src/
-│   └── main.rs              # Core implementation (~950 lines)
+├── src/                     # 5 modules, 995 lines total — see Module Layout above
+│   ├── main.rs              # CLI entry (121)
+│   ├── checks.rs            # compliance checks (316)
+│   ├── config.rs            # .aletheia.toml (243)
+│   ├── output.rs            # human/JSON/SARIF (226)
+│   └── types.rs             # core types (89)
 ├── tests/
-│   └── integration_tests.rs # Integration tests (18 tests)
+│   └── integration_tests.rs # 32 tests — 2 pass, 27 fail (issue #124)
 ├── benches/                 # Performance benchmarks
 ├── examples/                # Usage examples
 ├── fuzz/                    # Fuzzing infrastructure
@@ -281,12 +319,11 @@ aletheia/
 │   ├── security.txt         # RFC 9116 security contact
 │   ├── ai.txt               # AI training policies
 │   └── humans.txt           # Human attribution
-├── .github/workflows/       # 23 GitHub Actions workflows
+├── .github/workflows/       # 16 files — ⚠ ALL INERT, see below
 ├── Cargo.toml               # Zero dependencies, MSRV 1.80
 ├── Cargo.lock               # Lock file (commit this)
 ├── Justfile                 # Build automation
-├── flake.nix                # Nix reproducible builds
-├── .gitlab-ci.yml           # CI/CD pipeline
+├── .gitlab-ci.yml           # CI/CD pipeline (GitLab mirror)
 ├── .gitignore               # Git ignore patterns
 ├── README.adoc              # User documentation (AsciiDoc)
 ├── SECURITY.md              # Security policy
@@ -300,6 +337,22 @@ aletheia/
 ├── ECOSYSTEM.scm            # Ecosystem connections
 └── META.scm                 # Project metadata and ADRs
 ```
+
+### ⚠ The 16 workflows in `aletheia/.github/workflows/` have NEVER run
+
+`aletheia/` is **vendored into `maa-framework` as plain tracked files** (mode 100644),
+not a submodule, and GitHub Actions reads `.github/workflows/` **at the repository root
+only**. There is no standalone `hyperpolymath/aletheia` repo running them either — it was
+deleted around January 2026 and its content vendored here.
+
+Consequence: editing anything under `aletheia/.github/workflows/` has **no effect on
+CI whatsoever**. This is not hypothetical — it is how commit `b5322c2` (2026-06-17) left
+this crate **failing to compile for over a month** with nobody noticing.
+
+**The real gate is `/.github/workflows/rust-ci.yml` at the repository root.** It runs
+`cargo build` (debug + release), `cargo test`, `cargo fmt --check` and a zero-dependency
+assertion, with `working-directory: aletheia`. Add gates there, not here. See
+`aletheia/.github/workflows/README.md`.
 
 ## Troubleshooting
 
@@ -364,7 +417,7 @@ For questions about this document or Aletheia development:
 
 ---
 
-**Last Updated**: 2026-02-05
-**Version**: 1.1
+**Last Updated**: 2026-07-27
+**Version**: 1.2
 
 *"Alētheia is not just absence of falsehood, but active unconcealment of truth."*

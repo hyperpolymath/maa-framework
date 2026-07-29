@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
-
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 //! Aletheia Configuration Kernel — Zero-Dependency TOML Parser.
 //!
 //! This module implements a safe, minimal TOML parser to ingest
@@ -73,8 +73,13 @@ impl Config {
         let config_path = repo_path.join(".aletheia.toml");
 
         if config_path.is_file() {
-            if let Ok(content) = fs::read_to_string(&config_path) {
-                return Self::parse_from_string(&content);
+            if let Ok(file) = fs::File::open(&config_path) {
+                use std::io::Read;
+                let mut content = String::new();
+                // Cap the read at 1 MiB so a hostile config cannot exhaust memory.
+                if file.take(1024 * 1024).read_to_string(&mut content).is_ok() {
+                    return Self::parse_from_string(&content);
+                }
             }
         }
 

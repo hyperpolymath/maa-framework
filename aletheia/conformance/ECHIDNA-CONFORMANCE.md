@@ -1,3 +1,7 @@
+<!--
+SPDX-License-Identifier: CC-BY-SA-4.0
+Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+-->
 # Echidna Conformance Report
 
 [![Echidna Pending](https://img.shields.io/badge/Echidna-Pending-lightgrey)](https://gitlab.com/hyperpolymath/echidnabot)

@@ -1,0 +1,61 @@
+// SPDX-License-Identifier: CC-BY-SA-4.0
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+= Bot Directives
+:toc: preamble
+
+Per-repo directives for automated agents, read at session start by any AI
+agent (Claude, Gemini, Copilot, etc.) and by the estate's automated bots.
+Renamed from `agent_instructions/` in the 2026-06 estate standardization.
+
+== Purpose and Precedence
+
+Purpose: per-repo directives for automated agents — both methodology
+(how to work) and bot-specific operating rules (what each bot may do).
+
+Precedence: *maintainer > these directives > bot defaults.*
+
+Scope: applies to the Hypatia scanner, the gitbot fleet, and
+`.git-private-farm` propagation.
+
+== Files
+
+[cols="1,3"]
+|===
+| File | Purpose
+
+| `methodology.a2ml`
+| Default mode, invariants, ring ceiling, priority weights, convergent budget
+
+| `coverage.a2ml`
+| Session coverage tracking — what was visited, what was skipped, what has MUSTs
+
+| `debt.a2ml`
+| Meander debt — things found but not fixed, carried between sessions
+
+| `hypatia.a2ml`
+| Hypatia scanner directives: ignore-file, workflow, accepted findings, prohibited actions
+
+| `gitbot-fleet.a2ml`
+| Fleet roster (rhodibot, echidnabot, sustainabot, glambot, seambot, finishbot), branch policy, per-bot allow/deny
+
+| `git-private-farm.a2ml`
+| Propagation to `hyperpolymath/.git-private-farm` via `instant-sync.yml`; token-rotation runbook
+|===
+
+== How Agents Use These
+
+1. Read `methodology.a2ml` at session start — know mode, invariants, ceiling
+2. Read `coverage.a2ml` — know what was visited last time, what was skipped
+3. Read `debt.a2ml` — know what's outstanding from previous sessions
+4. Read your bot-specific file (`hypatia.a2ml` / `gitbot-fleet.a2ml` / `git-private-farm.a2ml`) — know your allow/deny boundaries
+5. At session end, update `coverage.a2ml` and `debt.a2ml`
+
+== Relationship to Other Files
+
+* `../6a2/AGENTIC.a2ml` says WHAT agents can do (permissions, gating)
+* `bot_directives/` says HOW agents should work (methodology) and what each bot may do (fleet-specific)
+* `.claude/CLAUDE.md` says how Claude specifically should work (Claude-specific)
+
+== Reference
+
+ADR-002 in `standards/agentic-a2ml/docs/ADR-002-methodology-layer.adoc`

@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MPL-2.0
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 //! Integration tests for Aletheia RSR compliance verification
 //!
 //! These tests verify the complete end-to-end functionality of Aletheia.
@@ -66,7 +68,7 @@ fn create_fully_compliant_repo(name: &str) -> PathBuf {
     create_file(
         &repo,
         "src/main.rs",
-        "// SPDX-License-Identifier: MIT\nfn main() {}",
+        "// SPDX-License-Identifier: MPL-2.0\nfn main() {}",
     );
     create_file(&repo, "tests/test.rs", "#[test] fn test() {}");
 
@@ -348,14 +350,8 @@ fn test_sarif_output() {
     );
     assert!(stdout.contains("\"rules\":"), "Should have rules");
     assert!(stdout.contains("\"results\":"), "Should have results");
-    assert!(
-        stdout.contains("\"ruleId\":"),
-        "Results should have ruleId"
-    );
-    assert!(
-        stdout.contains("rsr/"),
-        "Rule IDs should use rsr/ prefix"
-    );
+    assert!(stdout.contains("\"ruleId\":"), "Results should have ruleId");
+    assert!(stdout.contains("rsr/"), "Rule IDs should use rsr/ prefix");
 }
 
 /// Test quiet mode output
@@ -589,12 +585,12 @@ fn test_spdx_header_detection() {
     create_file(
         &repo,
         "src/main.rs",
-        "// SPDX-License-Identifier: MIT\nfn main() {}",
+        "// SPDX-License-Identifier: MPL-2.0\nfn main() {}",
     );
     create_file(
         &repo,
         "src/lib.rs",
-        "// SPDX-License-Identifier: MIT\npub fn hello() {}",
+        "// SPDX-License-Identifier: MPL-2.0\npub fn hello() {}",
     );
 
     let output = Command::new("cargo")
@@ -642,18 +638,12 @@ fn test_html_output() {
     assert!(output.status.success(), "Should succeed with HTML format");
 
     let stdout = String::from_utf8_lossy(&output.stdout);
-    assert!(
-        stdout.contains("<!DOCTYPE html>"),
-        "Should be valid HTML"
-    );
+    assert!(stdout.contains("<!DOCTYPE html>"), "Should be valid HTML");
     assert!(
         stdout.contains("Aletheia Compliance Report"),
         "Should have report title"
     );
-    assert!(
-        stdout.contains("<style>"),
-        "Should have embedded CSS"
-    );
+    assert!(stdout.contains("<style>"), "Should have embedded CSS");
     assert!(
         stdout.contains("Bronze-level RSR compliance"),
         "Should show compliance status"
@@ -668,16 +658,10 @@ fn test_html_format_equals_syntax() {
         .output()
         .expect("Failed to run aletheia with --format=html");
 
-    assert!(
-        output.status.success(),
-        "Should succeed with --format=html"
-    );
+    assert!(output.status.success(), "Should succeed with --format=html");
 
     let stdout = String::from_utf8_lossy(&output.stdout);
-    assert!(
-        stdout.contains("<!DOCTYPE html>"),
-        "Should output HTML"
-    );
+    assert!(stdout.contains("<!DOCTYPE html>"), "Should output HTML");
 }
 
 /// Test SVG badge output
@@ -812,8 +796,7 @@ fn test_init_hook() {
     let hook_path = repo.join(".git").join("hooks").join("pre-commit");
     assert!(hook_path.exists(), "Pre-commit hook file should exist");
 
-    let hook_content =
-        fs::read_to_string(&hook_path).expect("Failed to read hook");
+    let hook_content = fs::read_to_string(&hook_path).expect("Failed to read hook");
     assert!(
         hook_content.contains("aletheia"),
         "Hook should reference aletheia"

@@ -18,11 +18,13 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
+  actions: read
   contents: read
 
 jobs:
   analyze:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
       contents: read
       security-events: write
@@ -30,20 +32,25 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - language: javascript-typescript
+          # maa-framework has no JavaScript/TypeScript source — the
+          # javascript-typescript extractor errors with "no source code seen"
+          # (exit 32, configuration error). CodeQL's GitHub Actions analysis
+          # scans the workflow YAML that does exist here, keeping this a
+          # meaningful security check (same fix as oblibeny's codeql.yml).
+          - language: actions
             build-mode: none
 
     steps:
       - name: Checkout
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@7211b7c8077ea37d8641b6271f6a365a22a5fbfa # v3
+        uses: github/codeql-action/init@4187e74d05793876e9989daffde9c3e66b4acd07 # v3
         with:
           languages: ${{ matrix.language }}
           build-mode: ${{ matrix.build-mode }}
 
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@7211b7c8077ea37d8641b6271f6a365a22a5fbfa # v3
+        uses: github/codeql-action/analyze@4187e74d05793876e9989daffde9c3e66b4acd07 # v3
         with:
           category: "/language:${{ matrix.language }}"

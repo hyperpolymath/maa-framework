@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MPL-2.0
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 //! Benchmarks for Aletheia RSR compliance verification
 //!
 //! These benchmarks measure the performance of verification operations.
@@ -236,7 +238,10 @@ fn main() {
     } else if avg_ms < 10.0 {
         println!("\n  Status: ✅ TARGET MET ({:.2}ms < 10ms)", avg_ms);
     } else {
-        println!("\n  Status: ⚠️  NEEDS IMPROVEMENT ({:.2}ms >= 10ms)", avg_ms);
+        println!(
+            "\n  Status: ⚠️  NEEDS IMPROVEMENT ({:.2}ms >= 10ms)",
+            avg_ms
+        );
     }
 
     // Memory info (if available on Linux)

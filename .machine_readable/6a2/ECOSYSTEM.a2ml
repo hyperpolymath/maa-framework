@@ -7,4 +7,10 @@ project = "maa-framework"
 ecosystem = "hyperpolymath"
 
 [position]
-type = "component"
+type = "coordinator"  # maa-framework is the coordinating hub for its ecosystem
+
+[related-projects]
+# Coordinating hub: the projects below are standalone top-level repos,
+# referenced/contextualised here — NOT vendored as submodules.
+absolute-zero = "hyperpolymath/absolute-zero — Certified Null Operation (CNO); standalone repo, coordinated here (submodule removed 2026-06-13)"
+oblibeny = "hyperpolymath/oblibeny — reference language designed for the framework"

@@ -1,0 +1,151 @@
+<!--
+SPDX-License-Identifier: CC-BY-SA-4.0
+SPDX-FileCopyrightText: 2025-2026 Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+-->
+
+[![License: MPL-2.0](https://img.shields.io/badge/License-MPL--2.0-brightgreen.svg)](https://www.mozilla.org/en-US/MPL/2.0/) :toc: macro :toclevels: 3 :icons: font
+
+A full-stack, open-source paradigm for building verifiably-compliant,
+secure, and sustainable systems.
+
+<div id="toc">
+
+</div>
+
+# Status
+
+> [!IMPORTANT]
+> **Early implementation** — Specification uploads still pending
+> (ROADMAP Phase 1).
+>
+> This repository serves as the official hub and governance center for
+> the MAA Framework project. Implementation work lives in-tree under
+> `aletheia/` (the microkernel, Rust); the Certified Null Operation is
+> developed in the standalone `hyperpolymath/absolute-zero` repository and
+> pinned here as a git submodule under `absolute-zero/` (PR #89) — CNO
+> development happens upstream, and this pointer is bumped deliberately. A
+> CRG Tier-C test suite (unit, E2E, property, aspect, benchmarks) landed
+> 2026-04-04.
+> Detailed specification documents will be uploaded as development
+> progresses.
+
+# Overview
+
+The MAA Framework is an integrated ecosystem comprising:
+
+| Component | Description |
+|----|----|
+| **MAA Framework** | Full-stack paradigm for verifiably-compliant, secure, sustainable systems |
+| **Oblíbený** | Reference language designed for the framework |
+| **Aletheia** | Microkernel implementation |
+
+# Project Scope
+
+The framework addresses the following domains:
+
+- **Security & Formal Verification** — Provable correctness guarantees
+
+- **AI Ethics & Axiology** — Value-aligned system design
+
+- **Dependability** — Fault-tolerant, reliable computing
+
+- **Language Design & Compilers** — Purpose-built toolchains
+
+- **Microkernel Architecture** — Minimal trusted computing base
+
+- **RISC-V** — Open hardware architecture support
+
+- **Sustainability** — Resource-efficient computing
+
+- **Economics-as-Code** — Programmable economic primitives
+
+- **Distributed Computing** — BOINC-compatible workloads
+
+- **Reversibility** — Turing-complete/incomplete computation models
+
+- **Web Protocols** — Modern network standards
+
+# Repository Contents
+
+## Currently Available
+
+    .
+    ├── .claude/CLAUDE.md      # Language policy (Hyperpolymath Standard)
+    ├── .github/
+    │   ├── CODEOWNERS         # Maintainer assignments
+    │   └── workflows/         # CI wrappers + multi-forge synchronization
+    ├── .machine_readable/     # 6a2 metadata, contractiles, bot directives
+    ├── aletheia/              # Microkernel implementation (Rust)
+    ├── tests/                 # E2E, property, aspect tests
+    ├── GOVERNANCE.adoc        # Project governance
+    ├── README.adoc            # This file
+    ├── EXPLAINME.adoc         # Receipts backing README claims
+    ├── ROADMAP.adoc           # Development phases
+    └── SECURITY.md            # Vulnerability reporting policy
+
+## Infrastructure
+
+- **Hub-and-spoke mirroring** to GitLab, Codeberg, Bitbucket
+
+- **SHA-pinned GitHub Actions** for supply chain security
+
+- **SSH host key verification** for MITM protection
+
+- **Minimal permission model** (`contents:` `read`)
+
+# Language Policy
+
+This project follows the **Hyperpolymath Standard** for technology
+choices.
+
+| Technology          | Use Case                            |
+|---------------------|-------------------------------------|
+| AffineScript        | Primary application code            |
+| Deno                | Runtime & package management        |
+| Rust                | Performance-critical, systems, WASM |
+| Tauri 2.0+ / Dioxus | Mobile applications                 |
+| Gleam               | Backend services (BEAM/JS)          |
+| Guile Scheme        | State/meta files                    |
+
+Allowed
+
+See <a href=".claude/CLAUDE.md" class="md">CLAUDE</a> for complete
+policy.
+
+# Mirrors
+
+GitHub  
+[hyperpolymath/maa-framework](https://github.com/hyperpolymath/maa-framework)
+**(canonical)**
+
+GitLab  
+Synchronized automatically
+
+Codeberg  
+Synchronized automatically
+
+Bitbucket  
+Synchronized automatically
+
+# Security
+
+See <a href="SECURITY.md" class="md">SECURITY</a> for:
+
+- Vulnerability reporting procedures
+
+- Security measures implemented
+
+- Secret management practices
+
+# License
+
+This project is licensed under the Mozilla Public License, v. 2.0. See
+the `LICENSE` file for details.
+
+SPDX-License-Identifier: CC-BY-SA-4.0
+
+# Contributing
+
+Contribution guidelines will be established as the project develops.
+Currently maintained by
+[@hyperpolymath](https://github.com/hyperpolymath).

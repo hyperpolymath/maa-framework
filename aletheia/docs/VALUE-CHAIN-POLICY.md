@@ -1,3 +1,7 @@
+<!--
+SPDX-License-Identifier: CC-BY-SA-4.0
+Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+-->
 # Hyperpolymath Project Value Chain Policy
 
 This document defines the standard value chain model for all Hyperpolymath projects. It is based on Porter's Value Chain framework, adapted for software development.

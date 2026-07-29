@@ -1,0 +1,98 @@
+# SPDX-License-Identifier: MPL-2.0
+# Intentfile (A2ML Canonical) — north-star contractile for maa-framework
+# Author: Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+#
+# Semantics: north-star contractile. Declares BOTH concrete committed
+# next-actions AND horizon aspirations:
+#   [[intents]] — "we WILL do this; track progress"
+#                 status: declared -> in_progress -> done | deferred | retired
+#   [[wishes]]  — "we WISH this were true; revisit later"
+#                 status: declared -> in_progress -> achieved | abandoned
+#                 horizon: near / mid / far
+# Non-gating — this is a report, not a gate. See Mustfile.a2ml for hard gates.
+#
+# Provenance: written 2026-06-12 (governance checkpoint) from README.adoc,
+# EXPLAINME.adoc and ROADMAP.adoc. The former root INTENT.contractile's
+# purpose/anti-purpose fields were unfilled {{...}} placeholders, so no
+# repo-specific content existed there to port; this file supplies the real
+# purpose for the first time.
+
+[metadata]
+repo = "maa-framework"
+version = "2.0.0"
+format = "a2ml"
+last-updated = "2026-06-12"
+
+[purpose]
+text = """
+Hub and governance centre for the MAA Framework: a full-stack, open-source
+paradigm for building verifiably-compliant, secure, and sustainable systems.
+The monorepo coordinates three components — the MAA Framework itself (the
+paradigm and governance rules), Oblibeny (the reference language, developed
+in its own repo), and Aletheia (the microkernel trusted execution base,
+in-tree under aletheia/). The formal anchor is the Certified Null Operation
+(CNO) in absolute-zero/ (git submodule): every system operation must have a
+well-defined inverse whose composition with the operation is provably
+equivalent to the CNO.
+"""
+
+[anti-purpose]
+text = [
+  "NOT a single deployable binary — the components are coordinated design decisions, not one artifact",
+  "NOT the home of the Oblibeny language — that lives in hyperpolymath/oblibeny",
+  "NOT the home of CNO development — absolute-zero/ is a pinned submodule; changes go upstream",
+  "NOT a general-purpose project template — rsr-template-repo serves that role",
+]
+
+[if-in-doubt]
+ask-before-touching = [
+  ".machine_readable/ contractile definitions",
+  "governance documents (GOVERNANCE.adoc, MAINTAINERS.adoc, CODEOWNERS)",
+  "the absolute-zero submodule pointer",
+  "license policy documents",
+]
+
+[[intents]]
+name = "phase-1-specification"
+description = "Upload MAA Framework specification documents; document Aletheia architecture; define API boundaries (ROADMAP Phase 1)"
+status = "declared"
+
+[[intents]]
+name = "changelog-automation"
+description = "Adopt changelog-reusable.yml (standards#206) so CHANGELOG.md stays in sync with conventional commits"
+status = "declared"
+
+[[intents]]
+name = "root-justfile-wiring"
+description = "Wire root Justfile build/test/fmt/lint recipes to the real aletheia/ cargo targets (currently placeholders)"
+status = "declared"
+
+[[intents]]
+name = "crg-c-compliance"
+description = "CRG Tier C: unit + smoke + build + P2P + E2E + reflexive + contract + aspect + benchmarks"
+status = "done"
+notes = "Achieved 2026-04-04; see 6a2/STATE.a2ml [crg-compliance]"
+
+[[intents]]
+name = "estate-standardization"
+description = "Adopt the estate-standardization layout (6a2 manifest, flat contractiles, bot_directives, self-validating, GOVERNANCE.adoc, Guix manifest.scm)"
+status = "done"
+notes = "Merged 2026-06-12 from estate-standardization-20260607"
+
+[[wishes]]
+name = "toolchain-bootstrap"
+description = "Oblibeny lexer/parser, initial type system, REPL, Guix/Nix build integration (ROADMAP Phase 2)"
+horizon = "mid"
+status = "declared"
+
+[[wishes]]
+name = "proof-debt-zero"
+description = "Eliminate recorded proof debt (docs/proof-debt.md: Coq Axiom/Admitted + Lean sorry markers in vendored/submodule scope)"
+horizon = "mid"
+status = "declared"
+
+[[wishes]]
+name = "risc-v-support"
+description = "Aletheia on open RISC-V hardware with minimal trusted computing base"
+horizon = "far"
+status = "declared"

@@ -1,0 +1,82 @@
+# SPDX-License-Identifier: MPL-2.0
+# Dustfile — Cleanup, hygiene and deprecation contract for maa-framework
+# Author: Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+#
+# DUST tracks what is being swept away: cleanup policy, hygiene rules, and
+# the deprecation register. When a feature enters DUST, its MUST constraints
+# remain active until the feature is fully removed.
+#
+# Provenance: created 2026-06-12 (governance checkpoint), porting the former
+# nested .machine_readable/contractiles/dust/Dustfile.a2ml (removed by the
+# estate-standardization merge) into the flat estate layout, extended with
+# the repo's real deprecation register from git history.
+
+[metadata]
+repo = "maa-framework"
+version = "2.0.0"
+format = "a2ml"
+last-updated = "2026-06-12"
+
+[cleanup]
+stale-branch-policy = "delete-after-merge"
+artifact-retention = "90-days"
+cache-policy = "clear-on-release"
+
+[hygiene]
+linting = "required"
+formatting = "required"
+dead-code-removal = "encouraged"
+todo-tracking = "tracked-in-issues"
+
+[reversibility]
+backup-before-destructive = true
+rollback-mechanism = "git-revert"
+data-retention-policy = "preserve-30-days"
+
+# ── Deprecation register (real, dated, from git history) ──────────────
+
+[[deprecations]]
+name = "rescript-guidance"
+status = "removed"
+date = "2026-05"
+evidence = "PRs #53 (Item 9 guidance retirement), #74 (SafeDOMExample.res fixture deleted), #88 (CLAUDE.md flip)"
+replacement = "AffineScript per the 2026-05-25 estate language policy"
+residue = ".hypatia-ignore still carries absolute-zero demo exemptions plus a stale aletheia/examples/SafeDOMExample.res entry (file deleted in #74); prune per its TODO 2026-Q3"
+
+[[deprecations]]
+name = "pmpl-license"
+status = "removed"
+date = "2026-05"
+evidence = "commit e4e3db0 — migrate license from PMPL-1.0-or-later to MPL-2.0"
+replacement = "MPL-2.0"
+
+[[deprecations]]
+name = "vendored-absolute-zero-subtree"
+status = "removed"
+date = "2026-05"
+evidence = "PR #83 (re-vendor to upstream HEAD) then PR #89 (convert to git submodule, closes #84)"
+replacement = "absolute-zero/ git submodule pinned to hyperpolymath/absolute-zero"
+
+[[deprecations]]
+name = "flake-nix"
+status = "removed"
+date = "2026-06-12"
+evidence = "estate-standardization-20260607 merge removed flake.nix and aletheia/flake.{nix,lock}"
+replacement = "Guix manifest.scm (aletheia/manifest.scm, aletheia/extraction/rhodibot/manifest.scm) alongside guix.scm"
+
+[[deprecations]]
+name = "pre-estate-machine-readable-layout"
+status = "removed"
+date = "2026-06-12"
+evidence = "estate-standardization-20260607 merge: root *.contractile files and nested contractiles/{bust,dust,trust}/ replaced by flat contractiles/; agent_instructions/ -> bot_directives/; svc/k9/ -> self-validating/; anchors/ -> 6a2/anchor/"
+replacement = "flat estate layout; content ported into Mustfile/Trustfile/Adjustfile/Dustfile/Bustfile.a2ml"
+
+[[deprecations]]
+name = "per-repo-ci-workflow-copies"
+status = "removed"
+date = "2026-05"
+evidence = "PRs #52/#54/#73 (hypatia-scan), #76 (mirror), #77 (secret-scanner), #80 (scorecard), commit 8f03d8d (governance bundle)"
+replacement = "thin wrappers around hyperpolymath/standards reusable workflows"
+
+[not-applicable]
+runtime-data-purging = { status = "not-applicable", reason = "no runtime services or user data in this repo; it is a governance + microkernel-source monorepo" }

@@ -141,17 +141,8 @@ pub fn check_workflow_pins(report: &mut ComplianceReport, repo_path: &Path) {
                     {
                         checked_files += 1;
                         if let Ok(content) = fs::read_to_string(&path) {
-                            // Check if all 'uses:' lines have SHA pinning (40 hex chars)
-                            let mut has_unpinned = false;
-                            for line in content.lines() {
-                                if line.trim().starts_with("uses:") {
-                                    // Simple check: if it contains @v (like @v4), it's unpinned
-                                    if line.contains("@v") && !line.contains("@") {
-                                        has_unpinned = true;
-                                        break;
-                                    }
-                                }
-                            }
+                            let has_unpinned =
+                                content.lines().any(|line| !uses_line_is_pinned(line));
                             if !has_unpinned {
                                 valid_files += 1;
                             }
@@ -174,6 +165,49 @@ pub fn check_workflow_pins(report: &mut ComplianceReport, repo_path: &Path) {
 /// Helper: Check if a file exists at repo_path/filename
 fn file_exists(repo_path: &Path, filename: &str) -> bool {
     repo_path.join(filename).is_file()
+}
+
+/// SECURITY: Decide whether one workflow line satisfies SHA pinning.
+///
+/// Returns `true` for any line that is not a `uses:` line, so callers can apply
+/// this with `.any(|l| !uses_line_is_pinned(l))` over a whole file.
+///
+/// A `uses:` value is pinned only when the ref after the final `@` is exactly
+/// 40 hexadecimal characters (a full-length Git SHA-1). `@v4`, `@main`,
+/// `@master` and a bare action with no `@` at all are all unpinned.
+///
+/// Exempt (not pinnable, so treated as pinned):
+///   - local actions and local reusable workflows — `./…`
+///   - `docker://` image references, which use a different digest syntax
+///
+/// A trailing `# v4` provenance comment is ignored, so
+/// `uses: actions/checkout@3d3c42e5… # v7.0.1` is correctly seen as pinned.
+fn uses_line_is_pinned(line: &str) -> bool {
+    let trimmed = line.trim();
+    // Accept both `uses:` and list form `- uses:`.
+    let rest = match trimmed
+        .strip_prefix("uses:")
+        .or_else(|| trimmed.strip_prefix("- uses:"))
+    {
+        Some(r) => r,
+        None => return true, // not a uses: line — nothing to judge
+    };
+
+    // Strip the trailing provenance comment, then surrounding quotes.
+    let value = rest.split('#').next().unwrap_or("").trim();
+    let value = value.trim_matches(|c| c == '"' || c == '\'');
+
+    if value.is_empty() {
+        return true;
+    }
+    if value.starts_with("./") || value.starts_with(".\\") || value.starts_with("docker://") {
+        return true;
+    }
+
+    match value.rsplit_once('@') {
+        Some((_, git_ref)) => git_ref.len() == 40 && git_ref.chars().all(|c| c.is_ascii_hexdigit()),
+        None => false, // no ref at all — unpinned
+    }
 }
 
 /// Helper: Recursive implementation of glob_match.
@@ -300,12 +334,64 @@ mod tests {
 
     #[test]
     fn test_file_exists() {
-        // file_exists checks if path.join(filename).is_file()
-        // Since we're testing with temp dir, check something that exists
-        let current_dir = std::env::current_dir().expect("TODO: handle error");
-        let exists = file_exists(&current_dir, "Cargo.toml");
-        // May or may not exist depending on CWD, so just check it doesn't panic
-        assert!(true); // Test passed if no panic
+        // Anchor on CARGO_MANIFEST_DIR rather than the process working directory:
+        // the crate root is fixed at compile time, so this is deterministic no
+        // matter where the test binary is invoked from.
+        let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR"));
+
+        assert!(
+            file_exists(root, "Cargo.toml"),
+            "Cargo.toml exists at the crate root"
+        );
+        assert!(!file_exists(root, "no-such-file.does-not-exist"));
+        // `is_file()`, not `exists()` — a directory must not count as a file.
+        assert!(!file_exists(root, "src"), "a directory is not a file");
+    }
+
+    #[test]
+    fn test_uses_line_is_pinned_accepts_full_sha() {
+        // Real pins taken from this repository's own workflows.
+        assert!(uses_line_is_pinned(
+            "      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1"
+        ));
+        // A trailing provenance comment must not defeat the check.
+        assert!(uses_line_is_pinned(
+            "        uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5.0.0"
+        ));
+    }
+
+    #[test]
+    fn test_uses_line_is_pinned_rejects_tags_and_branches() {
+        // REGRESSION: the previous implementation was `line.contains("@v")
+        // && !line.contains("@")`, which is unsatisfiable — every one of these
+        // was silently reported as pinned.
+        assert!(!uses_line_is_pinned("        uses: actions/checkout@v4"));
+        assert!(!uses_line_is_pinned(
+            "      - uses: actions/checkout@v7.0.1"
+        ));
+        assert!(!uses_line_is_pinned("        uses: some/action@main"));
+        // The exact line that broke Governance and CodeQL on this repo.
+        assert!(!uses_line_is_pinned(
+            "        uses: SonarSource/sonarqube-scan-action@master"
+        ));
+        // A short/abbreviated SHA is not a full-length pin.
+        assert!(!uses_line_is_pinned("        uses: foo/bar@3d3c42e"));
+        // No ref at all.
+        assert!(!uses_line_is_pinned("        uses: foo/bar"));
+    }
+
+    #[test]
+    fn test_uses_line_is_pinned_ignores_non_uses_and_exempt_forms() {
+        assert!(uses_line_is_pinned("      - name: Checkout"));
+        assert!(uses_line_is_pinned("        run: cargo test"));
+        assert!(uses_line_is_pinned(""));
+        // Local actions and local reusable workflows cannot be SHA-pinned.
+        assert!(uses_line_is_pinned("      - uses: ./.github/actions/setup"));
+        assert!(uses_line_is_pinned(
+            "    uses: ./.github/workflows/reusable.yml"
+        ));
+        // Docker refs use a different digest syntax; out of scope.
+        assert!(uses_line_is_pinned("        uses: docker://alpine:3.20"));
     }
 
     #[test]

@@ -29,6 +29,30 @@ secure, and sustainable systems.
 > Detailed specification documents will be uploaded as development
 > progresses.
 
+**Current state (2026-07-29):** CI is green across every enabled workflow, and
+each gate has been shown capable of failing. `aletheia` builds, passes 29 unit
+tests, is formatted, and has zero dependencies — enforced by
+`.github/workflows/rust-ci.yml`, the repository's first real Rust gate (added
+2026-07-21).
+
+Two known gaps, both in `aletheia` and both blocked on one design ruling:
+
+| Issue | Gap |
+|----|----|
+| [#124](https://github.com/hyperpolymath/maa-framework/issues/124) | The CLI surface is unbuilt — `main.rs` wires 3 checks; the integration suite specifies far more. 27 of 29 integration tests fail **by design**, not by regression. |
+| [#125](https://github.com/hyperpolymath/maa-framework/issues/125) | 23 clippy findings, mostly dead code that exists *because* of #124. Not yet a blocking gate. |
+
+> [!WARNING]
+> **`aletheia/.github/workflows/` is inert.** GitHub Actions reads
+> `.github/workflows/` at the *repository root only*, and `aletheia/` is
+> vendored as plain tracked files rather than a submodule. Those 16 workflow
+> files have never executed. Add gates at the root, not there.
+
+📄 **Full measured snapshot: [`docs/STATE-OF-PLAY-2026-07-29.adoc`](docs/STATE-OF-PLAY-2026-07-29.adoc)**
+— CI status, what is actually gated, proof state, open questions, and the
+landmines to read before changing CI or history here. Machine-readable
+counterpart: [`.machine_readable/6a2/STATE.a2ml`](.machine_readable/6a2/STATE.a2ml).
+
 # Overview
 
 The MAA Framework is an integrated ecosystem comprising:

@@ -1,12 +1,15 @@
 # SPDX-License-Identifier: MPL-2.0
 # STATE.a2ml — Project state checkpoint
-# Last updated: 2026-06-12 (governance checkpoint; previous: 2026-04-04 CRG C complete)
+# Last updated: 2026-07-29 (CI-reality checkpoint; previous: 2026-06-12 governance)
+#
+# Human-readable counterpart: docs/STATE-OF-PLAY-2026-07-29.adoc
 
 [metadata]
 project = "maa-framework"
 version = "0.1.0"
-last-updated = "2026-06-12"
-status = "CRG C compliance achieved; estate-standardized governance layer landed"
+last-updated = "2026-07-29"
+status = "CI is genuinely green and each gate is proven falsifiable; aletheia CLI incomplete and blocked on one design ruling"
+measured-against = "measured 2026-07-29 vs origin/main 7d964ee; re-verified 2026-08-03 vs origin/main 2bf7a13 — all figures still hold"
 
 [project-context]
 name = "maa-framework"
@@ -14,13 +17,44 @@ completion-percentage = 50
 phase = "Governance & estate standardization (post-CRG-C; spec/implementation phases per ROADMAP.adoc still open)"
 
 [testing-status]
-unit-tests = "26 in aletheia + 13 in brainfuck + 5 in whitespace = 44 total"
-e2e-tests = "10 brainfuck interpreter E2E tests"
-property-tests = "11 property-based tests (determinism, equivalence, reversibility)"
-security-tests = "11 aspect tests (bounds, memory safety, input validation)"
+aletheia-unit-tests = "29 pass, 0 fail (was 26; +3 for SHA-pin detection in PR #144)"
+aletheia-integration-tests = "2 pass, 27 FAIL — expected; the suite specifies an unbuilt CLI (issue #124)"
+aletheia-clippy = "23 findings, NOT a blocking gate (issue #125, blocked on #124)"
+absolute-zero-tests = "13 brainfuck + 5 whitespace unit, 10 E2E, 11 property, 11 aspect — run in the upstream repo, not here"
 benchmarks = "criterion-based (absolute-zero/benches/cno_benchmarks.rs)"
-test-result = "ALL PASS as of 2026-04-04 CRG C checkpoint: 39 tests absolute-zero + 26 unit tests aletheia"
-note = "absolute-zero/ is a git submodule since PR #89; its tests run in the upstream repo"
+test-result = "aletheia unit + fmt + zero-dep GREEN on main via root rust-ci.yml"
+integration-test-caveat = "The 27 failures are NOT flaky and NOT a regression. tests/integration_tests.rs asserts on stdout SUBSTRINGS, so it is a UI contract, not a specification — every assertion can be satisfied by checks that verify nothing. Do not 'fix' it by writing checks to match the strings; see [open-questions].rsr-source-of-truth"
+note = "absolute-zero/ is a git submodule since PR #89; aletheia/ is VENDORED plain files, not a submodule"
+
+[ci-status]
+# Measured 2026-07-29 on origin/main 7d964ee
+rust-ci = "PASS — build debug+release, 29 unit tests, cargo fmt, zero-dependency assertion"
+governance = "PASS — 10 jobs; workflow linter and staleness both green"
+codeql = "PASS"
+secret-scanner = "PASS"
+hypatia-scan = "PASS"
+dogfood-gate = "PASS — repaired in #140/#141 by vendoring the validation scripts"
+ossf-scorecard = "PASS — was dying at checkout on a stray gitlink; fixed in #145 (merged) and green on main since. NOTE: scorecard.yml triggers only on push-to-main/schedule/workflow_dispatch, NOT pull_request, so it cannot be proven on a PR."
+mirror = "PASS"
+boj-trigger = "PASS"
+disabled-manually = "GitHub Pages (Ddraig SSG), Instant Sync, Push email notification — these report NOTHING; a green board is not full coverage"
+
+[gating-reality]
+only-real-rust-gate = ".github/workflows/rust-ci.yml AT THE REPOSITORY ROOT (added 2026-07-21 in PR #123)"
+inert-workflows = "The 16 files under aletheia/.github/workflows/ have NEVER executed. GitHub Actions reads .github/workflows/ at the repository ROOT ONLY, and aletheia/ is vendored (mode 100644), not a submodule. Editing them has no effect on CI."
+cost-of-that-gap = "b5322c2 (2026-06-17) dropped a brace in aletheia/src/config.rs; main did not compile FOR OVER A MONTH because nothing was compiling it. Repaired in PR #123."
+local-gates = "just build/test/fmt/lint/deps-check/check now run the same commands as CI (PR #144, closes #99). Before that every recipe echoed 'not configured yet' and exited 0."
+falsifiability-proven = "just fmt exits 1 on deliberately malformed Rust while just build stays 0; reverting restores 0. A gate nobody has watched fail is not a gate."
+
+[proof-state]
+# Measured 2026-07-29 against absolute-zero @87902bb7
+admitted-count = 0
+axiom-count = 23
+axiom-files = "physics/LandauerDerivation.v (6), quantum/QuantumCNO.v (6), common/StatMechBasis.v (5), physics/StatMech.v (3), common/PhysicsConstants.v (2), lambda/LambdaCNO.v (1)"
+falsified-claim = "PROOF-NEEDS.md previously claimed '1 Admitted in LambdaCNO.v'. There are ZERO. y_not_cno is a KEPT AXIOM with a written rationale. The claim was wrong in BOTH directions — it overstated the incompleteness and understated the trusted base 23x. Corrected in PR #144."
+gate-implication = "An Axiom PASSES a 'no sorry / no Admitted' gate silently. Counting only Admitted measures the wrong thing; any proof gate here must scan for Axiom too."
+authoritative-record = "The in-source AXIOM AUDIT at the end of proofs/coq/physics/LandauerDerivation.v, NOT PROOF-NEEDS.md. It is self-critical: it records that cno_zero_energy_dissipation_derived is an axiom DESPITE its _derived name, and that the triage docs' DISCHARGE marks are inaccurate."
+urgent-proof-item = "NOT y_not_cno. The audit's own SOUNDNESS WARNINGS: prob_nonneg and prob_normalized are false over unconstrained function-type distributions, and shannon_entropy_maximum's inequality is BACKWARDS. All three currently UNUSED — cheap now, expensive later."
 
 [crg-compliance]
 tier = "C"
@@ -39,12 +73,51 @@ docs = "CHANGELOG.md seeded, Keep-a-Changelog format (#81); docs-template/ skele
 dependabot = "actions bumps #59-#69, #92-#96 (checkout, artifacts, codeql-action, rust-toolchain, trufflehog, cache, pages)"
 estate-standardization = "2026-06-12: merged estate-standardization-20260607 — 6a2 manifest + README, anchors/ -> 6a2/anchor/, agent_instructions/ -> bot_directives/, flat contractiles, svc/k9 -> self-validating/, GOVERNANCE.adoc, Guix manifest.scm replaces flake.nix; codeql cron weekly -> monthly cherry-picked (standards#288)"
 
+[recent-work-2026-07]
+# The CI repair campaign, 2026-07-21..29. All merged unless noted.
+pr-123 = "aletheia had not compiled since 2026-06-17 (dropped brace) — repaired, and root rust-ci.yml added: the first real Rust gate this repo has ever had"
+pr-128 = "SHA-pinned the four unpinned actions in pages.yml (missed the #123 squash by 10 minutes; relanded)"
+pr-139 = "removed the unrunnable SonarCloud step that was breaking Governance AND CodeQL"
+pr-140-141 = "validate-action repos had been deleted upstream; validation scripts vendored, Dogfood Gate green again"
+pr-142 = "repointed codeql-action at a SHA that exists — BUT was a `git commit -a` on a dirty tree and carried TWO unrelated defects onto main (see [incidents])"
+pr-143 = "restored guix.scm identity + licence after the squisher-corpus clobber"
+pr-144 = "aletheia SHA-pin check made real; root Justfile wired (closes #99); PROOF-NEEDS.md and aletheia/CLAUDE.md corrected"
+pr-145 = "removed the stray worktree gitlink breaking every recursive checkout — MERGED; OSSF Scorecard green on main since"
+
+[incidents]
+squisher-corpus-clobber = "An automated sweep on 2026-07-26 ~16:00 BST copied hyper-repos/squisher-corpus/guix.scm BYTE-FOR-BYTE into a large number of estate repos instead of generating one per repo. Its own commit message names the bug: 'chore: update guix.scm from squisher-corpus'. Here it rewrote the package identity AND replaced MPL-2.0 with PMPL-1.0-or-later. Fixed in #143."
+clobber-is-a-policy-violation = "absolute-zero/.claude/CLAUDE.md lists PMPL-1.0 / PMPL-1.0-or-later under BANNED ('License: MPL-2.0 only'), and [recent-work].license-migration below records an estate-wide migration AWAY from PMPL to MPL-2.0. The licence half was a policy violation, not merely an error."
+stray-worktree-gitlink = ".claude/worktrees/maa-ci-repair was committed as a gitlink (mode 160000) with NO .gitmodules entry. Git refuses: 'fatal: No url found for submodule path ... in .gitmodules'. This broke OSSF Scorecard AT CHECKOUT, before a single probe ran, and breaks any recursive clone. Fixed in #145; .claude/worktrees/ now gitignored."
+gitlink-shape-is-a-repeat = "639f389 (2026-02-21) left aletheia as a gitlink with no .gitmodules entry. A gitlink WITHOUT its mapping resolves to a silently-empty directory — git's quietest failure — and went unnoticed for over a month."
+dead-sha-pin-check = "aletheia's own Silver-level 'GitHub Actions SHA pinning' check used `line.contains(\"@v\") && !line.contains(\"@\")`, which is UNSATISFIABLE — every repo passed unconditionally, including this one while it carried the unpinned @master action that had broken Governance and CodeQL. Fixed with 3 tests in #144."
+
+[open-questions]
+# These need a human ruling; they are not research tasks.
+rsr-source-of-truth = "BLOCKS #124 AND #125. What defines RSR compliance — hypatia's rsr-conformance oracle, a spec in standards, or aletheia's integration tests? If the oracle is canonical, the honest answer may be for aletheia to CONSUME it and DELETE the aspirational tests rather than build to their strings."
+absolute-zero-pin = "Is 87902bb7 the intended CNO state? The re-pin was a SEMANTIC BUMP, not a restore — the original pin ad085baa was orphaned by an upstream force-push and its content is unrecoverable, so this cannot be verified from inside the repo."
+submodule-or-vendored = "Settle permanently. The repo has oscillated three times (#89 -> bef4c92 -> #117). While absolute-zero accepts force-pushes to main, ANY pin will be orphaned again by the next rollout."
+aletheia-licence = "Is PR #135's move of aletheia to PMPL-1.0-or-later + CC-BY-SA-4.0 intended? It runs against the written ban noted in [incidents].clobber-is-a-policy-violation."
+
 [blockers]
 spec-uploads = "ROADMAP Phase 1 (specification documents for framework, Oblibeny, Aletheia) not yet uploaded"
-proof-debt = "upstream proof debt recorded in docs/proof-debt.md and docs/tech-debt-2026-05-26.md (80 Coq Axiom/Admitted + 54 Lean sorry/axiom markers across 25 files, all vendored/submodule scope)"
-root-justfile = "root Justfile build/test/fmt/lint recipes are placeholders; real builds live in aletheia/ (cargo)"
+proof-debt = "See [proof-state]. Note the older figure in docs/proof-debt.md (80 Coq Axiom/Admitted + 54 Lean markers) is ESTATE/vendored scope; absolute-zero itself measures 0 Admitted + 23 Axiom as of 2026-07-29."
+aletheia-cli = "issue #124 — 27/29 integration tests fail; blocked on [open-questions].rsr-source-of-truth"
+aletheia-clippy = "issue #125 — 23 findings; blocked on #124 because the dead code IS the missing feature"
 
 [next-actions]
+resolve-rsr-source-of-truth = "Answer [open-questions].rsr-source-of-truth — it unblocks both #124 and #125"
+empty-merged-prs = "#146 (ci(codeql) cron weekly->monthly) and #147 (Worktree maa ci repair) are BOTH EMPTY — git diff between parent and merge is blank. #146 stated change was already present. A merged PR title is not evidence the change happened; check git diff --stat."
+soundness-axioms = "Fix or delete prob_nonneg, prob_normalized, shannon_entropy_maximum while they are still unused"
 changelog-automation = "adopt changelog-reusable.yml (standards#206) so CHANGELOG.md stays in sync"
 hypatia-ignore-prune = "drop stale aletheia/examples/SafeDOMExample.res entry (file deleted in #74); migrate demo exemptions per .hypatia-ignore TODO 2026-Q3"
 submodule-docs = "document `git submodule update --init` for absolute-zero/ in QUICKSTART-DEV"
+
+[landmines]
+root-only-workflows = "GitHub Actions reads .github/workflows/ at the repository ROOT ONLY. The 16 files under aletheia/.github/workflows/ are inert."
+merged-pr-is-not-landed-work = "A push to a branch whose PR has ALREADY merged fires no pull_request event and produces ZERO runs, with no error. Verify by comparing each run's headSha against `git rev-parse HEAD`."
+early-exit-linter = "The Governance workflow linter exits after its SPDX/permissions block, BEFORE the SHA-pin check. Fixing the first defect REVEALS the second; expect the bar to stay red."
+gh-pr-checks-hides-startup-failure = "A parse-rejected or policy-rejected workflow produces NO check run at all. Use `gh run list --json conclusion`."
+generic-summary-is-not-detection = "The staleness job prints 'Remove legacy scorecard-enforcer.yml' on ANY failure regardless of whether that file exists. Only ##[error] lines naming a path are real."
+never-commit-dash-a = "Two separate defects reached main in one `git commit -a` (#142). Never use it in this repo."
+never-allow-dead-code = "Do not silence #125 with #![allow(dead_code)]. The dead code is the specification of the missing feature, and rust-ci.yml's header forbids it."
+never-restore-aletheia-from-mirror = "The in-tree copy is AHEAD — 134 tracked files vs 108, 45 in-tree only. The mirrors' only unique asset is 62 commits of history to 2026-01-03."

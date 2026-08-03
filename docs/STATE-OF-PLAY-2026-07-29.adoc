@@ -1,0 +1,307 @@
+// SPDX-License-Identifier: CC-BY-SA-4.0
+// SPDX-FileCopyrightText: 2026 Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+= State of Play — maa-framework
+:toc: macro
+:toclevels: 3
+:icons: font
+:revdate: 2026-07-29
+
+A measured snapshot of what is real, what is gated, and what is known to be
+broken. Every figure here was measured on 2026-07-29 against `origin/main`
+`7d964ee` unless stated otherwise. Where an earlier claim turned out to be
+wrong it is marked *FALSIFIED* rather than quietly dropped.
+
+toc::[]
+
+== One-paragraph summary
+
+`maa-framework` is the hub and governance repository for the MAA paradigm. The
+microkernel implementation lives in-tree at `aletheia/` (Rust, 5 modules, zero
+dependencies); the Certified Null Operation reference is a git submodule at
+`absolute-zero/`. As of 2026-07-29 the CI is genuinely green for the first
+time: every gate on `main` passes and, importantly, each one has been shown
+capable of failing. The two significant open items are both in `aletheia` and
+both blocked on a single unanswered design question, recorded in
+<<open-questions>>.
+
+== CI status
+
+[cols="2,1,4"]
+|===
+|Workflow |State |Note
+
+|Rust CI |PASS |build (debug+release), 29 unit tests, `cargo fmt`, zero-dependency assertion
+|Governance |PASS |10 jobs; workflow linter and staleness both green
+|CodeQL |PASS |`actions` language analysis
+|Secret Scanner |PASS |
+|Hypatia Security Scan |PASS |
+|Dogfood Gate |PASS |repaired in #140/#141 by vendoring the validation scripts
+|OSSF Scorecard |*see note* |was failing at checkout; fix in #145
+|Mirror to Git Forges |PASS |
+|BoJ Server Build Trigger |PASS |
+|GitHub Pages (Ddraig SSG) |disabled |`disabled_manually`; cancelled runs are expected
+|Instant Sync |disabled |`disabled_manually`
+|Push email notification |disabled |`disabled_manually`
+|===
+
+CAUTION: A green board is not the same as full coverage. Three workflows above
+are `disabled_manually`, so they report nothing at all. When reading this table,
+ask what is *not* running as well as what passed.
+
+== What is actually gated
+
+The root `.github/workflows/rust-ci.yml` is the only real gate on the Rust code,
+and it is recent — it was added 2026-07-21 in #123.
+
+[IMPORTANT]
+====
+*GitHub Actions reads `.github/workflows/` at the repository root only.*
+
+`aletheia/` is vendored as plain tracked files (mode 100644), not a submodule.
+The 16 workflow files under `aletheia/.github/workflows/` have therefore *never
+executed, not once*, and there is no standalone `hyperpolymath/aletheia` repo
+running them either — it was deleted around January 2026 and its content
+vendored here.
+
+Editing anything under `aletheia/.github/workflows/` has *no effect on CI*.
+====
+
+That gap had a measurable cost. Commit `b5322c2` (2026-06-17) dropped a brace in
+`aletheia/src/config.rs`; `main` did not compile *for over a month* and nothing
+noticed, because nothing was compiling it. Repaired in #123.
+
+=== Local gates
+
+`just check` now runs the same commands as CI, in the same order:
+
+[source,console]
+----
+just build        # cargo build --locked --all-targets, then --release
+just test         # cargo test --locked --bins
+just fmt          # cargo fmt --check   (fmt-fix applies)
+just lint         # cargo clippy --locked --all-targets
+just deps-check   # zero-dependency assertion, copied from rust-ci.yml
+just check        # all of the above
+just self-verify  # run aletheia against this repository
+----
+
+Before #144 every one of those recipes printed `"… not configured yet"` and
+exited 0.
+
+== aletheia
+
+Zero dependencies, `#![forbid(unsafe_code)]`, offline-first — all three still
+hold and `deps-check` enforces the first mechanically.
+
+[cols="3,1,4"]
+|===
+|File |Lines |Contents
+
+|`src/main.rs` |121 |CLI entry, arg parsing, `verify_repository`, exit policy
+|`src/checks.rs` |~360 |compliance checks, glob matching, SHA-pin detection
+|`src/config.rs` |243 |`.aletheia.toml` loading, hand-rolled TOML parse
+|`src/output.rs` |226 |human / JSON / SARIF report printing
+|`src/types.rs` |89 |`ComplianceLevel`, `CheckResult`, `ComplianceReport`
+|===
+
+* Unit tests: *29 pass, 0 fail*
+* Integration tests: *2 pass, 27 fail* — see <<issue-124>>
+* Clippy: *23 findings*, not yet a blocking gate — see <<issue-125>>
+
+=== The CLI is unfinished — issue #124 [[issue-124]]
+
+`main.rs` parses only `<repo-path>` plus `--json` / `--sarif`, and wires *three*
+checks. `tests/integration_tests.rs` is 806 lines / 32 tests describing a much
+larger tool: 16 Bronze checks plus Silver, `--help`, `--version`, `--verbose`,
+`--badge`, `--init-hook`, `--format=`, HTML output.
+
+This is *writing, not wiring*. The functionality has never been written.
+
+[WARNING]
+====
+Those tests assert on *stdout substrings*:
+
+[source,rust]
+----
+assert!(stdout.contains("Bronze-level RSR compliance: ACHIEVED"))
+----
+
+That pins the *wording* of the verdict and says nothing about what the checks
+must verify — so every assertion can be satisfied by checks that verify nothing.
+Treat the suite as a UI contract, not a specification.
+
+There is also a duplication risk: a definition of RSR conformance already exists
+in the estate (hypatia's `rsr-conformance` oracle). Building to these strings
+would create a second, divergent definition.
+====
+
+=== Clippy — issue #125 [[issue-125]]
+
+Most of the 23 findings are dead code that exists *because* the modules in
+<<issue-124>> are unwired. Deleting it removes what #124 needs; suppressing it
+with `#![allow(dead_code)]` is forbidden by the `rust-ci.yml` header. *#125 is
+therefore blocked on #124* — same decision, not two.
+
+When #125 closes, `-D warnings` must be added to `Justfile` *and* `rust-ci.yml`
+in the same change, so local and CI never disagree about what "lint passes"
+means.
+
+== Proof state
+
+Measured against `absolute-zero @87902bb7`:
+
+[source,console]
+----
+$ grep -rn "Admitted" absolute-zero --include=*.v | wc -l
+0
+$ grep -rn "^Axiom"  absolute-zero --include=*.v | wc -l
+23
+----
+
+*FALSIFIED:* `PROOF-NEEDS.md` previously claimed *"1 `Admitted` in
+`LambdaCNO.v`"*. There are *zero*. `y_not_cno` is a *KEPT AXIOM* with a written
+rationale. The old wording was wrong in both directions — it overstated the
+incompleteness and understated the trusted base 23×.
+
+[IMPORTANT]
+====
+An `Axiom` *passes* a "no `sorry` / no `Admitted`" gate silently. Counting only
+`Admitted` measures the wrong thing. Any proof gate for this repo must scan for
+`Axiom` too.
+====
+
+The Coq is considerably better than its own summary document was. The *AXIOM
+AUDIT* at the end of `proofs/coq/physics/LandauerDerivation.v` classifies every
+axiom, and is self-critical: it records that
+`cno_zero_energy_dissipation_derived` is an axiom *despite its `_derived` name*,
+and that the triage docs' "DISCHARGE" marks on two axioms are inaccurate.
+
+The genuinely urgent proof item is not `y_not_cno`. It is the audit's own
+*SOUNDNESS WARNINGS*: `prob_nonneg` and `prob_normalized` are false over
+unconstrained function-type distributions, and `shannon_entropy_maximum`'s
+inequality is *backwards*. All three are currently *unused* — cheap to fix now,
+expensive to discover later.
+
+== Recent incidents worth knowing about
+
+=== The `squisher-corpus` clobber
+
+An automated sweep on 2026-07-26 ~16:00 BST copied
+`hyper-repos/squisher-corpus/guix.scm` *byte-for-byte* into a large number of
+estate repos instead of generating one per repo. The sweep's own commit message
+names the bug: `chore: update guix.scm from squisher-corpus`.
+
+In this repository it rewrote the package identity to `squisher-corpus` *and*
+replaced the licence `MPL-2.0` with `PMPL-1.0-or-later`. Restored in #143.
+
+Two things make this more than cosmetic:
+
+. `absolute-zero/.claude/CLAUDE.md` lists `PMPL-1.0` / `PMPL-1.0-or-later` under
+  *BANNED* — "License: MPL-2.0 only". `STATE.a2ml` separately records an
+  estate-wide migration *away* from PMPL to MPL-2.0. So the licence half was a
+  policy violation, not merely an error.
+. It reached `origin/main` *after* the local copy had already been cleaned, via
+  #142 — an unrelated CI fix that swept up a dirty working-tree file.
+
+=== One careless `commit -a`, two defects
+
+#142 carried *two* unrelated broken things onto `main`: the `guix.scm` clobber
+above, and `.claude/worktrees/maa-ci-repair` committed as a *gitlink* (mode
+160000) with no `.gitmodules` entry. The latter breaks every recursive checkout:
+
+----
+fatal: No url found for submodule path '.claude/worktrees/maa-ci-repair' in .gitmodules
+----
+
+That is what was failing OSSF Scorecard — it died at checkout, before running a
+single probe. Fixed in #145, with `.claude/worktrees/` added to `.gitignore`.
+
+NOTE: This repository has been bitten by this exact shape before. `639f389`
+(2026-02-21) left `aletheia` as a gitlink with no `.gitmodules` entry. A gitlink
+*without* its mapping resolves to a silently-empty directory — git's quietest
+failure mode — and that one went unnoticed for over a month.
+
+=== aletheia's SHA-pinning check could never fail
+
+[source,rust]
+----
+if line.contains("@v") && !line.contains("@") {   // unsatisfiable
+----
+
+`contains("@v")` implies `contains("@")`, so the second clause is always false
+and the "unpinned" flag could never be set. Every repository passed the
+Silver-level *GitHub Actions SHA pinning* check unconditionally — including this
+one, while it carried `SonarSource/sonarqube-scan-action@master`, the very
+unpinned action that had broken Governance and CodeQL. Fixed with a real
+implementation and three tests in #144.
+
+== Open questions [[open-questions]]
+
+These need a human ruling. They are not research tasks.
+
+. *What is the source of truth for RSR compliance checks?* hypatia's
+  `rsr-conformance` oracle, a spec in `standards`, or aletheia's integration
+  tests? This blocks both #124 and #125. If the oracle is canonical, the honest
+  answer may be for aletheia to consume it and delete the aspirational tests.
+. *Is `87902bb7` the intended `absolute-zero` CNO state?* The re-pin was a
+  semantic bump, not a restore — the original pin `ad085baa` was orphaned by an
+  upstream force-push and its content is unrecoverable, so this cannot be
+  verified from inside the repo.
+. *Submodule or vendored, permanently?* The repo has oscillated three times
+  (#89 → `bef4c92` → #117). While `absolute-zero` accepts force-pushes to `main`,
+  any pin will be orphaned again by the next rollout.
+. *Is aletheia's move to PMPL-1.0-or-later + CC-BY-SA (#135) intended?* It runs
+  against the written ban noted above.
+
+== Open issues
+
+[cols="1,4,2"]
+|===
+|Issue |Summary |Status
+
+|#124 |aletheia CLI surface missing; 27/29 integration tests fail |awaiting ruling (question 1)
+|#125 |clippy `-D warnings`, 23 findings |blocked on #124
+|#102 |duplicate Justfiles — decide canonical |open; confirmed real by the mirror diff
+|#101 |`instant-sync.yml` lacks `FARM_DISPATCH_TOKEN` presence gate |open
+|#100 |adopt `changelog-reusable.yml` (standards#206) |open
+|#98 |prune stale `.hypatia-ignore`; migrate 2026-Q3 exemptions |open
+|===
+
+Closed 2026-07-29: *#99* — root `Justfile` wired to real cargo targets (#144).
+
+== Landmines
+
+Read before changing CI or history here.
+
+. *Root-only workflow discovery.* The 16 files under
+  `aletheia/.github/workflows/` are inert. Fixes applied there do nothing.
+. *A merged PR is not landed work.* #123 squash-merged while a follow-up commit
+  was in flight; the commit was authored ten minutes after the merge head and
+  belonged to nothing. A push to a branch whose PR has already merged fires no
+  `pull_request` event and produces *zero runs, with no error*. Verify by
+  comparing each run's `headSha` against `git rev-parse HEAD`.
+. *Early-exit linters mask downstream failures.* The Governance workflow linter
+  accumulates failures through its SPDX/permissions block and exits *before*
+  reaching the SHA-pin check. Fixing the first defect *reveals* the second.
+. *`gh pr checks` hides startup failures.* A parse-rejected or policy-rejected
+  workflow produces *no check run at all*. Use `gh run list --json conclusion`.
+. *A generic remediation summary is not a detection.* The staleness job prints
+  "Remove legacy scorecard-enforcer.yml" on any failure, whether or not that file
+  exists. Only `##[error]` lines naming a path are real.
+. *Never `git commit -a` here.* Two separate defects reached `main` that way in
+  a single commit (#142).
+. *Do not silence #125 with `#![allow(dead_code)]`.* The dead code is the
+  specification of the missing feature.
+. *Never restore `aletheia/` from a mirror.* The in-tree copy is *ahead* — 134
+  tracked files versus 108, with 45 in-tree only. The mirrors' only unique asset
+  is 62 commits of history to 2026-01-03.
+
+== Provenance
+
+Measured 2026-07-29 against `origin/main` `7d964ee` and `absolute-zero`
+`87902bb7`. Commands used: `gh run view --log-failed`, `gh run list --json
+conclusion`, `git submodule status`, `git ls-tree`, `cargo test --locked`,
+`cargo clippy --locked --all-targets`, `cargo fmt --check`, and `grep` counts
+over `absolute-zero/**/*.v`.
+
+Machine-readable counterpart: `.machine_readable/6a2/STATE.a2ml`.

@@ -9,15 +9,42 @@ Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 ## CRG Grade: C — ACHIEVED 2026-04-04
 
 All CRG C requirements met across the absolute-zero crate:
-- Unit tests: 44 total (26 in aletheia src, 13 brainfuck, 5 whitespace)
+- Unit tests: 47 total (**29** in aletheia src, 13 brainfuck, 5 whitespace)
 - Smoke tests: build and self-verification pass
 - P2P/property-based: 11 deterministic property tests in `absolute-zero/tests/property_based.rs` (100% pass)
 - E2E/reflexive: 10 brainfuck interpreter E2E tests in `absolute-zero/tests/brainfuck_e2e.rs` (100% pass)
 - Security aspect tests: 11 tests in `absolute-zero/tests/security_aspects.rs` (100% pass)
 - Criterion benchmarks: `absolute-zero/benches/cno_benchmarks.rs` (compiles and runs)
 
-Note: aletheia integration tests require a functioning binary with specific CLI output format;
-those 27 tests are pre-existing failures (binary CLI output does not match expected strings).
+> **Updated 2026-07-29.** aletheia unit tests went 26 → **29**: three new tests for
+> SHA-pin detection (PR #144), added alongside a fix for a check that could never
+> fail. One tautological `assert!(true)` was replaced with a real assertion at the
+> same time. `absolute-zero/` is a submodule — its tests run in the upstream repo,
+> not in this repository's CI.
+
+### The 27 failing aletheia integration tests
+
+They fail **by design, not by regression** — and the distinction matters:
+
+`tests/integration_tests.rs` (806 lines, 32 tests) describes a CLI that has never
+been written: 16 Bronze checks plus Silver, `--help`, `--version`, `--verbose`,
+`--badge`, `--init-hook`, `--format=`, HTML output. `main.rs` currently parses
+`<repo-path>` plus `--json`/`--sarif` and wires **three** checks.
+
+> [!CAUTION]
+> Every assertion in that suite is on a **stdout substring**, e.g.
+> `assert!(stdout.contains("Bronze-level RSR compliance: ACHIEVED"))`. That pins
+> the *wording* of the verdict and says nothing about what the checks must
+> verify — so the whole suite can be satisfied by checks that verify nothing.
+>
+> **Do not "fix" these by writing checks that emit the expected strings.** That
+> would invent a definition of RSR compliance and encode it as canonical, while
+> a definition already exists in the estate (hypatia's `rsr-conformance` oracle).
+> Tracked as issue #124, blocked on that source-of-truth ruling.
+
+They are deliberately **not** in the CI gate and **not** in `just test`
+(`--bins` only). Adding them without resolving #124 would make the bar green by
+breaking it.
 
 ## Current State
 

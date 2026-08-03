@@ -7,9 +7,10 @@
 :revdate: 2026-07-29
 
 A measured snapshot of what is real, what is gated, and what is known to be
-broken. Every figure here was measured on 2026-07-29 against `origin/main`
-`7d964ee` unless stated otherwise. Where an earlier claim turned out to be
-wrong it is marked *FALSIFIED* rather than quietly dropped.
+broken. Figures were measured on 2026-07-29 against `origin/main` `7d964ee`,
+and *re-verified 2026-08-03* against `origin/main` `2bf7a13` — all still hold.
+Where an earlier claim turned out to be wrong it is marked *FALSIFIED* rather
+than quietly dropped.
 
 toc::[]
 
@@ -36,7 +37,7 @@ both blocked on a single unanswered design question, recorded in
 |Secret Scanner |PASS |
 |Hypatia Security Scan |PASS |
 |Dogfood Gate |PASS |repaired in #140/#141 by vendoring the validation scripts
-|OSSF Scorecard |*see note* |was failing at checkout; fix in #145
+|OSSF Scorecard |PASS |was dying at checkout on a stray gitlink; fixed in #145 and green on `main` since
 |Mirror to Git Forges |PASS |
 |BoJ Server Build Trigger |PASS |
 |GitHub Pages (Ddraig SSG) |disabled |`disabled_manually`; cancelled runs are expected
@@ -214,7 +215,13 @@ fatal: No url found for submodule path '.claude/worktrees/maa-ci-repair' in .git
 ----
 
 That is what was failing OSSF Scorecard — it died at checkout, before running a
-single probe. Fixed in #145, with `.claude/worktrees/` added to `.gitignore`.
+single probe. Fixed in #145, with `.claude/worktrees/` added to `.gitignore`;
+Scorecard has been green on `main` since.
+
+TIP: Scorecard could not be proven on the pull request, because `scorecard.yml`
+triggers only on `push` to `main`, `schedule` and `workflow_dispatch` — not on
+`pull_request`. The fix was verified locally instead (`git submodule status`
+exits 0 listing only `absolute-zero`) and confirmed on `main` after merge.
 
 NOTE: This repository has been bitten by this exact shape before. `639f389`
 (2026-02-21) left `aletheia` as a gitlink with no `.gitmodules` entry. A gitlink
@@ -280,6 +287,12 @@ Read before changing CI or history here.
   belonged to nothing. A push to a branch whose PR has already merged fires no
   `pull_request` event and produces *zero runs, with no error*. Verify by
   comparing each run's `headSha` against `git rev-parse HEAD`.
+. *A merged PR can also change nothing at all.* Both #146 (`ci(codeql): cron
+  weekly→monthly`) and #147 (`Worktree maa ci repair`) are *empty* — `git diff`
+  between their parents and merge commits is completely blank. #146's stated
+  change was already present (`cron: '0 6 1 * *'` was monthly before it merged).
+  A merged PR title is not evidence that the change it describes happened;
+  check `git diff --stat <parent> <merge>`.
 . *Early-exit linters mask downstream failures.* The Governance workflow linter
   accumulates failures through its SPDX/permissions block and exits *before*
   reaching the SHA-pin check. Fixing the first defect *reveals* the second.

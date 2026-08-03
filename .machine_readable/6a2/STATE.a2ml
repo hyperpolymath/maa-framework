@@ -9,7 +9,7 @@ project = "maa-framework"
 version = "0.1.0"
 last-updated = "2026-07-29"
 status = "CI is genuinely green and each gate is proven falsifiable; aletheia CLI incomplete and blocked on one design ruling"
-measured-against = "origin/main 7d964ee; absolute-zero 87902bb7"
+measured-against = "measured 2026-07-29 vs origin/main 7d964ee; re-verified 2026-08-03 vs origin/main 2bf7a13 — all figures still hold"
 
 [project-context]
 name = "maa-framework"
@@ -34,7 +34,7 @@ codeql = "PASS"
 secret-scanner = "PASS"
 hypatia-scan = "PASS"
 dogfood-gate = "PASS — repaired in #140/#141 by vendoring the validation scripts"
-ossf-scorecard = "was FAILING at checkout on a stray gitlink; fix in PR #145"
+ossf-scorecard = "PASS — was dying at checkout on a stray gitlink; fixed in #145 (merged) and green on main since. NOTE: scorecard.yml triggers only on push-to-main/schedule/workflow_dispatch, NOT pull_request, so it cannot be proven on a PR."
 mirror = "PASS"
 boj-trigger = "PASS"
 disabled-manually = "GitHub Pages (Ddraig SSG), Instant Sync, Push email notification — these report NOTHING; a green board is not full coverage"
@@ -82,7 +82,7 @@ pr-140-141 = "validate-action repos had been deleted upstream; validation script
 pr-142 = "repointed codeql-action at a SHA that exists — BUT was a `git commit -a` on a dirty tree and carried TWO unrelated defects onto main (see [incidents])"
 pr-143 = "restored guix.scm identity + licence after the squisher-corpus clobber"
 pr-144 = "aletheia SHA-pin check made real; root Justfile wired (closes #99); PROOF-NEEDS.md and aletheia/CLAUDE.md corrected"
-pr-145 = "removed the stray worktree gitlink breaking every recursive checkout — OPEN at time of writing"
+pr-145 = "removed the stray worktree gitlink breaking every recursive checkout — MERGED; OSSF Scorecard green on main since"
 
 [incidents]
 squisher-corpus-clobber = "An automated sweep on 2026-07-26 ~16:00 BST copied hyper-repos/squisher-corpus/guix.scm BYTE-FOR-BYTE into a large number of estate repos instead of generating one per repo. Its own commit message names the bug: 'chore: update guix.scm from squisher-corpus'. Here it rewrote the package identity AND replaced MPL-2.0 with PMPL-1.0-or-later. Fixed in #143."
@@ -106,7 +106,7 @@ aletheia-clippy = "issue #125 — 23 findings; blocked on #124 because the dead 
 
 [next-actions]
 resolve-rsr-source-of-truth = "Answer [open-questions].rsr-source-of-truth — it unblocks both #124 and #125"
-merge-pr-145 = "Merge the stray-gitlink fix; OSSF Scorecard cannot be verified on a PR because scorecard.yml triggers only on push-to-main, schedule and workflow_dispatch"
+empty-merged-prs = "#146 (ci(codeql) cron weekly->monthly) and #147 (Worktree maa ci repair) are BOTH EMPTY — git diff between parent and merge is blank. #146 stated change was already present. A merged PR title is not evidence the change happened; check git diff --stat."
 soundness-axioms = "Fix or delete prob_nonneg, prob_normalized, shannon_entropy_maximum while they are still unused"
 changelog-automation = "adopt changelog-reusable.yml (standards#206) so CHANGELOG.md stays in sync"
 hypatia-ignore-prune = "drop stale aletheia/examples/SafeDOMExample.res entry (file deleted in #74); migrate demo exemptions per .hypatia-ignore TODO 2026-Q3"

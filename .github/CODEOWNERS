@@ -1,11 +1,4 @@
-# CODEOWNERS - Defines code ownership for review requirements
-# See: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
-
-# Default owners for everything in the repo
-* @hyperpolymath
-
-# Workflow files require maintainer review (security-critical)
-/.github/workflows/ @hyperpolymath
-
-# Security policy requires maintainer review
-/SECURITY.md @hyperpolymath
+# SPDX-License-Identifier: MPL-2.0
+# Solo-maintained hyperpolymath repo: no owner lines by policy.
+# See hyperpolymath/standards CODEOWNERS-POLICY.adoc (Rule 1).
+# Sole-maintainer review is moot; SPDX headers carry attribution.

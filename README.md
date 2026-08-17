@@ -1,175 +1,221 @@
-<!--
-SPDX-License-Identifier: CC-BY-SA-4.0
-SPDX-FileCopyrightText: 2025-2026 Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
--->
+// SPDX-License-Identifier: MPL-2.0
+= MAA Framework — Mutually Assured Accountability
+:toc: preamble
+:toc-title: Contents
+:icons: font
+:doctype: article
 
-[![License: MPL-2.0](https://img.shields.io/badge/License-MPL--2.0-brightgreen.svg)](https://www.mozilla.org/en-US/MPL/2.0/) :toc: macro :toclevels: 3 :icons: font
+image:https://img.shields.io/badge/OpenSSF-BestPractices-green[link="https://www.bestpractices.dev/projects/XXXX"]
 
-A full-stack, open-source paradigm for building verifiably-compliant,
-secure, and sustainable systems.
+Governance hub and microkernel for the Mutually Assured Accountability paradigm: building verifiably-compliant, secure, and sustainable systems where accountability is symmetric and enforceable.
 
-<div id="toc">
+== Overview
 
-</div>
+Mutually Assured Accountability (MAA) is a paradigm where accountability between system participants is symmetric—each party can verify the other's compliance, and no party is above audit. This repository is the governance hub and implementation centre for the MAA ecosystem.
 
-# Status
+The ecosystem has three components:
 
-> [!IMPORTANT]
-> **Early implementation** — Specification uploads still pending
-> (ROADMAP Phase 1).
->
-> This repository serves as the official hub and governance center for
-> the MAA Framework project. Implementation work lives in-tree under
-> `aletheia/` (the microkernel, Rust); the Certified Null Operation is
-> developed in the standalone `hyperpolymath/absolute-zero` repository and
-> pinned here as a git submodule under `absolute-zero/` (PR #89) — CNO
-> development happens upstream, and this pointer is bumped deliberately. A
-> CRG Tier-C test suite (unit, E2E, property, aspect, benchmarks) landed
-> 2026-04-04.
-> Detailed specification documents will be uploaded as development
-> progresses.
+[cols="1,2", options="header"]
+|===
+| Component | Role
 
-**Current state (2026-07-29):** CI is green across every enabled workflow, and
-each gate has been shown capable of failing. `aletheia` builds, passes 29 unit
-tests, is formatted, and has zero dependencies — enforced by
-`.github/workflows/rust-ci.yml`, the repository's first real Rust gate (added
-2026-07-21).
+| MAA Framework
+| Governance hub, specifications, CI, and integration layer
 
-Two known gaps, both in `aletheia` and both blocked on one design ruling:
+| Oblíbený
+| Reference language designed for the framework (specification stage)
 
-| Issue | Gap |
-|----|----|
-| [#124](https://github.com/hyperpolymath/maa-framework/issues/124) | The CLI surface is unbuilt — `main.rs` wires 3 checks; the integration suite specifies far more. 27 of 29 integration tests fail **by design**, not by regression. |
-| [#125](https://github.com/hyperpolymath/maa-framework/issues/125) | 23 clippy findings, mostly dead code that exists *because* of #124. Not yet a blocking gate. |
+| Aletheia
+| Microkernel implementation (Rust, in-tree)
+|===
 
-> [!WARNING]
-> **`aletheia/.github/workflows/` is inert.** GitHub Actions reads
-> `.github/workflows/` at the *repository root only*, and `aletheia/` is
-> vendored as plain tracked files rather than a submodule. Those 16 workflow
-> files have never executed. Add gates at the root, not there.
+The Certified Null Operation (CNO) formalisation is developed upstream in `link:https://github.com/hyperpolymath/absolute-zero[absolute-zero]` and pinned here as a git submodule.
 
-📄 **Full measured snapshot: [`docs/STATE-OF-PLAY-2026-07-29.adoc`](docs/STATE-OF-PLAY-2026-07-29.adoc)**
-— CI status, what is actually gated, proof state, open questions, and the
-landmines to read before changing CI or history here. Machine-readable
-counterpart: [`.machine_readable/6a2/STATE.a2ml`](.machine_readable/6a2/STATE.a2ml).
+== What is built and what is planned
 
-# Overview
+[cols="1,2,2", options="header"]
+|===
+| Artefact | Status | Evidence
 
-The MAA Framework is an integrated ecosystem comprising:
+| Aletheia microkernel (Rust)
+| Builds, 29 unit tests passing, zero dependencies
+| `aletheia/`, CI gate `rust-ci.yml`
 
-| Component | Description |
-|----|----|
-| **MAA Framework** | Full-stack paradigm for verifiably-compliant, secure, sustainable systems |
-| **Oblíbený** | Reference language designed for the framework |
-| **Aletheia** | Microkernel implementation |
+| CRG Tier-C test suite
+| Landed 2026-04-04 (unit, E2E, property, aspect, benchmarks)
+| `tests/`
 
-# Project Scope
+| CI gates at repository root
+| Green across every enabled workflow; each shown capable of failing
+| `.github/workflows/`
 
-The framework addresses the following domains:
+| Hub-and-spoke mirroring
+| GitHub → GitLab, Codeberg, Bitbucket (automated)
+| Mirror workflows
 
-- **Security & Formal Verification** — Provable correctness guarantees
+| CLI surface for Aletheia
+| **Unbuilt** — `main.rs` wires 3 checks; integration suite specifies more
+| Issue #124
 
-- **AI Ethics & Axiology** — Value-aligned system design
+| Oblíbený reference language
+| **Specification stage**
+| Not yet in tree
 
-- **Dependability** — Fault-tolerant, reliable computing
+| Specification documents
+| **Pending upload** (ROADMAP Phase 1)
+| `docs/` (partial)
+|===
 
-- **Language Design & Compilers** — Purpose-built toolchains
+== Known gaps
 
-- **Microkernel Architecture** — Minimal trusted computing base
+[CAUTION]
+====
+**Aletheia CLI is unbuilt.** `main.rs` wires 3 checks. The integration suite specifies far more. 27 of 29 integration tests fail by design (not by regression), because the code to make them pass does not exist yet. Tracked in Issue #124.
+====
 
-- **RISC-V** — Open hardware architecture support
+[CAUTION]
+====
+**23 clippy findings in Aletheia**, mostly dead code that exists because of the unbuilt CLI (#124). Not yet a blocking gate. Tracked in Issue #125.
+====
 
-- **Sustainability** — Resource-efficient computing
+[CAUTION]
+====
+**`aletheia/.github/workflows/` is inert.** GitHub Actions reads `.github/workflows/` at the repository root only, and `aletheia/` is vendored as plain tracked files (not a submodule). Those 16 workflow files have never executed. Gates must be added at the root, not inside `aletheia/`.
+====
 
-- **Economics-as-Code** — Programmable economic primitives
+[CAUTION]
+====
+**Specification uploads are pending.** ROADMAP Phase 1 (specification publication) is not complete. The project scope is stated; the formal specifications backing it are not yet in-tree.
+====
 
-- **Distributed Computing** — BOINC-compatible workloads
+== What is standard and what is ours
 
-- **Reversibility** — Turing-complete/incomplete computation models
+[cols="1,2,2", options="header"]
+|===
+| Concept | Status | Home
 
-- **Web Protocols** — Modern network standards
+| Microkernel architecture (Rust)
+| Standard
+| `aletheia/`
 
-# Repository Contents
+| Hub-and-spoke repo mirroring
+| Standard
+| `.github/workflows/` (mirror sync)
 
-## Currently Available
+| SHA-pinned GitHub Actions
+| Standard supply-chain hygiene
+| `.github/workflows/`
 
-    .
-    ├── .claude/CLAUDE.md      # Language policy (Hyperpolymath Standard)
-    ├── .github/
-    │   ├── CODEOWNERS         # Maintainer assignments
-    │   └── workflows/         # CI wrappers + multi-forge synchronization
-    ├── .machine_readable/     # 6a2 metadata, contractiles, bot directives
-    ├── aletheia/              # Microkernel implementation (Rust)
-    ├── tests/                 # E2E, property, aspect tests
-    ├── GOVERNANCE.adoc        # Project governance
-    ├── README.adoc            # This file
-    ├── EXPLAINME.adoc         # Receipts backing README claims
-    ├── ROADMAP.adoc           # Development phases
-    └── SECURITY.md            # Vulnerability reporting policy
+| Mutually Assured Accountability paradigm
+| **Novel governance concept**
+| This repository
 
-## Infrastructure
+| Symmetric accountability enforcement
+| **Novel** (paradigm definition)
+| Specifications (pending)
 
-- **Hub-and-spoke mirroring** to GitLab, Codeberg, Bitbucket
+| Oblíbený reference language
+| **Novel** (specification stage)
+| Not yet in tree
+|===
 
-- **SHA-pinned GitHub Actions** for supply chain security
+== Project scope
 
-- **SSH host key verification** for MITM protection
+The framework addresses these domains. Where an implementation exists, it is noted; where it does not, the domain is a stated intention:
 
-- **Minimal permission model** (`contents:` `read`)
+[cols="1,2", options="header"]
+|===
+| Domain | Current status
 
-# Language Policy
+| Security & Formal Verification
+| CNO submodule pinned; Aletheia builds
 
-This project follows the **Hyperpolymath Standard** for technology
-choices.
+| AI Ethics & Axiology
+| Specification pending
 
-| Technology          | Use Case                            |
-|---------------------|-------------------------------------|
-| AffineScript        | Primary application code            |
-| Deno                | Runtime & package management        |
-| Rust                | Performance-critical, systems, WASM |
-| Tauri 2.0+ / Dioxus | Mobile applications                 |
-| Gleam               | Backend services (BEAM/JS)          |
-| Guile Scheme        | State/meta files                    |
+| Dependability
+| Specification pending
 
-Allowed
+| Language Design & Compilers
+| Oblíbený at specification stage
 
-See <a href=".claude/CLAUDE.md" class="md">CLAUDE</a> for complete
-policy.
+| Microkernel Architecture
+| Aletheia: builds, 29 unit tests, zero dependencies
 
-# Mirrors
+| RISC-V
+| Specification pending
 
-GitHub  
-[hyperpolymath/maa-framework](https://github.com/hyperpolymath/maa-framework)
-**(canonical)**
+| Sustainability
+| Specification pending
 
-GitLab  
-Synchronized automatically
+| Economics-as-Code
+| Specification pending
 
-Codeberg  
-Synchronized automatically
+| Distributed Computing
+| Specification pending
 
-Bitbucket  
-Synchronized automatically
+| Reversibility
+| CNO submodule (upstream: `absolute-zero`)
 
-# Security
+| Web Protocols
+| Specification pending
+|===
 
-See <a href="SECURITY.md" class="md">SECURITY</a> for:
+== Repository Layout
 
-- Vulnerability reporting procedures
+[cols="1,3", options="header"]
+|===
+| Path | Purpose
 
-- Security measures implemented
+| `aletheia/`
+| Microkernel implementation (Rust, vendored in-tree)
 
-- Secret management practices
+| `absolute-zero/`
+| CNO formalisation (git submodule, developed upstream)
 
-# License
+| `tests/`
+| E2E, property, aspect tests (CRG Tier-C)
 
-This project is licensed under the Mozilla Public License, v. 2.0. See
-the `LICENSE` file for details.
+| `.github/workflows/`
+| CI gates and mirror synchronization (root level only)
 
-SPDX-License-Identifier: CC-BY-SA-4.0
+| `docs/`
+| Specifications and state-of-play documents
 
-# Contributing
+| `.machine_readable/`
+| 6a2 metadata, contractiles, bot directives
+|===
 
-Contribution guidelines will be established as the project develops.
-Currently maintained by
-[@hyperpolymath](https://github.com/hyperpolymath).
+== Build
+
+[source,bash]
+----
+# Aletheia microkernel
+cd aletheia/
+cargo build
+cargo test
+
+# Full CI (from repository root)
+just verify
+----
+
+== Documentation
+
+* link:EXPLAINME.adoc[EXPLAINME] — claim-by-claim receipts and known gaps
+* link:Glossary.adoc[Glossary] — terminology reference
+* `docs/STATE-OF-PLAY-2026-07-29.adoc` — CI status, gated checks, proof state, open questions
+* `ROADMAP.adoc` — development phases
+* `GOVERNANCE.adoc` — project governance
+* link:https://github.com/hyperpolymath/absolute-zero[absolute-zero] — CNO formalisation (upstream)
+
+== License
+
+SPDX-License-Identifier: MPL-2.0 — see link:LICENSE[LICENSE].
+
+Prose documentation is licensed under CC-BY-SA-4.0; see `LICENSES/`.
+[cols="1,3", options="header"]
+|===
+| Path | Purpose
+
+| `aletheia/`
+| Microkernel implementation (Rust, vendored in-tree)

@@ -1,0 +1,70 @@
+// SPDX-License-Identifier: CC-BY-SA-4.0
+= MAA Framework — Glossary
+:toc: preamble
+:toc-title: Contents
+:icons: font
+:doctype: article
+
+Cross-reference glossary for link:README.adoc[README.adoc], link:EXPLAINME.adoc[EXPLAINME.adoc], and the MAA Framework wiki.
+
+== Core concepts
+
+[[maa]]
+Mutually Assured Accountability (MAA)::
+  A paradigm where accountability between system participants is symmetric: each party can verify the other's compliance, and no party is above audit. Named by analogy to Mutually Assured Destruction (MAD), but with accountability replacing destruction as the enforcement mechanism.
+  *Classification:* **project-specific** (paradigm definition).
+
+[[symmetric-accountability]]
+Symmetric accountability::
+  The core property of MAA: for any participants A and B, A can audit B *and* B can audit A. No participant holds a privileged audit position.
+  *Classification:* **project-specific**.
+
+== Components
+
+[[aletheia]]
+Aletheia::
+  The MAA microkernel implementation (Rust). Named after the Greek concept of truth as unconcealment. Currently: builds, passes 29 unit tests, zero dependencies. CLI surface is unbuilt (#124).
+  *Classification:* **project-specific**.
+
+[[oblibeny]]
+Oblíbený::
+  The reference language designed for the MAA framework. Named from Czech ("favourite" / "beloved"). Currently at specification stage with no in-tree implementation.
+  *Classification:* **project-specific**.
+
+[[cno-submodule]]
+CNO submodule (`absolute-zero/`)::
+  A git submodule pointer to the `link:https://github.com/hyperpolymath/absolute-zero[absolute-zero]` repository, which formalises Certified Null Operations and Observational Null Disclosure. Development happens upstream; this pointer is bumped deliberately.
+  *Classification:* **project-specific** (integration point).
+
+== Architecture
+
+[[hub-and-spoke]]
+Hub-and-spoke mirroring::
+  The repository mirroring pattern: GitHub (canonical) → GitLab, Codeberg, Bitbucket. Automated via CI workflows.
+  *Classification:* **standard** (repository management).
+
+[[crg-tier-c]]
+CRG Tier-C test suite::
+  The estate's test suite classification covering unit, E2E, property, aspect, and benchmark tests.
+  *Classification:* **project-specific** (estate standard).
+
+[[inert-workflows]]
+Inert workflows::
+  GitHub Actions workflow files located inside a subdirectory (e.g., `aletheia/.github/workflows/`) that GitHub Actions never reads, because it only scans `.github/workflows/` at the repository root. These files exist but have never executed.
+  *Classification:* **standard** (GitHub Actions behaviour), surfaced as a **project-specific gotcha**.
+
+== Pronunciation guide
+
+[cols="1,2", options="header"]
+|===
+| Written | Spoken
+
+| MAA
+| "em-ay-ay"
+
+| Oblíbený
+| "ob-lee-be-nee" (Czech)
+
+| Aletheia
+| "al-uh-thay-uh" (Greek)
+|===

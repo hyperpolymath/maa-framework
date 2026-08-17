@@ -1,0 +1,140 @@
+// SPDX-License-Identifier: MPL-2.0
+= MAA Framework — EXPLAINME
+:toc: preamble
+:toc-title: Contents
+:icons: font
+:doctype: article
+
+This file backs every factual claim in link:README.adoc[README.adoc] with code paths and honest caveats. Read it if you are doing due diligence on whether the story matches the code.
+
+== Claim-to-implementation map
+
+=== Aletheia builds, passes 29 unit tests, has zero dependencies
+
+[quote, README.adoc]
+____
+Aletheia microkernel (Rust): Builds, 29 unit tests passing, zero dependencies.____
+
+How this is implemented::
+`link:aletheia/[]` contains the Rust microkernel. `link:.github/workflows/rust-ci.yml[]` gates `cargo build`, `cargo test`, and formatting. CI is green. The `Cargo.toml` has zero external dependencies (enforced by CI).
+
+Caveat::
+29 unit tests pass. 27 of 29 integration tests *fail by design*—the integration test suite specifies behaviour that the CLI does not yet implement (#124). The failing integration tests are not regressions; they are specifications of unwritten code.
+
+=== CI is green across every enabled workflow and each gate has been shown capable of failing
+
+[quote, README.adoc]
+____CI is green across every enabled workflow, and each gate has been shown capable of failing.____
+
+How this is implemented::
+`.github/workflows/` at the repository root contains the CI gates. Each gate was verified to fail before being merged (standard CI hygiene).
+
+Caveat::
+The `aletheia/.github/workflows/` directory contains 16 workflow files that **have never executed**. GitHub Actions reads workflows at the repository root only. Those files are inert. See <<_aletheia_workflows_are_inert>>.
+
+=== CRG Tier-C test suite landed 2026-04-04
+
+[quote, README.adoc]
+____A CRG Tier-C test suite (unit, E2E, property, aspect, benchmarks) landed 2026-04-04.____
+
+How this is implemented::
+`link:tests/[]` contains the test suite. The tier classification (CRG Tier-C) is documented in the estate standards.
+
+Caveat::
+The test suite exists and runs. The "E2E, property, aspect, benchmarks" categories describe the *structure* of the suite, not all passing results. The integration (E2E) tests largely fail by design (#124).
+
+=== absolute-zero is a git submodule pinned here
+
+[quote, README.adoc]
+____The Certified Null Operation is developed in the standalone hyperpolymath/absolute-zero repository and pinned here as a git submodule.____
+
+How this is implemented::
+`link:absolute-zero/[]` is a git submodule (PR #89). Development happens upstream; this pointer is bumped deliberately.
+
+Caveat::
+The submodule points to a specific commit in `absolute-zero`. Changes to CNO proofs happen upstream first, then the submodule pointer is updated here. There is no automated synchronisation.
+
+=== The MAA paradigm is symmetric accountability
+
+[quote, README.adoc]
+____Mutually Assured Accountability (MAA) is a paradigm where accountability between system participants is symmetric.____
+
+How this is implemented::
+The paradigm is defined in the governance and specification documents. Aletheia is the microkernel intended to enforce it. The paradigm definition exists; the enforcement mechanism is under construction.
+
+Caveat::
+**The paradigm is stated; the enforcement is not yet implemented.** Aletheia's CLI surface (the mechanism through which accountability checks would be invoked) is unbuilt (#124). The paradigm is a design intent with a nascent implementation, not a deployed system.
+
+== Dogfooded Across The Account
+
+[cols="1,2,2", options="header"]
+|===
+| Technology / Pattern | Used here | Also used in
+
+| Rust microkernel
+| `aletheia/`
+| link:https://github.com/hyperpolymath/typell[Typell] (kernel)
+
+| CNO formalisation
+| `absolute-zero/` submodule
+| link:https://github.com/hyperpolymath/absolute-zero[absolute-zero] (upstream)
+
+| Hub-and-spoke mirroring
+| Root CI workflows
+| Estate-wide pattern
+|===
+
+== Known gaps
+
+[[_aletheia_workflows_are_inert]]
+[CAUTION]
+====
+**`aletheia/.github/workflows/` is inert.** 16 workflow files exist inside `aletheia/` but GitHub Actions only reads `.github/workflows/` at the repository root. Since `aletheia/` is vendored as plain tracked files (not a submodule), these workflows have never executed. Gates must be added at the root level.
+====
+
+[CAUTION]
+====
+**CLI surface is unbuilt (Issue #124).** `main.rs` wires 3 checks. The integration test suite specifies far more. 27 of 29 integration tests fail because the implementing code does not exist yet.
+====
+
+[CAUTION]
+====
+**23 clippy findings (Issue #125).** Mostly dead code left by the unbuilt CLI. Not yet a blocking gate.
+====
+
+[CAUTION]
+====
+**Specifications are pending.** ROADMAP Phase 1 (specification publication) is incomplete. The project scope (11 domains) is stated; the formal specifications for most domains are not yet in-tree.
+====
+
+[CAUTION]
+====
+**Oblíbený is at specification stage.** The reference language has no implementation in this repository.
+====
+
+[CAUTION]
+====
+**Scope-to-implementation gap is large.** The stated scope covers 11 domains (security, AI ethics, dependability, language design, microkernel, RISC-V, sustainability, economics-as-code, distributed computing, reversibility, web protocols). Only the microkernel domain has running code. The remaining 10 domains are at specification or intention stage.
+====
+
+== Evidence Index
+
+[cols="2,3", options="header"]
+|===
+| Path | Proves / Implements
+
+| `aletheia/`
+| Rust microkernel (builds, 29 unit tests, zero dependencies)
+
+| `absolute-zero/`
+| CNO formalisation (git submodule, upstream pointer)
+
+| `tests/`
+| CRG Tier-C test suite (unit, E2E, property, aspect, benchmarks)
+
+| `.github/workflows/rust-ci.yml`
+| Aletheia CI gate
+
+| `docs/STATE-OF-PLAY-2026-07-29.adoc`
+| Full measured snapshot: CI, proof state, open questions
+|===

@@ -1,0 +1,83 @@
+== maa-framework
+
+____
+\{\{PROJECT_DESCRIPTION}}
+____
+
+=== 🚀 Quick Start
+
+[source,bash]
+----
+# Clone the repository
+git clone {{REPOSITORY_URL}}
+cd maa-framework
+
+# Build
+cargo build --release
+
+# Run
+cargo run
+
+# Test
+cargo test
+----
+
+=== 📊 RSR Compliance
+
+*Level*: Bronze ✅
+
+This project maintains RSR Bronze-level compliance:
+
+* ✅ Type Safety: Rust compile-time guarantees
+* ✅ Memory Safety: Ownership model, zero unsafe blocks
+* ✅ Zero Dependencies: Only standard library
+* ✅ Offline-First: No network dependencies
+* ✅ Complete Documentation: All required docs present
+* ✅ Security: RFC 9116 compliant security.txt
+* ✅ Build System: Justfile, flake.nix, CI/CD
+* ✅ Testing: Comprehensive test suite
+
+Verify compliance:
+
+[source,bash]
+----
+aletheia .
+----
+
+=== 🎯 Features
+
+* Feature 1: \{\{FEATURE_1_DESCRIPTION}}
+* Feature 2: \{\{FEATURE_2_DESCRIPTION}}
+* Feature 3: \{\{FEATURE_3_DESCRIPTION}}
+
+=== 📖 Documentation
+
+* link:SECURITY.md[Security Policy] - Vulnerability disclosure
+* link:CONTRIBUTING.md[Contributing Guide] - How to contribute
+* link:CODE_OF_CONDUCT.md[Code of Conduct] - Community standards
+* link:CHANGELOG.md[Changelog] - Version history
+
+=== 🤝 Contributing
+
+We welcome contributions! See CONTRIBUTING.md for guidelines.
+
+=== 📜 License
+
+Dual-licensed under: - MIT License - See LICENSE-MIT.txt -
+\{\{ALTERNATIVE_LICENSE}} - See LICENSE-%7B%7BALTERNATIVE%7D%7D.txt
+
+=== 🙏 Acknowledgments
+
+* Built with https://www.rust-lang.org/[Rust]
+* RSR compliant via
+https://gitlab.com/maa-framework/6-the-foundation/aletheia[Aletheia]
+
+=== 📞 Contact
+
+* *Repository*: \{\{REPOSITORY_URL}}
+* *Issues*: \{\{ISSUES_URL}}
+* *Security*: See SECURITY.md
+
+'''''
+
+_\{\{PROJECT_TAGLINE}}_

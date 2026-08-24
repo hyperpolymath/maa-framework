@@ -1,0 +1,88 @@
+== Conformance Reports
+
+This folder contains conformance reports for Aletheia’s compliance with
+various standards and verification systems.
+
+=== Reports
+
+[width="100%",cols="29%,27%,44%",options="header",]
+|===
+|Report |Status |Description
+|RSR-CONFORMANCE.md
+|image:https://img.shields.io/badge/RSR-Bronze-cd7f32[Bronze] |Rhodium
+Standard Repository compliance
+|===
+
+image:https://img.shields.io/badge/License-MPL–2.0-blue.svg[License:
+PMPL-1.0,link="`https://github.com/hyperpolymath/palimpsest-license`"] |
+OIKOS-CONFORMANCE.md |
+image:https://img.shields.io/badge/Oikos-Pending-lightgrey[Pending] |
+Economic/ecological validation | | ECHIDNA-CONFORMANCE.md |
+image:https://img.shields.io/badge/Echidna-Pending-lightgrey[Pending] |
+Formal proof verification |
+
+=== Understanding Badges
+
+==== RSR (Rhodium Standard Repositories)
+
+Repository organization and documentation standards.
+
+[cols=",",options="header",]
+|===
+|Level |Meaning
+|Bronze |Basic compliance - documentation and structure
+|Silver |Enhanced quality - testing and coverage
+|Gold |Production ready - multi-platform builds
+|Platinum |Enterprise grade - full formal verification
+|===
+
+==== Palimpsest License
+
+Overlay license for attribution and provenance.
+
+[cols=",",options="header",]
+|===
+|Status |Meaning
+|Active |License properly applied
+|Partial |Some requirements pending
+|===
+
+==== Oikos
+
+Economic and ecological evaluation.
+
+[cols=",",options="header",]
+|===
+|Level |Meaning
+|Pending |Awaiting validation
+|Evaluated |Under review
+|Validated |Meets sustainability criteria
+|Exemplary |Best practices
+|===
+
+==== Echidna
+
+Formal proof-based code validation.
+
+[cols=",",options="header",]
+|===
+|Level |Meaning
+|Pending |Awaiting verification
+|Partial |Some proofs complete
+|Verified |Core properties proven
+|Certified |Full formal verification
+|===
+
+=== Learn More
+
+* link:../docs/VALUE-CHAIN-POLICY.md[Value Chain Policy] - How
+conformance fits into project value chain
+* link:../ALETHEIA-HANDOVER.md[ALETHEIA-HANDOVER.md] - Project handover
+with all badges
+* link:../CROSSREPO-HANDOVER.md[CROSSREPO-HANDOVER.md] - Full ecosystem
+documentation
+
+'''''
+
+_Conformance is verified by automated bots: rhodibot, oikos bot,
+echidnabot_

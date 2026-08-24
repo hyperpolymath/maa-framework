@@ -1,0 +1,203 @@
+== Aletheia Project Handover
+
+*For*: AI assistants starting work on the Aletheia project *Updated*:
+2026-02-05
+
+=== Conformance Badges
+
+link:conformance/RSR-CONFORMANCE.md[image:https://img.shields.io/badge/RSR-Bronze-cd7f32[RSR
+Bronze]]
+link:conformance/PALIMPSEST-CONFORMANCE.md[image:https://img.shields.io/badge/License-Palimpsest%20v0.8-blue[Palimpsest
+License]]
+link:conformance/OIKOS-CONFORMANCE.md[image:https://img.shields.io/badge/Oikos-Pending-lightgrey[Oikos
+Pending]]
+link:conformance/ECHIDNA-CONFORMANCE.md[image:https://img.shields.io/badge/Echidna-Pending-lightgrey[Echidna
+Pending]]
+link:docs/VALUE-CHAIN-POLICY.md[image:https://img.shields.io/badge/Value%20Chain-Defined-green[Value
+Chain]]
+
+=== What is Aletheia?
+
+*Aletheia* (ἀλήθεια - "`truth`", "`disclosure`", "`unconcealment`") is
+the *precursor research project* for building a reversible operating
+system based on Minix.
+
+==== Core Purpose
+
+Aletheia explores *reversible system operations* - the foundational
+research required before undertaking a full rewrite of Minix into a
+modern, reversible operating system (*r-Minix*).
+
+==== What Aletheia is NOT
+
+* ❌ NOT an RSR compliance checking tool (that’s
+link:extraction/rhodibot/[rhodibot])
+* ❌ NOT a CI/CD pipeline generator (that’s
+link:extraction/rhodium-pipeline/[rhodium-pipeline])
+* ❌ NOT just about repository standards
+
+==== What Aletheia IS
+
+* ✅ Research into reversible computing at the OS level
+* ✅ Practical application of CNO (Certified Null Operation) theory
+* ✅ Precursor work for r-Minix
+* ✅ Connected to
+https://gitlab.com/hyperpolymath/absolute-zero[Absolute Zero] formal
+proofs
+
+=== Value Chain Position
+
+....
+┌────────────────────────────────────────────────────────────────┐
+│ ALETHEIA VALUE CHAIN                                           │
+├────────────────────────────────────────────────────────────────┤
+│                                                                │
+│  INBOUND          OPERATIONS        OUTBOUND                   │
+│  ════════         ══════════        ════════                   │
+│  Absolute Zero    Reversible        CCCP Stack                 │
+│  • CNO proofs     Minix research    • Valence Shell           │
+│  • Landauer       • OS primitives   • Future r-Minix          │
+│  • Bennett        • Undo/redo       • Svalinn integration     │
+│                   • State capture                              │
+│                                                                │
+└────────────────────────────────────────────────────────────────┘
+....
+
+For the complete value chain model, see
+link:docs/VALUE-CHAIN-POLICY.md[VALUE-CHAIN-POLICY.md].
+
+=== Theoretical Foundation
+
+Aletheia builds on *Absolute Zero* - formal verification of Certified
+Null Operations:
+
+[width="100%",cols="41%,59%",options="header",]
+|===
+|Concept |Description
+|*CNO* |Certified Null Operation: `+op ;; reverse(op) ≡ identity+`
+
+|*Landauer’s Principle* |Computation dissipates heat (kT ln 2 per bit
+erased)
+
+|*Bennett’s Insight* |Reversible computation = zero heat dissipation
+
+|*Reversibility* |Every operation has an inverse
+|===
+
+=== Ecosystem Connections
+
+....
+                     ┌─────────────────────┐
+                     │   absolute-zero     │
+                     │  (Formal Proofs)    │
+                     └──────────┬──────────┘
+                                │ provides CNOs
+                                ▼
+┌───────────────┐    ┌─────────────────────┐    ┌───────────────┐
+│ valence-shell │◀───│      ALETHEIA       │───▶│   r-Minix     │
+│  (Reversible  │    │                     │    │   (FUTURE)    │
+│  Filesystem)  │    │ Precursor research  │    │               │
+└───────────────┘    └─────────────────────┘    └───────────────┘
+....
+
+=== Project Setup
+
+==== Bots Present
+
+* *echidnabot* - Formal proof-based code validation
+* *oikos bot* - Economic/ecological analysis
+* *rhodibot* - RSR compliance checking
+
+==== AI Support Files (.scm - Guile Scheme)
+
+[cols=",",options="header",]
+|===
+|File |Purpose
+|`+META.scm+` |Project metadata
+|`+ECOSYSTEM.scm+` |Ecosystem connections
+|`+STATE.scm+` |Current project state
+|`+PLAYBOOK.scm+` |Development workflows
+|`+AGENTIC.scm+` |AI agent configuration
+|`+NEUROSYM.scm+` |Neurosymbolic settings
+|===
+
+==== Build System
+
+* `+mustfile+` - Hyperpolymath build/task automation
+
+==== Licensing
+
+* *Primary*: link:LICENSE[Palimpsest License (MPL-2.0)]
+
+=== Quick Reference
+
+==== Language Policy
+
+[cols=",",options="header",]
+|===
+|Allowed |Use Case
+|Rust |Systems, performance-critical
+|ReScript |Application code
+|Deno |Runtime
+|Gleam |Backend services
+|===
+
+[cols=",",options="header",]
+|===
+|Banned |Use Instead
+|TypeScript |ReScript
+|Node.js/npm |Deno
+|Go |Rust
+|Python (general) |Rust/AffineScript
+|===
+
+==== Key Files
+
+[cols=",",options="header",]
+|===
+|File |Purpose
+|`+ALETHEIA-HANDOVER.md+` |This file - project handover
+|`+CROSSREPO-HANDOVER.md+` |Full ecosystem documentation
+|`+CLAUDE.md+` |AI assistant instructions
+|`+docs/VALUE-CHAIN-POLICY.md+` |Value chain model
+|`+conformance/+` |Conformance reports
+|===
+
+=== Conformance Reports
+
+All conformance reports are in the link:conformance/[`+conformance/+`]
+folder:
+
+[width="100%",cols="29%,27%,44%",options="header",]
+|===
+|Report |Status |Description
+|link:conformance/RSR-CONFORMANCE.md[RSR-CONFORMANCE.md] |Bronze
+|Repository standards
+
+|link:conformance/PALIMPSEST-CONFORMANCE.md[PALIMPSEST-CONFORMANCE.md]
+|Active |License compliance
+
+|link:conformance/OIKOS-CONFORMANCE.md[OIKOS-CONFORMANCE.md] |Pending
+|Economic/ecological
+
+|link:conformance/ECHIDNA-CONFORMANCE.md[ECHIDNA-CONFORMANCE.md]
+|Pending |Formal verification
+|===
+
+=== Getting Started
+
+[arabic]
+. *Read this document* to understand Aletheia’s purpose
+. *Check CLAUDE.md* for development constraints
+. *Review conformance/* for current compliance status
+. *Start with the research* - focus on reversible OS primitives
+
+=== Contact
+
+*Jonathan D. A. Jewell* - GitLab:
+https://gitlab.com/hyperpolymath[@hyperpolymath] - GitHub:
+https://github.com/Hyperpolymath[@Hyperpolymath]
+
+'''''
+
+_Aletheia: Unconcealing the path to reversible operating systems._

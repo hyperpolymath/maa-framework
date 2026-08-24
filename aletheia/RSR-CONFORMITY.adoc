@@ -1,0 +1,45 @@
+== RSR Conformity Statement
+
+*Project*: Aletheia *RSR Level*: Bronze *Standard*:
+https://github.com/hyperpolymath/rhodium-standard-repositories[Rhodium
+Standard Repository] *Last Verified*: 2025-12-26
+
+=== Bronze Requirements Met
+
+[cols=",",options="header",]
+|===
+|Requirement |Status
+|Zero external dependencies |Yes
+|Zero unsafe code |Yes
+|Offline-first (no network) |Yes
+|Documentation suite complete |Yes
+|Security disclosure (RFC 9116) |Yes
+|Build automation |Yes
+|CI/CD pipeline |Yes
+|Test suite |Yes
+|===
+
+=== Verification
+
+Run self-verification:
+
+[source,bash]
+----
+cargo run
+----
+
+Expected output: `+16/16 checks passed (100.0%)+`
+
+=== Audits
+
+[cols=",,",options="header",]
+|===
+|Date |Auditor |Result
+|2025-12-26 |Security review |0 vulnerabilities
+|===
+
+'''''
+
+See the
+https://github.com/hyperpolymath/rhodium-standard-repositories[RSR
+specification] for full standard details.

@@ -1,21 +1,60 @@
-// SPDX-License-Identifier: CC-BY-SA-4.0
-// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
-= Contributing Guide
+== Contributing to Aletheia
 
-== Getting Started
+Thank you for your interest in contributing to Aletheia!
 
-1. Fork the repository
-2. Create a feature branch from `main`
-3. Sign off commits (`git commit -s`)
-4. Submit a pull request
+=== Getting Started
 
-== Commit Guidelines
+[arabic]
+. Fork the repository on GitHub
+. Clone your fork locally
+. Create a feature branch from `+main+`
+. Set up your development environment (see below)
 
-* Conventional commits: `type(scope): description`
-* Sign all commits (DCO required)
-* Atomic, focused commits
+=== Development Setup
 
-== License
+Aletheia requires only the Rust toolchain. No external dependencies.
 
-Contributions licensed under project license.
+[source,bash]
+----
+# Clone and build
+git clone https://github.com/hyperpolymath/aletheia.git
+cd aletheia
+cargo build
+cargo test
+----
 
+=== How to Contribute
+
+==== Reporting Issues
+
+Open an issue on GitHub with a clear description of the problem or
+suggestion.
+
+==== Submitting Changes
+
+[arabic]
+. Create a feature branch: `+git checkout -b feat/my-feature+`
+. Make your changes following the code style below
+. Run `+cargo test+` and `+cargo clippy -- -D warnings+`
+. Sign off your commits: `+git commit -s+`
+. Submit a pull request against `+main+`
+
+=== Pull Request Process
+
+* Keep PRs focused and atomic
+* Include tests for new functionality
+* Ensure all existing tests pass
+* Follow conventional commit format: `+type(scope): description+`
+* All PRs require review before merge
+
+=== Code Style
+
+* Zero external dependencies (use std library only)
+* Zero unsafe code
+* Run `+cargo fmt+` before committing
+* All public items must have doc comments
+
+=== License
+
+Contributions are licensed under MPL-2.0. See CONTRIBUTING.adoc for full
+details.

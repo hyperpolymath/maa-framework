@@ -1,48 +1,195 @@
-// SPDX-License-Identifier: CC-BY-SA-4.0
-// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
-= Maintainers
-:toc: preamble
+== Maintainers
 
-This document lists the maintainers of this project and their responsibilities.
+This document lists the maintainers of the Aletheia project and
+describes the governance structure.
 
-== Current Maintainers
+=== 🏛️ Governance Model
 
-[cols="2,3,2",options="header"]
-|===
-| Name | Role | Contact
+Aletheia follows a *benevolent dictator governance model with maintainer
+delegation*:
 
-| Jonathan D.A. Jewell
-| Lead Maintainer
-| https://github.com/hyperpolymath[@hyperpolymath]
-|===
+* *Project Lead*: Makes final decisions on project direction
+* *Core Maintainers*: Review and merge contributions
+* *Contributors*: Submit improvements and feedback
 
-== Responsibilities
+=== 👥 Current Maintainers
 
-Maintainers are responsible for:
+==== Project Lead
 
-* Reviewing and merging pull requests
-* Triaging issues and feature requests
-* Ensuring code quality and security standards
-* Managing releases and versioning
-* Upholding the project's code of conduct
+*hyperpolymath* - *Role*: Project vision, final decision authority -
+*GitLab*: @hyperpolymath - *Email*: hyperpolymath@maa-framework.org -
+*Timezone*: Global - *Focus Areas*: Architecture, RSR compliance,
+community, Hyperpolymath Standard
 
-== Becoming a Maintainer
+==== Core Maintainers
 
-Contributors who demonstrate:
+*MAA Framework Contributors* - *Role*: Code review, merge authority -
+*GitLab*: @maa-framework - *Email*: maintainers@maa-framework.org -
+*Timezone*: Global - *Focus Areas*: Rust implementation, testing,
+documentation
 
-* Consistent, high-quality contributions
-* Understanding of the project's goals and standards
-* Constructive participation in discussions
-* Commitment to the project's long-term health
+_Contributors are welcome! See CONTRIBUTING.md for how to get involved._
 
-May be invited to become maintainers at the discretion of existing maintainers.
+=== 🎯 Maintainer Responsibilities
 
-== Decision Making
+==== Code Review
 
-* Routine decisions (bug fixes, minor improvements) can be made by any maintainer
-* Significant changes require discussion and consensus among maintainers
-* Breaking changes or major features should be discussed in issues before implementation
+* Review merge requests within 7 days
+* Ensure RSR Bronze-level compliance
+* Verify tests pass and code quality standards are met
+* Provide constructive feedback
 
-== Contact
+==== Issue Triage
 
-For questions about project governance, open an issue or contact the maintainers listed above.
+* Label issues appropriately (`+bug+`, `+enhancement+`,
+`+documentation+`, etc.)
+* Assign priority levels (`+critical+`, `+high+`, `+medium+`, `+low+`)
+* Close duplicate or resolved issues
+* Link related issues and merge requests
+
+==== Release Management
+
+* Tag releases following semantic versioning
+* Update CHANGELOG.md
+* Build and verify release artifacts
+* Announce releases to community
+
+==== Community Leadership
+
+* Welcome new contributors
+* Enforce Code of Conduct
+* Foster inclusive environment
+* Mentor contributors
+
+=== 🌱 Becoming a Maintainer
+
+Maintainers are invited based on sustained, high-quality contributions.
+Typical criteria:
+
+[arabic]
+. *Sustained Contributions*: 10+ merged MRs over 3+ months
+. *Code Quality*: Consistent adherence to standards
+. *Community Engagement*: Helpful in issues and discussions
+. *Alignment*: Understanding of RSR principles and project goals
+. *Availability*: Able to commit 2-4 hours/week to maintenance
+
+==== Nomination Process
+
+[arabic]
+. *Self-nomination or peer nomination*: Open an issue titled
+"`Maintainer Nomination: [Name]`"
+. *Discussion*: Existing maintainers discuss contribution history and
+fit
+. *Vote*: Maintainers vote (simple majority required)
+. *Onboarding*: New maintainer added to this document and granted
+repository access
+
+=== 🔐 Maintainer Permissions
+
+==== Repository Access
+
+* *Write access*: Push to non-protected branches
+* *Merge access*: Merge approved merge requests
+* *Release access*: Create tags and releases
+* *Settings access*: Manage labels, milestones, CI/CD
+
+==== Communication Channels
+
+* Access to maintainer email list
+* Private maintainer discussion forum (if established)
+* Authority to speak on behalf of project (with coordination)
+
+=== 📋 Decision-Making Process
+
+==== Minor Decisions
+
+* *Scope*: Bug fixes, documentation updates, minor features
+* *Process*: Single maintainer approval sufficient
+* *Timeline*: Decide within 7 days
+
+==== Major Decisions
+
+* *Scope*: Breaking changes, architecture changes, new dependencies
+* *Process*: Discussion among all maintainers, consensus preferred
+* *Timeline*: Minimum 14-day discussion period
+* *Fallback*: Project lead makes final decision if consensus cannot be
+reached
+
+==== Emergency Decisions
+
+* *Scope*: Critical security fixes, severe bugs
+* *Process*: Any maintainer can act immediately
+* *Follow-up*: Notify other maintainers within 24 hours
+
+=== 🚪 Stepping Down
+
+Maintainers may step down at any time:
+
+[arabic]
+. *Notification*: Email other maintainers with 30-day notice (if
+possible)
+. *Transition*: Hand off ongoing responsibilities
+. *Emeritus Status*: Retain advisory role and recognition
+. *Repository Access*: Access revoked, can be restored if returning
+
+==== Emeritus Maintainers
+
+Former maintainers who have stepped down with recognition:
+
+_None yet - Aletheia is a new project!_
+
+=== 🔄 Inactive Maintainer Policy
+
+If a maintainer is unresponsive for 90+ days:
+
+[arabic]
+. *Outreach*: Other maintainers attempt contact via email
+. *Grace Period*: 30 additional days for response
+. *Temporary Removal*: Repository access temporarily revoked
+. *Reinstatement*: Access restored upon return and re-engagement
+
+=== 🎓 Mentorship
+
+Maintainers are encouraged to mentor potential future maintainers:
+
+* Review contributions with detailed feedback
+* Suggest areas for contribution
+* Invite to maintainer discussions (when appropriate)
+* Share knowledge of project history and architecture
+
+=== 📊 Maintainer Activity
+
+We track maintainer activity to ensure the project remains
+well-maintained:
+
+* Monthly review of open issues and merge requests
+* Quarterly review of maintainer engagement
+* Annual review of governance structure
+
+=== 🌐 TPCF Alignment
+
+Maintainers operate across all TPCF perimeters:
+
+* *Perimeter 1 (Inner Sanctum)*: Full access to all project resources
+* *Perimeter 2 (Trusted Contributors)*: Ability to promote active
+contributors
+* *Perimeter 3 (Community Sandbox)*: Steward open contribution process
+
+=== 📞 Contact Maintainers
+
+* *General*: maintainers@maa-framework.org
+* *Security*: security@maa-framework.org
+* *Code of Conduct*: conduct@maa-framework.org
+* *GitLab*: Mention @maintainers in issues/MRs
+
+=== 🙏 Acknowledgments
+
+Thank you to all maintainers for their dedication to Aletheia and the
+pursuit of _alētheia_ - the unconcealment of truth.
+
+'''''
+
+*Last Updated*: 2025-11-22 *Version*: 1.0
+
+_This document will be updated as the maintainer team grows and
+governance evolves._

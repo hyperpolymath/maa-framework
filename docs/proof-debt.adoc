@@ -221,7 +221,7 @@ the canonical `+hyperpolymath/absolute-zero+` repo upstream and bump the
 submodule pin here (`+git submodule update --remote absolute-zero+` then
 commit).
 . If a *new* proof-bearing file appears *outside* `+absolute-zero/+`
-(e.g. under `+aletheia/+` for the Rust verification pipeline, or under
+(e.g. under `+aletheia/+` for the Rust verification pipeline, or under
 `+contractiles/+`), classify it into §(a)/(b)/(c)/(d) per the canonical
 schema. That would be load-bearing maa-framework debt.
 

@@ -338,7 +338,7 @@ mkdir tests
 
 * Read ARCHITECTURE.md - Understand how Aletheia works
 * Read RSR-SPECIFICATION.md - Learn RSR standards
-* Read link:../CONTRIBUTING.md[CONTRIBUTING.md] - Contribute to Aletheia
+* Read link:../../.github/CONTRIBUTING.md[CONTRIBUTING.md] - Contribute to Aletheia
 
 === Support
 

@@ -151,7 +151,7 @@ link:../MAINTAINERS.md[MAINTAINERS.md] for details.
 
 ==== How can I contribute?
 
-See link:../CONTRIBUTING.md[CONTRIBUTING.md] for contribution
+See link:../../.github/CONTRIBUTING.md[CONTRIBUTING.md] for contribution
 guidelines. We welcome: - Bug reports - Feature requests - Documentation
 improvements - Code contributions
 

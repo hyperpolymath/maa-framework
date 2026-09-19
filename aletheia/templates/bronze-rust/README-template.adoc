@@ -53,7 +53,7 @@ aletheia .
 === 📖 Documentation
 
 * link:SECURITY.md[Security Policy] - Vulnerability disclosure
-* link:CONTRIBUTING.md[Contributing Guide] - How to contribute
+* link:../../../.github/CONTRIBUTING.md[Contributing Guide] - How to contribute
 * link:CODE_OF_CONDUCT.md[Code of Conduct] - Community standards
 * link:CHANGELOG.md[Changelog] - Version history
 

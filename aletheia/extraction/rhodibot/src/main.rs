@@ -406,7 +406,7 @@ See [LICENSE.txt](LICENSE.txt) for details.
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines.
+See [CONTRIBUTING.md](../../../../.github/CONTRIBUTING.md) for contribution guidelines.
 
 ## Security
 

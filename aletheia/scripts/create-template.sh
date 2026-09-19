@@ -101,7 +101,7 @@ This project maintains RSR Bronze-level compliance:
 
 ## 🤝 Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md)
+See [CONTRIBUTING.md](../../.github/CONTRIBUTING.md)
 
 ## 📜 License
 

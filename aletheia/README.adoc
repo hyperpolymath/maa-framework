@@ -249,7 +249,7 @@ This is research-stage software. Contributions welcome in:
 * Reversibility literature survey
 * Rust/AffineScript implementation
 
-See link:CONTRIBUTING.md[CONTRIBUTING.md] for guidelines.
+See link:../.github/CONTRIBUTING.md[CONTRIBUTING.md] for guidelines.
 
 == License
 

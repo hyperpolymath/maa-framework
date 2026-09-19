@@ -29,7 +29,7 @@ reversible operating systems (r-Minix).
 *Required Documentation*: - `+README.adoc+` - Project overview
 (AsciiDoc) - `+LICENSE+` - Palimpsest License (MPL-2.0) -
 `+SECURITY.md+` - Security policy and disclosure - `+CONTRIBUTING.md+` /
-`+CONTRIBUTING.adoc+` - Contribution guidelines - `+CODE_OF_CONDUCT.md+`
+`+../.github/CONTRIBUTING.md+` - Contribution guidelines - `+CODE_OF_CONDUCT.md+`
 - Community standards - `+MAINTAINERS.md+` / `+MAINTAINERS.adoc+` -
 Governance structure - `+CHANGELOG.md+` / `+CHANGELOG.adoc+` - Version
 history

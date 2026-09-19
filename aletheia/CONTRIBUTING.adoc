@@ -56,5 +56,5 @@ suggestion.
 
 === License
 
-Contributions are licensed under MPL-2.0. See CONTRIBUTING.adoc for full
+Contributions are licensed under MPL-2.0. See ../.github/CONTRIBUTING.md for full
 details.

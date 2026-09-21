@@ -32,10 +32,15 @@ broken for over a month.
 
 ## Where the real gate lives now
 
-`/.github/workflows/rust-ci.yml`, at the repository root. It builds debug and release,
-runs the 26 unit tests, checks formatting, and enforces the zero-dependency constraint
-from `aletheia/CLAUDE.md`. Read its header comment for what it deliberately does *not*
-gate yet.
+`/.github/workflows/rust-ci.yml`, at the repository root. (It went missing for a
+while: the commit that moved the crate to `aletheia/` deleted the old root gate
+without re-pointing it, so main had no Rust CI until the gate was restored on
+2026-09-21.) It builds debug (`--all-targets`) and release, runs the full test
+suite (66 unit + 45 integration and counting), checks formatting, runs clippy
+with warnings denied (issue #125), and enforces the zero-dependency constraint
+from `aletheia/CLAUDE.md`. Each job has a same-named recipe in the root Justfile
+— `just check` runs the same steps locally. Read the workflow header comment for
+what it deliberately does *not* gate yet.
 
 ## If you are changing CI for aletheia
 

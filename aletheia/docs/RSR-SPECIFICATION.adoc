@@ -1,3 +1,14 @@
+[WARNING]
+====
+Superseded. This v0.1.0 specification predates the estate's RSR v2
+criteria and no longer defines anything: the normative criteria text is
+`hyperpolymath/standards` `0-canon/rsr/rsr-criteria-v2.a2ml`, the
+normative evaluator is the hypatia `rsr-conformance` oracle, and
+aletheia's implemented subset is defined by the inventory table in
+`src/checks.rs` (see `SSOT_PROVENANCE`). Do not extend this document —
+it is retained for archaeology only.
+====
+
 == RSR (Rhodium Standard Repository) Specification
 
 === Version 0.1.0

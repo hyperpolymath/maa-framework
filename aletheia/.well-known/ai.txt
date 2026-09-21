@@ -15,7 +15,7 @@ Overlay: Palimpsest-0.8
 
 # Attribution Requirements
 Attribution: required
-Attribution-url: https://gitlab.com/maa-framework/6-the-foundation/aletheia
+Attribution-url: https://github.com/hyperpolymath/maa-framework/tree/main/aletheia
 Attribution-name: MAA Framework Contributors
 
 # Consent Framework

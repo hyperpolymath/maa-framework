@@ -26,34 +26,35 @@ submodule — its tests run in the upstream repo, not in this repository’s
 CI.
 ____
 
-==== The 27 failing aletheia integration tests
+____
+*Updated 2026-09-21.* aletheia unit tests went 29 → *66*
+and the integration suite went 2 pass / 27 fail → *45 pass / 0 fail*
+(issues #124 and #125 closed). The root `+rust-ci.yml+` gate was
+restored re-pointed at `+aletheia/+` with clippy blocking. `+absolute-zero/+`
+tests still run in the upstream repo.
+____
 
-They fail *by design, not by regression* — and the distinction matters:
+==== The 45 passing aletheia integration tests (was: 27 failing by design)
 
-`+tests/integration_tests.rs+` (806 lines, 32 tests) describes a CLI
-that has never been written: 16 Bronze checks plus Silver, `+--help+`,
-`+--version+`, `+--verbose+`, `+--badge+`, `+--init-hook+`,
-`+--format=+`, HTML output. `+main.rs+` currently parses `+<repo-path>+`
-plus `+--json+`/`+--sarif+` and wires *three* checks.
+*Resolved 2026-09-21 (issue #124).* The CLI the suite specified has been
+written — against the upstream RSR criteria, not against the suite's
+strings, exactly as the caution below demanded. `+tests/integration_tests.rs+`
+(45 tests) runs the built binary end to end: 26 checks over the offline
+file-presence subset, `+--help+`, `+--version+`, `+--verbose+`,
+`+--badge+`, `+--init-hook+`, `+--format=+`, HTML output. The suite is in
+the CI gate and in `+just test+` (full `+cargo test --locked+`).
+
+The historical note is preserved because the warning still applies to
+future checks:
 
 ____
-[!CAUTION] Every assertion in that suite is on a *stdout substring*,
-e.g.
-`+assert!(stdout.contains("Bronze-level RSR compliance: ACHIEVED"))+`.
+[!CAUTION] Every assertion in that suite is on a *stdout substring*.
 That pins the _wording_ of the verdict and says nothing about what the
 checks must verify — so the whole suite can be satisfied by checks that
-verify nothing.
-
-*Do not "`fix`" these by writing checks that emit the expected strings.*
-That would invent a definition of RSR compliance and encode it as
-canonical, while a definition already exists in the estate (hypatia’s
-`+rsr-conformance+` oracle). Tracked as issue #124, blocked on that
-source-of-truth ruling.
+verify nothing. New checks must cite their upstream criterion (see
+`+SSOT_PROVENANCE+` in `+aletheia/src/checks.rs+`); never write a check
+to match a string.
 ____
-
-They are deliberately *not* in the CI gate and *not* in `+just test+`
-(`+--bins+` only). Adding them without resolving #124 would make the bar
-green by breaking it.
 
 === Current State
 

@@ -4,7 +4,7 @@
 
 [metadata]
 repo = "maa-framework"
-last-updated = "2026-06-12"
+last-updated = "2026-09-21"
 owner = "hyperpolymath"
 
 [scanner]
@@ -13,10 +13,11 @@ workflow = ".github/workflows/hypatia-scan.yml"  # thin wrapper of hyperpolymath
 report-format = "logtalk"  # per 6a2/NEUROSYM.a2ml [hypatia-config]
 
 [accepted-findings]
-# Known, deliberate exemptions — mirrored from .hypatia-ignore with reasons.
-banned-language-absolute-zero-demos = "cicd_rules/banned_language_file entries for absolute-zero/ (.res/.go/.java/.kt/.swift demo files): absolute-zero/ is a submodule pinned to hyperpolymath/absolute-zero; the entries mirror that repo's own .hypatia-ignore and are kept defensively in case hypatia scans through the submodule boundary. Demonstration scaffolds, not load-bearing code (see #71)."
-stale-aletheia-safedom-entry = "the aletheia/examples/SafeDOMExample.res entry is STALE — the file was deleted in PR #74; entry retained pending an ignore-file prune (TODO 2026-Q3 in .hypatia-ignore)."
-glob-collapse-pending = "per .hypatia-ignore: the per-file absolute-zero/examples/** entries will collapse to a single file_pattern entry once standards#180 (glob matching in in_baseline()) merges."
+# No active exemptions (2026-09-21, issue #98): the 10 mirrored
+# banned_language_file entries were pruned after verifying every path dead
+# at the pinned absolute-zero commit. Upstream residue is tracked in the
+# owning repo (hyperpolymath/absolute-zero#77). standards#180 has merged,
+# so file_pattern globs are available if per-file exemptions ever return.
 
 [prohibited-actions]
 auto-delete-branches = false

@@ -1,3 +1,14 @@
+[NOTE]
+====
+2026-09-21: the record below dates from 2025-12-26 and describes the *v1*
+check shape (16 checks: LICENSE.txt, lowercase justfile, flake.nix),
+which the estate has since retired. Current state: aletheia implements
+the RSR v2 offline file-presence subset (26 checks: 13 Bronze, 12 Silver,
+1 Gold — see `SSOT_PROVENANCE` in `src/checks.rs`) and achieves
+Bronze-level compliance on itself. The hypatia `rsr-conformance` oracle
+is normative. This file is retained as a historical record.
+====
+
 == RSR Conformance Report
 
 https://github.com/hyperpolymath/rhodium-standard-repositories[image:https://img.shields.io/badge/RSR-Bronze-cd7f32[RSR

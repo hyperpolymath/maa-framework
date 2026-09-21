@@ -68,14 +68,14 @@ The Certified Null Operation (CNO) formalisation is developed upstream in `link:
 
 == Known gaps
 
-[CAUTION]
+[NOTE]
 ====
-**Aletheia CLI is unbuilt.** `main.rs` wires 3 checks. The integration suite specifies far more. 27 of 29 integration tests fail by design (not by regression), because the code to make them pass does not exist yet. Tracked in Issue #124.
+**Aletheia CLI rebuilt 2026-09-21 (was: unbuilt, #124).** The CLI now implements the RSR v2 offline file-presence subset (26 checks: 13 Bronze, 12 Silver, 1 Gold) with human/JSON/SARIF/HTML/badge/quiet/verbose output; 66 unit + 45 integration tests pass. The hypatia `rsr-conformance` oracle stays normative — aletheia evaluates only the offline subset and says so in verbose output.
 ====
 
-[CAUTION]
+[NOTE]
 ====
-**23 clippy findings in Aletheia**, mostly dead code that exists because of the unbuilt CLI (#124). Not yet a blocking gate. Tracked in Issue #125.
+**Clippy clean and blocking since 2026-09-21 (was: 23 findings, #125).** The findings were wired into real code, not silenced; `cargo clippy --all-targets -- -D warnings` gates in `rust-ci.yml` and `just lint`.
 ====
 
 [CAUTION]

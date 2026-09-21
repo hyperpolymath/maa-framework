@@ -1,86 +1,109 @@
 == Aletheia Quick Reference Card
 
-One-page reference for Aletheia RSR compliance verification.
+One-page reference for Aletheia RSR compliance verification (v1.9.0,
+2026-09-21). Aletheia evaluates the *offline file-presence subset* of the
+RSR v2 criteria (26 checks); the hypatia `rsr-conformance` oracle stays
+normative. Criteria source: `hyperpolymath/standards`
+`0-canon/rsr/rsr-criteria-v2.a2ml`.
 
 === 🚀 Installation
 
 [source,bash]
 ----
-# Quick install
-curl -sSf https://gitlab.com/.../install.sh | bash
+# Build from source (aletheia is vendored in maa-framework)
+git clone https://github.com/hyperpolymath/maa-framework.git
+cd maa-framework/aletheia && cargo build --release
+# binary: target/release/aletheia (zero dependencies, MSRV 1.80)
 
-# Or build from source
-git clone https://gitlab.com/maa-framework/6-the-foundation/aletheia.git
-cd aletheia && cargo build --release
-
-# Or use Cargo
-cargo install --git https://gitlab.com/maa-framework/6-the-foundation/aletheia.git
+# Or run the installer (same steps, installs to ~/.local/bin)
+bash scripts/install.sh
 ----
 
 === 💻 Usage
 
 [source,bash]
 ----
-# Verify current directory
+# Verify current directory (human report, Bronze gate)
 aletheia
-# or
-cargo run
 
-# Verify specific repository
+# Verify a specific repository
 aletheia /path/to/repo
-# or
-cargo run -- /path/to/repo
 
-# In Docker
-docker run -v $(pwd):/repo aletheia:0.1.0
+# Machine-readable output
+aletheia --format json /path/to/repo
+aletheia --format sarif . > results.sarif
+aletheia --badge . > badge.svg        # SVG compliance badge
+aletheia -q .                         # quiet: prints only PASS or FAIL
+aletheia -v .                         # verbose: suggestions, tiers, SSOT note
+
+# Config file (default: <repo>/.aletheia.toml)
+aletheia --config my.toml .
+
+# Install a pre-commit hook that runs aletheia
+aletheia init-hook /path/to/repo
 ----
 
-=== ✅ RSR Bronze Requirements Checklist
+=== ✅ The 26 checks (RSR v2 offline subset)
 
-==== Documentation (7 files)
+==== Bronze (13 — the gate)
 
-* [ ] `+README.md+` - Project overview
-* [ ] `+LICENSE.txt+` - Open source license
-* [ ] `+SECURITY.md+` - Security policy
-* [ ] `+CONTRIBUTING.md+` - Contribution guide
-* [ ] `+CODE_OF_CONDUCT.md+` - Community standards
-* [ ] `+MAINTAINERS.md+` - Governance
-* [ ] `+CHANGELOG.md+` - Version history
+* [ ] `scm-github` — `.github/` directory
+* [ ] `justfile` — Justfile with real recipes
+* [ ] `no-makefile` — no Makefile / Dockerfile
+* [ ] `readme` — README.adoc (README.md accepted)
+* [ ] `license-file` — LICENSE file (not LICENSE.txt)
+* [ ] `security-policy` — SECURITY policy (root or .github/)
+* [ ] `gitignore` — .gitignore + .gitattributes
+* [ ] `spdx-headers` — SPDX headers on source files
+* [ ] `no-secrets` — no committed secrets / key material
+* [ ] `language-policy` — no banned languages
+* [ ] `no-node-runtime` — no package.json runtime deps (Bun lockfile carves out)
+* [ ] `ci-present` — CI pipeline under .github/workflows/
+* [ ] `licence-class` — LICENSE names a recognized identifier
 
-==== .well-known (3 files)
+==== Silver (12 — reported, non-fatal at the default gate)
 
-* [ ] `+.well-known/security.txt+` - RFC 9116 security contact
-* [ ] `+.well-known/ai.txt+` - AI policy
-* [ ] `+.well-known/humans.txt+` - Attribution
+* [ ] `editorconfig`, `tool-versions`
+* [ ] `coc` — CODE_OF_CONDUCT (root or .github/)
+* [ ] `contributing` — CONTRIBUTING (root or .github/)
+* [ ] `changelog` — CHANGELOG.adoc (or .md)
+* [ ] `wellknown-core` — .well-known/{security.txt,ai.txt,humans.txt}
+* [ ] `ai-manifest` — 0-AI-MANIFEST.a2ml
+* [ ] `rsr-profile` — .machine_readable/rsr-profile.a2ml
+* [ ] `sha-pinned` — actions pinned (full SHA, or tag covered by actions.lock)
+* [ ] `hypatia-scan` — hypatia-scan.yml workflow
+* [ ] `governance-wf` — governance.yml workflow
+* [ ] `reuse` — LICENSES/ with full texts
 
-==== Build System (3 files)
+==== Gold (1)
 
-* [ ] `+justfile+` - Build automation
-* [ ] `+flake.nix+` - Nix reproducible builds
-* [ ] `+.gitlab-ci.yml+` or `+.github/workflows/+` - CI/CD
+* [ ] `no-silent-skip` — no `|| echo SKIP` silent-green recipes
 
-==== Source Structure (2 directories)
-
-* [ ] `+src/+` - Source code
-* [ ] `+tests/+` or `+test/+` - Tests
+Plus automatic critical warnings for symlinks escaping the repo root.
 
 === 📊 Understanding Output
 
 ....
-🔍 Aletheia - RSR Compliance Verification Report
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Aletheia - RSR Compliance Verification Report
 Repository: /path/to/repo
+Verified: 2026-09-21T20:05:37Z
 
-📋 Documentation
-  ✅ README.md [Bronze]        # Passes
-  ❌ LICENSE.txt [Bronze]      # Fails
+[Documentation]
+  ✅ README.adoc (or README.md) [Bronze]
+  ✅ LICENSE file (not LICENSE.txt) [Bronze]
+  ❌ SECURITY policy (root or .github/) [Bronze]
 
-Score: 8/16 checks passed (50.0%)
-⚠️  Bronze-level RSR compliance: NOT MET  # Exit code 1
+Score: 25/26 checks passed (96.2%)
+Bronze-level RSR compliance: NOT MET  # Exit code 1
+
+Fix Suggestions
+  [security-policy] Add SECURITY.md with disclosure contact + response timeline; v2 2.1.3.
 ....
 
-*Exit Codes*: - `+0+` - All Bronze checks pass (compliant) - `+1+` - One
-or more Bronze checks fail (not compliant)
+*Exit Codes*: `0` — required tier achieved; `1` — tier not met; `2` —
+critical warning (escaping symlink); `3` — usage/path/config error;
+`4` — invalid arguments. Gate tier via `[aletheia] level` in config
+(default `bronze`).
 
 === 🛠️ Quick Fixes
 
@@ -88,10 +111,11 @@ or more Bronze checks fail (not compliant)
 
 [source,bash]
 ----
-# Create all required docs at once
-touch README.md LICENSE.txt SECURITY.md \
-      CONTRIBUTING.md CODE_OF_CONDUCT.md \
-      MAINTAINERS.md CHANGELOG.md
+# .adoc is primary, .md accepted; LICENSE (never LICENSE.txt)
+touch README.adoc LICENSE SECURITY.md \
+      CONTRIBUTING.md CODE_OF_CONDUCT.md CHANGELOG.adoc
+touch .gitignore .gitattributes
+mkdir -p LICENSES  # full licence texts, REUSE style
 ----
 
 ==== Missing .well-known
@@ -101,7 +125,7 @@ touch README.md LICENSE.txt SECURITY.md \
 mkdir -p .well-known
 cat > .well-known/security.txt << 'EOF'
 Contact: mailto:security@example.org
-Expires: 2026-12-31T23:59:59.000Z
+Expires: 2027-12-31T23:59:59.000Z
 EOF
 
 touch .well-known/ai.txt .well-known/humans.txt
@@ -111,114 +135,54 @@ touch .well-known/ai.txt .well-known/humans.txt
 
 [source,bash]
 ----
-# Create Justfile
+# Capital-J Justfile with real recipes (stubs fail the check)
 cat > Justfile << 'EOF'
 build:
-    cargo build
+    cargo build --locked
+
 test:
-    cargo test
+    cargo test --locked
 EOF
 
-# Create basic flake.nix
-echo '{}' > flake.nix
-
-# Create basic CI
-touch .gitlab-ci.yml  # or .github/workflows/ci.yml
+# CI lives at .github/workflows/ (repo root only)
+mkdir -p .github/workflows
 ----
 
-==== Missing Source Structure
+==== Missing Source/Machine-Readable
 
 [source,bash]
 ----
-mkdir -p src tests
-mv *.rs src/  # Move source files
+mkdir -p src
+touch 0-AI-MANIFEST.a2ml
+mkdir -p .machine_readable && touch .machine_readable/rsr-profile.a2ml
 ----
 
-=== 🔧 Build Automation (Justfile)
+=== 🔧 Config (.aletheia.toml)
 
-[source,bash]
+[source,toml]
 ----
-just                 # List all commands
-just build          # Build project
-just test           # Run tests
-just check          # Run all checks
-just validate       # Verify RSR compliance
-just clean          # Clean build artifacts
-----
+[aletheia]
+level = "bronze"   # gate tier: bronze | silver | gold
 
-=== 🐳 Docker Commands
+[checks]
+# Disable by check id, category, or tier alias:
+# wellknown-core = false
+# Machine-Readable = false
+# silver = false
 
-[source,bash]
-----
-# Build image
-docker build -t aletheia:0.1.0 .
-
-# Verify current directory
-docker run -v $(pwd):/repo aletheia:0.1.0
-
-# Verify specific path
-docker run -v /path/to/repo:/repo aletheia:0.1.0
+[ignore]
+files = ["CHANGELOG.adoc"]   # glob patterns, repo-relative
 ----
 
 === 🔄 CI/CD Integration
 
-==== GitLab CI
-
 [source,yaml]
 ----
-rsr-compliance:
-  script:
-    - cargo install --git https://gitlab.com/.../aletheia.git
-    - aletheia
-----
-
-==== GitHub Actions
-
-[source,yaml]
-----
-- run: cargo install --git https://gitlab.com/.../aletheia.git
-- run: aletheia
-----
-
-=== 📝 Quick Templates
-
-==== Minimal README.md
-
-[source,markdown]
-----
-# Project Name
-
-Description
-
-## Usage
-\`\`\`bash
-command
-\`\`\`
-
-## License
-See [LICENSE.txt](LICENSE.txt)
-----
-
-==== Minimal SECURITY.md
-
-[source,markdown]
-----
-# Security Policy
-
-Report vulnerabilities to: security@example.org
-
-See [.well-known/security.txt](.well-known/security.txt)
-----
-
-==== Minimal Justfile
-
-[source,makefile]
-----
-build:
-    cargo build
-
-test:
-    cargo test
+# No published image or crate: build from the vendored tree.
+- uses: actions/checkout@v7.0.1
+- run: cargo build --locked --release
+  working-directory: aletheia
+- run: ./aletheia/target/release/aletheia -q .
 ----
 
 === 🆘 Troubleshooting
@@ -226,11 +190,13 @@ test:
 [width="100%",cols="48%,52%",options="header",]
 |===
 |Problem |Solution
-|Path not found |Use absolute path: `+aletheia /full/path+`
+|Path not found |Use an absolute path: `+aletheia /full/path+`
 
 |Permission denied |Check file permissions: `+ls -la+`
 
-|Wrong directory |Run from repo root
+|Wrong directory |Run from the repo root, or pass the path
+
+|Exit code 2 |An escaping symlink was found — inspect before overriding
 
 |Missing tool |Install Rust:
 `+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs \| sh+`
@@ -238,25 +204,27 @@ test:
 
 === 📚 More Information
 
-* *Full Docs*: See `+docs/+` directory
-* *Quick Start*: `+docs/QUICK_START.md+`
-* *FAQ*: `+docs/FAQ.md+`
-* *Migration*: `+docs/MIGRATION-GUIDE.md+`
-* *Architecture*: `+docs/ARCHITECTURE.md+`
+* *AI guide*: `+CLAUDE.md+` (setup, gates, module layout)
+* *Status*: `+PROJECT_STATUS.adoc+`
+* *Architecture*: `+docs/ARCHITECTURE.adoc+`
+* *Quick Start*: `+docs/QUICK_START.adoc+`
+* *FAQ*: `+docs/FAQ.adoc+`
+* *Silver level*: `+docs/SILVER-LEVEL.adoc+`
 
 === 🔗 Links
 
 * *Repository*:
-https://gitlab.com/maa-framework/6-the-foundation/aletheia
-* *Issues*: https://gitlab.com/…/aletheia/-/issues
-* *Security*: See `+SECURITY.md+`
+https://github.com/hyperpolymath/maa-framework/tree/main/aletheia
+* *Issues*: https://github.com/hyperpolymath/maa-framework/issues
+* *Security*: See `+SECURITY.md+` and `+.well-known/security.txt+`
 
 === 📞 Contact
 
-* *Email*: maintainers@maa-framework.org
 * *Security*: security@maa-framework.org
 
 '''''
 
-*Version*: 0.1.0 | *RSR Level*: Bronze | *License*: MIT OR
-Palimpsest-0.8
+*Version*: 1.9.0 | *RSR Level*: Bronze (self-verified) + Silver checks |
+*License*: PMPL-1.0-or-later (code) + CC-BY-SA-4.0 (docs), see LICENSE —
+under review, see the `aletheia-licence` open question in the root
+STATE.a2ml

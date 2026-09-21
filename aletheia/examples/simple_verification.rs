@@ -20,23 +20,25 @@ fn main() {
     println!("Example 2: Verify specific repository");
     println!("Run: cargo run -- /path/to/repository\n");
 
-    // Example 3: Expected output
+    // Example 3: Expected output (RSR v2 shape — README.adoc primary,
+    // LICENSE not LICENSE.txt, 26 checks in the offline subset)
     println!("Example 3: Expected output format");
     println!(
         "
-🔍 Aletheia - RSR Compliance Verification Report
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Aletheia - RSR Compliance Verification Report
 Repository: /path/to/repository
+Verified: 2026-09-21T20:05:37Z
 
-📋 Documentation
-  ✅ README.md [Bronze]
-  ✅ LICENSE.txt [Bronze]
-  ✅ SECURITY.md [Bronze]
-  ❌ CONTRIBUTING.md [Bronze]
+[Documentation]
+  ✅ README.adoc (or README.md) [Bronze]
+  ✅ LICENSE file (not LICENSE.txt) [Bronze]
+  ✅ SECURITY policy (root or .github/) [Bronze]
+  ❌ CONTRIBUTING (root or .github/) [Silver]
   ...
 
-Score: 14/16 checks passed (87.5%)
-⚠️  Bronze-level RSR compliance: NOT MET
+Score: 25/26 checks passed (96.2%)
+Bronze-level RSR compliance: ACHIEVED
+Silver-level RSR compliance: NOT MET
     "
     );
 

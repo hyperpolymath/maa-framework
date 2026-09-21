@@ -12,7 +12,9 @@
 # Justfile; keep them in lockstep so `just check` means the same thing
 # locally as this gate. Toolchain is the runner's ambient Rust (the crate
 # declares rust-version 1.80; there is deliberately no pinned toolchain
-# action here, to keep the lockfile surface to checkout alone).
+# action here, to keep the lockfile surface to checkout alone). No
+# #![allow(dead_code)] workarounds: dead code here is either wired or
+# deleted (see the never-allow-dead-code landmine in STATE.a2ml).
 name: rust-ci
 on:
   push:

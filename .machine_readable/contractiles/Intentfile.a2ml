@@ -60,12 +60,14 @@ status = "declared"
 [[intents]]
 name = "changelog-automation"
 description = "Adopt changelog-reusable.yml (standards#206) so CHANGELOG.md stays in sync with conventional commits"
-status = "declared"
+status = "done"
+notes = "Closed #100 on 2026-09-21: changelog.yml (commit-back), CHANGELOG.md seeded, CHANGELOG.adoc frozen as pointer"
 
 [[intents]]
 name = "root-justfile-wiring"
 description = "Wire root Justfile build/test/fmt/lint recipes to the real aletheia/ cargo targets (currently placeholders)"
-status = "declared"
+status = "done"
+notes = "Wired in #144 (closes #99); canonicalised in #102 (contractiles stub is now a forwarding shim); lint is -D warnings since #125"
 
 [[intents]]
 name = "crg-c-compliance"

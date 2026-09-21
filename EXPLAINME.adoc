@@ -148,9 +148,9 @@ Hypatia's compliance scanner
 | `contractile.just` + `contractiles/` — shared build recipes
 | Universal across hyperpolymath repos
 
-| *Guix/Nix*
-| `guix.scm` + `flake.nix` — reproducible build environments
-| Ecosystem-wide policy enforced by guix-nix-policy.yml CI
+| *Guix (preferred dev shell; no manifest in tree)*
+| QUICKSTART-DEV prescribes `guix shell`, but no `guix.scm`/`manifest.scm` is committed — environment setup is currently manual
+| Ecosystem-wide where adopted (`flake.nix` retired estate-wide 2026-06; no guix-nix-policy gate in this repo)
 |===
 
 == File Map

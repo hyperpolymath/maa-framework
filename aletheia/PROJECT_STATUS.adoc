@@ -1,7 +1,7 @@
 == Aletheia Project Status
 
-*Version*: 1.0.0 *Status*: Stable / Maintenance *Last Updated*:
-2026-02-05
+*Version*: 1.9.0 *Status*: Stable / Maintenance *Last Updated*:
+2026-09-21
 
 === Project Overview
 
@@ -14,13 +14,13 @@ reversible operating systems (r-Minix).
 ==== Core Implementation (100% Complete)
 
 * *Main Application* (`+src/main.rs+`)
-** ~950 lines of safe Rust code
+** ~3,800 lines of safe Rust code (measured 2026-09-21)
 ** Zero dependencies
 ** Zero unsafe blocks
-** 10 unit tests + 18 integration tests (28 total)
+** 66 unit tests + 45 integration tests (111 total, 100% pass)
 ** 100% test pass rate
-** Bronze-level RSR verification logic
-** CLI with human, JSON, quiet, verbose output modes
+** RSR v2 offline-subset verification (26 checks: 13 Bronze, 12 Silver, 1 Gold)
+** CLI with human, JSON, SARIF, HTML, badge, quiet, verbose output + `.aletheia.toml` config
 ** Symlink detection and security warnings
 ** Verification timestamps
 
@@ -50,10 +50,9 @@ Architecture, specifications, FAQ, quick start
 
 * `+Cargo.toml+` - Zero dependencies, MSRV 1.80
 * `+Cargo.lock+` - Reproducible builds
-* `+justfile+` / `+Justfile+` - Build automation
-* `+flake.nix+` - Nix reproducible builds
-* `+.gitlab-ci.yml+` - GitLab CI/CD pipeline
-* `+.github/workflows/+` - 23 GitHub Actions workflows
+* `+Justfile+` - Crate recipes (the root Justfile is canonical, wired to CI)
+* `+.gitlab-ci.yml+` - Present for the GitLab mirror; the live gate is the root `+rust-ci.yml+`
+* `+.github/workflows/+` - 16 files, ALL INERT (live gates live at the repo root)
 
 ==== Source Structure (100% Complete)
 
@@ -66,33 +65,30 @@ Architecture, specifications, FAQ, quick start
 
 === RSR Bronze Compliance
 
-*Self-Verification Result*: 16/16 checks passed (100%)
-
-....
-Documentation: 7/7
-Well-Known:    4/4
-Build System:  3/3
-Source:        2/2
-....
+*Self-Verification Result* (measured 2026-09-21): Bronze-level RSR
+compliance ACHIEVED — 13/13 Bronze checks in the v2 offline subset pass
+(23/26 overall; the 3 gaps are Silver: `+.tool-versions+`,
+`+0-AI-MANIFEST.a2ml+`, `+rsr-profile.a2ml+`, which live at the repo
+root, not in the vendored crate tree).
 
 === Code Metrics
 
 [cols=",",options="header",]
 |===
 |Metric |Value
-|Lines of Rust (main) |~950
-|Lines of Rust (tests) |~490
+|Lines of Rust (main, measured) |~3,800
+|Lines of Rust (tests, measured) |~1,240
 |Dependencies |0
 |Unsafe Blocks |0
-|Unit Tests |10
-|Integration Tests |18
+|Unit Tests |66
+|Integration Tests |45
 |Clippy Warnings |0
 |Format Issues |0
 |===
 
 === Security Posture
 
-* *Attack Surface*: Minimal (~950 lines)
+* *Attack Surface*: Minimal (~3,800 lines, zero dependencies, `#![forbid(unsafe_code)]`)
 * *Supply Chain Risk*: None (zero dependencies)
 * *Memory Safety*: 100% (Rust ownership, zero unsafe)
 * *Network Access*: None (offline-first)
@@ -102,22 +98,22 @@ Source:        2/2
 ==== Short-term
 
 [arabic]
-. Tag v1.0.0 release
+. Tag a release from the current tree (crate is at 1.9.0, untagged)
 . Publish to crates.io (optional)
 
-==== Medium-term (v1.1.0+)
+*Shipped 2026-09-21 (were medium-term):* SARIF output, `+.aletheia.toml+`
+configuration, Silver-level RSR checks.
+
+==== Open
 
 [arabic]
-. SARIF output format for CI/CD integration
-. `+.aletheia.toml+` configuration file
 . Custom check definitions
-. Silver-level RSR checks
 
 '''''
 
 *Status Summary*: *Stable*
 
-Aletheia v1.0.0 is feature-complete, well-tested, fully documented, and
-achieves 100% Bronze-level RSR compliance.
+Aletheia v1.9.0 is feature-complete, well-tested, fully documented, and
+achieves Bronze-level RSR compliance on itself.
 
 _"`Aletheia: Unconcealing the truth in repository standards.`"_

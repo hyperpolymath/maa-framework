@@ -9,17 +9,17 @@ This file backs every factual claim in link:README.adoc[README.adoc] with code p
 
 == Claim-to-implementation map
 
-=== Aletheia builds, passes 29 unit tests, has zero dependencies
+=== Aletheia builds, passes 66 unit + 45 integration tests, has zero dependencies
 
 [quote, README.adoc]
 ____
-Aletheia microkernel (Rust): Builds, 29 unit tests passing, zero dependencies.____
+Aletheia microkernel (Rust): Builds, 66 unit + 45 integration tests passing, zero dependencies.____
 
 How this is implemented::
-`link:aletheia/[]` contains the Rust microkernel. `link:.github/workflows/rust-ci.yml[]` gates `cargo build`, `cargo test`, and formatting. CI is green. The `Cargo.toml` has zero external dependencies (enforced by CI).
+`link:aletheia/[]` contains the Rust microkernel. `link:.github/workflows/rust-ci.yml[]` gates `cargo build` (debug + release), the full `cargo test` suite, formatting, `clippy -- -D warnings`, and the zero-dependency assertion — each mirrored by a root Justfile recipe (`just check`). CI is green. The `Cargo.toml` has zero external dependencies (enforced by CI).
 
 Caveat::
-29 unit tests pass. 27 of 29 integration tests *fail by design*—the integration test suite specifies behaviour that the CLI does not yet implement (#124). The failing integration tests are not regressions; they are specifications of unwritten code.
+66 unit + 45 integration tests pass. The integration suite *was* a specification for an unbuilt CLI (27 of 29 failing by design, #124); the CLI has since been built to the upstream RSR criteria and the suite is in the CI gate.
 
 === CI is green across every enabled workflow and each gate has been shown capable of failing
 
@@ -41,7 +41,7 @@ How this is implemented::
 `link:tests/[]` contains the test suite. The tier classification (CRG Tier-C) is documented in the estate standards.
 
 Caveat::
-The test suite exists and runs. The "E2E, property, aspect, benchmarks" categories describe the *structure* of the suite, not all passing results. The integration (E2E) tests largely fail by design (#124).
+The test suite exists and runs. The "E2E, property, aspect, benchmarks" categories describe the *structure* of the suite, not all passing results. The integration (E2E) tests pass: 45/45 since the CLI rebuild closed #124.
 
 === absolute-zero is a git submodule pinned here
 
@@ -63,7 +63,7 @@ How this is implemented::
 The paradigm is defined in the governance and specification documents. Aletheia is the microkernel intended to enforce it. The paradigm definition exists; the enforcement mechanism is under construction.
 
 Caveat::
-**The paradigm is stated; the enforcement is not yet implemented.** Aletheia's CLI surface (the mechanism through which accountability checks would be invoked) is unbuilt (#124). The paradigm is a design intent with a nascent implementation, not a deployed system.
+**The paradigm is stated; the enforcement covers the offline file-presence subset.** Aletheia's CLI surface exists since #124 closed (26 checks, machine-readable output), so invocation is no longer the gap — depth of checking (proofs, containers, Scorecard) still lives with the hypatia oracle, not here.
 
 == Dogfooded Across The Account
 
@@ -94,12 +94,12 @@ Caveat::
 
 [CAUTION]
 ====
-**CLI surface is unbuilt (Issue #124).** `main.rs` wires 3 checks. The integration test suite specifies far more. 27 of 29 integration tests fail because the implementing code does not exist yet.
+**CLI surface rebuilt 2026-09-21 (was: unbuilt, #124).** 26 checks over the RSR v2 offline subset; 66 unit + 45 integration tests pass; hypatia oracle stays normative.
 ====
 
 [CAUTION]
 ====
-**23 clippy findings (Issue #125).** Mostly dead code left by the unbuilt CLI. Not yet a blocking gate.
+**Clippy clean and blocking since 2026-09-21 (was: 23 findings, #125).** Findings wired into real code; `-D warnings` in CI and `just lint`.
 ====
 
 [CAUTION]
@@ -124,7 +124,7 @@ Caveat::
 | Path | Proves / Implements
 
 | `aletheia/`
-| Rust microkernel (builds, 29 unit tests, zero dependencies)
+| Rust microkernel (builds, 66 unit + 45 integration tests, zero dependencies)
 
 | `absolute-zero/`
 | CNO formalisation (git submodule, upstream pointer)

@@ -148,9 +148,9 @@ Hypatia's compliance scanner
 | `contractile.just` + `contractiles/` — shared build recipes
 | Universal across hyperpolymath repos
 
-| *Guix (preferred dev shell; no manifest in tree)*
-| QUICKSTART-DEV prescribes `guix shell`, but no `guix.scm`/`manifest.scm` is committed — environment setup is currently manual
-| Ecosystem-wide where adopted (`flake.nix` retired estate-wide 2026-06; no guix-nix-policy gate in this repo)
+| *Guix (preferred dev shell; manifest.scm in tree)*
+| `manifest.scm` ships rust/just/git (specs verified 2026-09-21; bare `guix shell` auto-discovers it). The #97 estate-standardization retired `flake.nix` but the manifest itself never landed until now
+| Ecosystem-wide where adopted (no guix-nix-policy gate in this repo; criterion 1.2.1 + gates v0.3.0 only recognise `guix.scm` — filed upstream)
 |===
 
 == File Map

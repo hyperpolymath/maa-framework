@@ -1,33 +1,23 @@
 # SPDX-License-Identifier: MPL-2.0
 #
-# Estate-policy exemptions for legacy demonstration files under
-# absolute-zero/ (submodule, pinned to hyperpolymath/absolute-zero) and
-# aletheia/ subdirs. These pre-date the estate-wide
-# ReScript→AffineScript migration; the absolute-zero/ entries mirror
-# that repo's own .hypatia-ignore (kept here defensively in case
-# hypatia scans through the submodule boundary). They are
-# demonstration scaffolds, not load-bearing code paths.
+# Hypatia scanner exemptions for maa-framework. There are currently NO
+# active exemptions: this file is intentionally rules-free, kept as an
+# audit record so the absence of exemptions is a deliberate state rather
+# than a missing file.
 #
-# TODO 2026-Q3: migrate these to AffineScript and drop the exemptions.
-
-cicd_rules/banned_language_file:absolute-zero/src/AuditTrail.res
-cicd_rules/banned_language_file:absolute-zero/interpreters/rescript/malbolgeInterpreter.res
-cicd_rules/banned_language_file:absolute-zero/examples/SafeDOMExample.res
-cicd_rules/banned_language_file:aletheia/examples/SafeDOMExample.res
-
-# Go-language demonstration of "nop" semantics in the absolute-zero
-# subdirectory. Mirrors the file in the standalone absolute-zero repo's
-# own .hypatia-ignore.
-cicd_rules/banned_language_file:absolute-zero/examples/go/nop.go
-
-# Java/Kotlin/Swift demonstration files in the absolute-zero examples
-# tree. Same rationale as the .res/.go entries above — these are part of
-# the vendored language-demo subtree, not load-bearing code. Will
-# collapse to a single `absolute-zero/examples/**` file_pattern entry in
-# .hypatia-baseline.json once standards#180 (file_pattern glob matching
-# in in_baseline()) merges.
-cicd_rules/banned_language_file:absolute-zero/examples/java/Nop.java
-cicd_rules/banned_language_file:absolute-zero/examples/java/BalancedOps.java
-cicd_rules/banned_language_file:absolute-zero/examples/kotlin/Nop.kt
-cicd_rules/banned_language_file:absolute-zero/examples/kotlin/BalancedOps.kt
-cicd_rules/banned_language_file:absolute-zero/examples/swift/Nop.swift
+# HISTORY (pruned 2026-09-21, issue #98):
+# - 10 cicd_rules/banned_language_file entries (9 absolute-zero/ demo
+#   files + aletheia/examples/SafeDOMExample.res) were dropped after
+#   verifying every referenced path dead at the pinned submodule commit:
+#   the ReScript->AffineScript migration landed upstream and the vendored
+#   demo subtree is gone. The TODO 2026-Q3 comment and the standards#180
+#   note went with them (standards#180 has since merged — file_pattern
+#   globs are available if per-file exemptions ever return).
+# - Upstream follow-up lives in the owning repo, not here:
+#   hyperpolymath/absolute-zero#77 (prune that repo's own stale entries).
+#
+# VERIFY (re-run before adding any exemption back):
+#   git submodule status absolute-zero   # note the pinned commit
+#   for f in <paths>; do test -e "$f" && echo "ALIVE: $f"; done
+# An exemption for a path that does not exist at the pinned commit is
+# theater, not coverage — do not re-add dead entries.

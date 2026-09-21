@@ -1,14 +1,13 @@
 # Aletheia Security Contact Information
 # RFC 9116 Compliant (https://www.rfc-editor.org/rfc/rfc9116.html)
-# Last Updated: 2025-11-22
+# Last Updated: 2026-09-21 (repointed from the dead GitLab mirror to GitHub)
 
 Contact: mailto:security@maa-framework.org
-Contact: https://gitlab.com/maa-framework/6-the-foundation/aletheia/-/issues/new?issue[confidential]=true
+Contact: https://github.com/hyperpolymath/maa-framework/security/advisories/new
 Expires: 2026-12-31T23:59:59.000Z
-Encryption: https://gitlab.com/maa-framework/.gpg
 Preferred-Languages: en
-Canonical: https://gitlab.com/maa-framework/6-the-foundation/aletheia/-/raw/main/.well-known/security.txt
-Policy: https://gitlab.com/maa-framework/6-the-foundation/aletheia/-/blob/main/SECURITY.md
+Canonical: https://raw.githubusercontent.com/hyperpolymath/maa-framework/main/aletheia/.well-known/security.txt
+Policy: https://github.com/hyperpolymath/maa-framework/blob/main/aletheia/SECURITY.md
 Hiring: https://maa-framework.org/careers
 
 # Acknowledgments

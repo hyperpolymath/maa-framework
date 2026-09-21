@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: MPL-2.0
 # Aletheia installation script
 # This script installs Aletheia on Unix-like systems
 
@@ -11,7 +12,7 @@ YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
 # Configuration
-REPO_URL="https://gitlab.com/maa-framework/6-the-foundation/aletheia.git"
+REPO_URL="https://github.com/hyperpolymath/maa-framework.git"
 INSTALL_DIR="${HOME}/.local/bin"
 TEMP_DIR=$(mktemp -d)
 
@@ -48,8 +49,8 @@ check_dependencies() {
 clone_repository() {
     log_info "Cloning Aletheia repository..."
     cd "$TEMP_DIR"
-    git clone "$REPO_URL" aletheia
-    cd aletheia
+    git clone "$REPO_URL" maa-framework
+    cd maa-framework/aletheia
 }
 
 build_binary() {
@@ -126,7 +127,7 @@ main() {
     echo "  1. Run 'aletheia' in any repository to verify RSR compliance"
     echo "  2. Run 'aletheia /path/to/repo' to verify a specific repository"
     echo "  3. Read the documentation at:"
-    echo "     https://gitlab.com/maa-framework/6-the-foundation/aletheia"
+    echo "     https://github.com/hyperpolymath/maa-framework/tree/main/aletheia"
     echo ""
 }
 

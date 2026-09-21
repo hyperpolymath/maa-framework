@@ -49,20 +49,20 @@ Aletheia maintains **zero unsafe blocks** for RSR compliance.
 
 ## Architecture Principles
 
-### Module Layout (updated 2026-07-27 — this section was stale)
+### Module Layout (updated 2026-09-21 — re-measured after the CLI rebuild)
 
 > **This file used to say "all core logic lives in `src/main.rs` (~950 lines)" and
 > "don't split into modules unless >1000 lines". Both were out of date.** The crate has
-> been split for some time. Measured 2026-07-27:
+> been split for some time. Measured 2026-09-21 (`wc -l`):
 
 | File | Lines | Contents |
 |---|---|---|
-| `src/main.rs` | 121 | CLI entry, arg parsing, `verify_repository`, exit policy |
-| `src/checks.rs` | 316 | `check_documentation`, `check_spdx_headers`, `check_workflow_pins`, `check_path_security`, glob matching |
-| `src/config.rs` | 243 | `.aletheia.toml` loading, hand-rolled TOML parse |
-| `src/output.rs` | 226 | human / JSON / SARIF report printing, date+time formatting |
-| `src/types.rs` | 89 | `ComplianceLevel`, `CheckResult`, `ComplianceReport`, … |
-| **total** | **995** | |
+| `src/main.rs` | 422 | CLI entry, arg parsing, init-hook installer, exit policy |
+| `src/checks.rs` | 1932 | 26-check inventory, `Scanner` walks, symlink sweep, pure predicates |
+| `src/config.rs` | 538 | `.aletheia.toml` (level / checks / ignore), hand-rolled TOML |
+| `src/output.rs` | 626 | human / JSON / SARIF / HTML / badge / quiet / verbose, exit codes |
+| `src/types.rs` | 246 | `ComplianceLevel`, `CheckResult`, `ComplianceReport`, scoring |
+| **total src** | **3764** | (+ 1236 lines in `tests/integration_tests.rs`) |
 
 The single-file rationale still applies *in spirit* — prefer few, auditable files over
 deep abstraction — but do not "restore" the single-file layout, and do not treat 1000
@@ -77,27 +77,25 @@ lines as a threshold that has not yet been crossed.
 - Don't create abstractions prematurely
 - Don't add utility files for one-off functions
 
-### Known gap: the CLI is unfinished (issues #124 / #125)
+### Resolved 2026-09-21: the CLI rebuild (was: issues #124 / #125)
 
-`main.rs` parses only `<repo-path>` plus `--json` / `--sarif`, and wires **three**
-checks. `tests/integration_tests.rs` is 806 lines / 32 tests describing a much larger
-tool (16 Bronze checks plus Silver, `--help`, `--version`, `--verbose`, `--badge`,
-`--init-hook`, `--format=`, HTML output). **2 pass, 27 fail.**
+The CLI now implements the RSR v2 offline file-presence subset: 26 checks
+(13 Bronze, 12 Silver, 1 Gold) across `src/{types,config,checks,output,main}.rs`,
+TOML config, and human/JSON/SARIF/HTML/badge/quiet/verbose output with exit
+codes 0–4. **66 unit + 45 integration tests pass; clippy `-D warnings` is a
+blocking gate** (`rust-ci.yml` + `just lint`).
 
-Two things to know before touching it:
+Two lessons from the rebuild, still binding:
 
-1. **Those tests assert on stdout substrings**, e.g.
-   `assert!(stdout.contains("Bronze-level RSR compliance: ACHIEVED"))`. They pin the
-   *wording* of the report and say nothing about what the checks must verify — so they
-   can be satisfied by checks that verify nothing. Treat them as a UI contract, not a
-   specification.
-2. **A definition of RSR conformance already exists** elsewhere in the estate (hypatia's
-   `rsr-conformance` oracle). Writing checks to satisfy these strings risks creating a
-   second, divergent definition. Resolve the source-of-truth question first.
+1. **The integration tests assert on stdout substrings** — a UI contract, not a
+   specification. Every check cites its upstream criterion (see `SSOT_PROVENANCE`
+   in `src/checks.rs`); never write a check to match a string.
+2. **Hypatia's `rsr-conformance` oracle is normative.** Aletheia evaluates only
+   the offline subset and labels itself non-normative. Do not grow a second,
+   divergent definition of RSR here.
 
-Most of the clippy findings in #125 are dead code that exists *because* those modules
-are unwired. **Do not silence them with `#![allow(dead_code)]`** — the root Rust CI
-header forbids it, and that dead code is the specification of the missing feature.
+The #125 findings were wired into real code, not silenced. **Do not silence
+future ones with `#![allow(dead_code)]`** — the root Rust CI header forbids it.
 
 ### Type Safety First
 
@@ -311,7 +309,7 @@ aletheia/
 │   ├── output.rs            # human/JSON/SARIF (226)
 │   └── types.rs             # core types (89)
 ├── tests/
-│   └── integration_tests.rs # 32 tests — 2 pass, 27 fail (issue #124)
+│   └── integration_tests.rs # 45 tests, all passing (#124 closed 2026-09-21)
 ├── benches/                 # Performance benchmarks
 ├── examples/                # Usage examples
 ├── fuzz/                    # Fuzzing infrastructure
@@ -417,7 +415,7 @@ For questions about this document or Aletheia development:
 
 ---
 
-**Last Updated**: 2026-07-27
+**Last Updated**: 2026-09-21
 **Version**: 1.2
 
 *"Alētheia is not just absence of falsehood, but active unconcealment of truth."*

@@ -32,6 +32,7 @@ nix develop
 ----
 git clone https://github.com/hyperpolymath/maa-framework.git
 cd maa-framework
+git submodule update --init   # absolute-zero/ (pinned upstream proofs)
 just setup-dev
 ----
 

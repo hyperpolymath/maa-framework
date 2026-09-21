@@ -40,8 +40,10 @@ pub const LOCAL_SUBSET_NOTE: &str = "Local subset: offline file-presence checks 
 const MAX_SCAN_FILES: usize = 50_000;
 /// Maximum recursion depth for filesystem walks.
 const MAX_SCAN_DEPTH: u32 = 16;
-/// Maximum depth for the symlink security sweep.
-const MAX_SYMLINK_DEPTH: u32 = 6;
+/// Maximum depth for the symlink security sweep. Kept equal to
+/// `MAX_SCAN_DEPTH` so the sweep covers every directory the file walk
+/// reaches.
+const MAX_SYMLINK_DEPTH: u32 = MAX_SCAN_DEPTH;
 /// Maximum entries examined by the symlink security sweep.
 const MAX_SYMLINK_ENTRIES: usize = 20_000;
 /// Content reads are capped at 64 KiB per file.
@@ -489,6 +491,7 @@ impl<'a> Scanner<'a> {
         findings: &mut Vec<(String, Option<PathBuf>)>,
     ) {
         if depth > MAX_SYMLINK_DEPTH || *seen >= MAX_SYMLINK_ENTRIES {
+            self.truncated.set(true);
             return;
         }
         let entries = match fs::read_dir(dir) {
@@ -497,6 +500,7 @@ impl<'a> Scanner<'a> {
         };
         for entry in entries.flatten() {
             if *seen >= MAX_SYMLINK_ENTRIES {
+                self.truncated.set(true);
                 return;
             }
             *seen += 1;

@@ -451,7 +451,10 @@ pub fn print_html_report(report: &ComplianceReport, level: ComplianceLevel) {
         report.total_count(),
         report.score_pct()
     );
-    println!("<p class=\"{verdict_class}\">Bronze-level RSR compliance: {verdict}</p>");
+    println!(
+        "<p class=\"{verdict_class}\">{}-level RSR compliance: {verdict}</p>",
+        level.name()
+    );
     for (category, checks) in group_by_category(report) {
         println!("<h2>{}</h2>", html_escape(&category));
         println!("<table><tr><th>Status</th><th>Check</th><th>Tier</th></tr>");

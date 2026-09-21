@@ -22,7 +22,7 @@ aletheia-integration-tests = "45 pass, 0 fail — CLI built to the RSR v2 SSOT; 
 aletheia-clippy = "0 findings; `clippy --all-targets -- -D warnings` blocks in rust-ci.yml + `just lint` (issue #125 closed 2026-09-21)"
 absolute-zero-tests = "13 brainfuck + 5 whitespace unit, 10 E2E, 11 property, 11 aspect — run in the upstream repo, not here"
 benchmarks = "criterion-based (absolute-zero/benches/cno_benchmarks.rs)"
-test-result = "ON THIS BRANCH: build + full suite (66+45) + fmt + clippy -D + zero-dep all GREEN via `just check`; root rust-ci.yml restored to run the same on main"
+test-result = "main: build + full suite (68+47) + fmt + clippy -D + zero-dep all GREEN via `just check`; root rust-ci.yml restored to run the same on main"
 integration-test-caveat = "RETIRED 2026-09-21 (the warning was heeded): the suite still asserts on stdout substrings (a UI contract), but the checks were built to the upstream SSOT criteria — each cites its v2 criterion — not to the strings. Keep that direction: SSOT first, strings second."
 note = "absolute-zero/ is a git submodule since PR #89; aletheia/ is VENDORED plain files, not a submodule"
 
@@ -86,11 +86,12 @@ pr-145 = "removed the stray worktree gitlink breaking every recursive checkout �
 
 [recent-work-2026-09]
 # The all-open-issues campaign, 2026-09-21. All five open issues closed.
-issue-124 = "Aletheia CLI rebuilt on the RSR v2 SSOT (standards rsr-criteria-v2.a2ml v2.1.0-draft): 26-check offline subset, TOML config, human/JSON/SARIF/HTML/badge/quiet/verbose output, exit codes 0-4; 66 unit + 45 integration green"
+issue-124 = "Aletheia CLI rebuilt on the RSR v2 SSOT (standards rsr-criteria-v2.a2ml v2.1.0-draft): 26-check offline subset, TOML config, human/JSON/SARIF/HTML/badge/quiet/verbose output, exit codes 0-4; 68 unit + 47 integration green (review-response R1: T1/T2/T4-T10 addressed)"
 issue-125 = "Clippy findings wired away (no allow(dead_code)); `clippy --all-targets -- -D warnings` blocks in rust-ci.yml + `just lint`"
 issue-102 = "Root Justfile declared canonical; contractiles/Justfile stub (fake gates) replaced by a forwarding shim; repaired crg-grade/crg-badge (Make-style $$ broke every run)"
 issue-100 = "changelog.yml adopted (pr-back; commit-back blocked by Optimus-Branch ruleset); CHANGELOG.md seeded; CHANGELOG.adoc frozen as pointer"
 issue-98 = ".hypatia-ignore pruned to a comments-only audit record (all 10 entries verified dead); upstream residue in absolute-zero#77"
+review-response-185 = "CodeRabbit T1-T10 triaged: T6 parser (flags after positional), T4 symlink depth/truncation, T5 unterminated array, T7 hook exit codes, T8 HTML tier label, T9 pid fixtures, T10 submodule test, T2 SHA pin, T1 perm kept+documented; T3 perf consolidation deferred with reason"
 main-health-red-to-green = "2026-09-21: changelog caller fixed (top-level actions:read — the reusable requests it — plus pr-back for the ruleset-guarded main); actions.lock reconciled to codeql-action v4.38.1 (#187 fallout); U+200B removed from CHANGELOG.md (empty-linter); root CONTRIBUTING.adoc added (docs-gate cutoff passed)"
 rust-ci-restore = "Root rust-ci.yml restored re-pointed at aletheia/ (5 jobs mirroring `just check`); pin check taught the estate tags+actions.lock mechanism; Bun lockfile carve-out for no-node-runtime"
 

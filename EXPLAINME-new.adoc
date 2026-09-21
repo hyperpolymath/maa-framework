@@ -9,17 +9,17 @@ This file backs every factual claim in link:README.adoc[README.adoc] with code p
 
 == Claim-to-implementation map
 
-=== Aletheia builds, passes 66 unit + 45 integration tests, has zero dependencies
+=== Aletheia builds, passes 68 unit + 47 integration tests, has zero dependencies
 
 [quote, README.adoc]
 ____
-Aletheia microkernel (Rust): Builds, 66 unit + 45 integration tests passing, zero dependencies.____
+Aletheia microkernel (Rust): Builds, 68 unit + 47 integration tests passing, zero dependencies.____
 
 How this is implemented::
 `link:aletheia/[]` contains the Rust microkernel. `link:.github/workflows/rust-ci.yml[]` gates `cargo build` (debug + release), the full `cargo test` suite, formatting, `clippy -- -D warnings`, and the zero-dependency assertion — each mirrored by a root Justfile recipe (`just check`). CI is green. The `Cargo.toml` has zero external dependencies (enforced by CI).
 
 Caveat::
-66 unit + 45 integration tests pass. The integration suite *was* a specification for an unbuilt CLI (27 of 29 failing by design, #124); the CLI has since been built to the upstream RSR criteria and the suite is in the CI gate.
+68 unit + 47 integration tests pass. The integration suite *was* a specification for an unbuilt CLI (27 of 29 failing by design, #124); the CLI has since been built to the upstream RSR criteria and the suite is in the CI gate.
 
 === CI is green across every enabled workflow and each gate has been shown capable of failing
 
@@ -94,7 +94,7 @@ Caveat::
 
 [CAUTION]
 ====
-**CLI surface rebuilt 2026-09-21 (was: unbuilt, #124).** 26 checks over the RSR v2 offline subset; 66 unit + 45 integration tests pass; hypatia oracle stays normative.
+**CLI surface rebuilt 2026-09-21 (was: unbuilt, #124).** 26 checks over the RSR v2 offline subset; 68 unit + 47 integration tests pass; hypatia oracle stays normative.
 ====
 
 [CAUTION]
@@ -124,7 +124,7 @@ Caveat::
 | Path | Proves / Implements
 
 | `aletheia/`
-| Rust microkernel (builds, 66 unit + 45 integration tests, zero dependencies)
+| Rust microkernel (builds, 68 unit + 47 integration tests, zero dependencies)
 
 | `absolute-zero/`
 | CNO formalisation (git submodule, upstream pointer)

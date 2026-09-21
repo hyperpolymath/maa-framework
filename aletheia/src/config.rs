@@ -271,10 +271,11 @@ fn parse_scalar(value_str: &str) -> TomlValue {
 /// not the goal — resilience is).
 fn parse_inline_array(value_str: &str) -> Vec<String> {
     let inner = value_str.trim();
-    let inner = inner
-        .strip_prefix('[')
-        .and_then(|s| s.strip_suffix(']'))
-        .unwrap_or(inner);
+    // Only a complete single-line array is understood; an unterminated
+    // (multi-line) array yields no patterns rather than a bogus one.
+    let Some(inner) = inner.strip_prefix('[').and_then(|s| s.strip_suffix(']')) else {
+        return Vec::new();
+    };
     inner
         .split(',')
         .map(|item| {
@@ -534,5 +535,16 @@ enabled = true
         let parsed = parse_toml(toml);
         assert_eq!(parsed["s"]["files"], TomlValue::Array(vec![]));
         assert_eq!(parsed["s"].len(), 1);
+    }
+
+    #[test]
+    fn test_parse_inline_array_unterminated_yields_empty() {
+        // Review T5: `files = [` must not become a literal "[" pattern.
+        assert!(parse_inline_array("[").is_empty());
+        assert!(parse_inline_array("").is_empty());
+        assert_eq!(
+            parse_inline_array("[\"a\", \"b\"]"),
+            vec!["a".to_string(), "b".to_string()]
+        );
     }
 }

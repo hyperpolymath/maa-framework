@@ -1,0 +1,17 @@
+// SPDX-License-Identifier: CC-BY-SA-4.0
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+= Contributing to maa-framework
+
+New contributors start at `QUICKSTART-DEV.adoc` (setup, build, test, and
+the repo layout in one page). The long-form guide is
+`.github/CONTRIBUTING.md` — note it still carries template placeholders
+in places; treat it as an outline, not gospel.
+
+The rules that will block your PR if you miss them:
+
+* `main` merges squash-only, on PRs only, with signed commits
+  (Optimus-Branch ruleset, zero bypass actors — direct pushes fail).
+* `just check` must pass locally: it mirrors the CI gate exactly
+  (build, test, fmt, clippy with warnings denied, zero-dependency).
+* Normative state lives in `.machine_readable/6a2/STATE.a2ml` — read the
+  `[landmines]` section before touching CI, workflows, or contracts.

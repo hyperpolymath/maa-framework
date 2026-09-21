@@ -109,7 +109,7 @@ resolve-rsr-source-of-truth = "Answer [open-questions].rsr-source-of-truth — i
 empty-merged-prs = "#146 (ci(codeql) cron weekly->monthly) and #147 (Worktree maa ci repair) are BOTH EMPTY — git diff between parent and merge is blank. #146 stated change was already present. A merged PR title is not evidence the change happened; check git diff --stat."
 soundness-axioms = "Fix or delete prob_nonneg, prob_normalized, shannon_entropy_maximum while they are still unused"
 changelog-automation = "adopt changelog-reusable.yml (standards#206) so CHANGELOG.md stays in sync"
-hypatia-ignore-prune = "drop stale aletheia/examples/SafeDOMExample.res entry (file deleted in #74); migrate demo exemptions per .hypatia-ignore TODO 2026-Q3"
+hypatia-ignore-prune = "RESOLVED 2026-09-21 (#98): all 10 entries verified dead at the pinned submodule commit; .hypatia-ignore is a comments-only audit record, upstream residue in absolute-zero#77"
 submodule-docs = "document `git submodule update --init` for absolute-zero/ in QUICKSTART-DEV"
 
 [landmines]

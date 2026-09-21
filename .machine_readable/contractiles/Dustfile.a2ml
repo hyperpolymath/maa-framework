@@ -41,7 +41,7 @@ status = "removed"
 date = "2026-05"
 evidence = "PRs #53 (Item 9 guidance retirement), #74 (SafeDOMExample.res fixture deleted), #88 (CLAUDE.md flip)"
 replacement = "AffineScript per the 2026-05-25 estate language policy"
-residue = ".hypatia-ignore still carries absolute-zero demo exemptions plus a stale aletheia/examples/SafeDOMExample.res entry (file deleted in #74); prune per its TODO 2026-Q3"
+residue = "RESOLVED 2026-09-21 (#98): .hypatia-ignore pruned to a comments-only audit record; upstream residue tracked in hyperpolymath/absolute-zero#77"
 
 [[deprecations]]
 name = "pmpl-license"

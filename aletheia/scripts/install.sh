@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: MPL-2.0
 # Aletheia installation script
 # This script installs Aletheia on Unix-like systems
 

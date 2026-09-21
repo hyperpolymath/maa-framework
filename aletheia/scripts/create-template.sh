@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: MPL-2.0
 # Script to create RSR Bronze-compliant project template
 # Usage: ./create-template.sh <project-name> <language>
 

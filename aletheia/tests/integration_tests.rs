@@ -1146,3 +1146,91 @@ fn test_init_hook_no_git() {
 
     fs::remove_dir_all(repo).ok();
 }
+
+/// Test tags covered by actions.lock pass (estate mechanism: tags in YAML
+/// plus a verified lockfile; governance forbids inline SHAs with a lock).
+#[test]
+fn test_tag_with_lockfile_passes() {
+    let repo = create_fully_compliant_repo("tag_locked");
+    create_file(
+        &repo,
+        ".github/workflows/ci.yml",
+        "name: CI\non: [push]\njobs:\n  t:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v7.0.1\n",
+    );
+    create_file(
+        &repo,
+        ".github/workflows/actions.lock",
+        "version: 'v0.0.2'\nworkflows:\n    '.github/workflows/ci.yml':\n        - 'actions/checkout@v7.0.1'\n",
+    );
+    let output = aletheia()
+        .arg(repo.to_str().unwrap())
+        .output()
+        .expect("Failed to run aletheia");
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    assert!(
+        stdout.contains("\u{2705} GitHub Actions SHA pinning"),
+        "Locked tag should pass: {stdout}"
+    );
+    fs::remove_dir_all(repo).ok();
+}
+
+/// Test tags without lock coverage fail (strict SHAs, no-lock branch).
+#[test]
+fn test_tag_without_lockfile_fails() {
+    let repo = create_fully_compliant_repo("tag_unlocked");
+    create_file(
+        &repo,
+        ".github/workflows/ci.yml",
+        "name: CI\non: [push]\njobs:\n  t:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v7.0.1\n",
+    );
+    let output = aletheia()
+        .arg(repo.to_str().unwrap())
+        .output()
+        .expect("Failed to run aletheia");
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    assert!(
+        stdout.contains("\u{274c} GitHub Actions SHA pinning"),
+        "Unlocked tag should fail: {stdout}"
+    );
+    assert!(
+        stdout.contains("actions.lock"),
+        "Hint should name the lock: {stdout}"
+    );
+    fs::remove_dir_all(repo).ok();
+}
+
+/// Test tier-1 Bun carve-out: runtime deps with a Bun lockfile pass.
+#[test]
+fn test_bun_lockfile_carveout() {
+    let repo = create_fully_compliant_repo("bun_ok");
+    create_file(&repo, "package.json", "{\"dependencies\": {\"x\": \"1\"}}");
+    create_file(&repo, "bun.lock", "# bun lockfile");
+    let output = aletheia()
+        .arg(repo.to_str().unwrap())
+        .output()
+        .expect("Failed to run aletheia");
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    assert!(
+        stdout.contains("\u{2705} No Node/npm runtime deps"),
+        "Bun lockfile should carve out: {stdout}"
+    );
+    fs::remove_dir_all(repo).ok();
+
+    let bare = create_fully_compliant_repo("bun_missing");
+    create_file(&bare, "package.json", "{\"dependencies\": {\"x\": \"1\"}}");
+    let output = aletheia()
+        .arg(bare.to_str().unwrap())
+        .output()
+        .expect("Failed to run aletheia");
+    assert_eq!(
+        output.status.code(),
+        Some(1),
+        "Runtime deps without a Bun lockfile are a Bronze failure"
+    );
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    assert!(
+        stdout.contains("\u{274c} No Node/npm runtime deps"),
+        "Should flag the unlocked runtime deps: {stdout}"
+    );
+    fs::remove_dir_all(bare).ok();
+}

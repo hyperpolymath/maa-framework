@@ -843,6 +843,9 @@ fn check_language_policy(scanner: &Scanner) -> Outcome {
 }
 
 /// 5.1.6 no-node-runtime: no npm-style runtime dependencies.
+///
+/// Tier-1 Bun carve-out (estate LANGUAGE-POLICY §1, enforced by
+/// governance): runtime deps accompanied by a Bun lockfile pass.
 fn check_no_node_runtime(scanner: &Scanner) -> Outcome {
     let mut offenders = Vec::new();
     for path in scanner.walk_files(None) {
@@ -852,7 +855,7 @@ fn check_no_node_runtime(scanner: &Scanner) -> Outcome {
             .is_some_and(|name| name == "package.json")
         {
             if let Some(content) = read_head(&path, MAX_CONTENT_BYTES) {
-                if package_json_has_runtime_deps(&content) {
+                if package_json_has_runtime_deps(&content) && !has_bun_lockfile(&path) {
                     offenders.push(scanner.rel(&path));
                 }
             }
@@ -862,10 +865,18 @@ fn check_no_node_runtime(scanner: &Scanner) -> Outcome {
         Outcome::pass()
     } else {
         Outcome::fail(format!(
-            "package.json with runtime dependencies: {}. Use the estate runtime policy (v2 5.1.6).",
+            "package.json with runtime dependencies and no Bun lockfile: {}. Use the estate runtime policy (v2 5.1.6).",
             offenders.join(", ")
         ))
     }
+}
+
+/// A Bun lockfile next to package.json (either generation: `bun.lock`
+/// text or legacy `bun.lockb` binary).
+fn has_bun_lockfile(package_json: &Path) -> bool {
+    package_json
+        .parent()
+        .is_some_and(|dir| dir.join("bun.lock").is_file() || dir.join("bun.lockb").is_file())
 }
 
 /// 6.1.1 ci-present: CI pipeline with at least one workflow.
@@ -1010,52 +1021,139 @@ fn check_rsr_profile(scanner: &Scanner) -> Outcome {
     }
 }
 
-/// SECURITY: Decide whether one workflow line satisfies SHA pinning.
+/// SECURITY: Extract the normalized `uses:` value from one workflow line.
 ///
-/// Returns `true` for any line that is not a `uses:` line, so callers can apply
-/// this with `.any(|l| !uses_line_is_pinned(l))` over a whole file.
-///
-/// A `uses:` value is pinned only when the ref after the final `@` is exactly
-/// 40 hexadecimal characters (a full-length Git SHA-1). `@v4`, `@main`,
-/// `@master` and a bare action with no `@` at all are all unpinned.
-///
-/// Exempt (not pinnable, so treated as pinned):
-///   - local actions and local reusable workflows — `./…`
-///   - `docker://` image references, which use a different digest syntax
-///
-/// A trailing `# v4` provenance comment is ignored, so
-/// `uses: actions/checkout@3d3c42e5… # v7.0.1` is correctly seen as pinned.
-fn uses_line_is_pinned(line: &str) -> bool {
+/// Returns `None` for non-`uses:` lines and empty values (nothing to
+/// judge — callers treat those as pinned). Strips trailing provenance
+/// comments (`# v7.0.1`) and surrounding quotes.
+fn parse_uses_value(line: &str) -> Option<String> {
     let trimmed = line.trim();
     // Accept both `uses:` and list form `- uses:`.
-    let rest = match trimmed
+    let rest = trimmed
         .strip_prefix("uses:")
-        .or_else(|| trimmed.strip_prefix("- uses:"))
-    {
-        Some(r) => r,
-        None => return true, // not a uses: line — nothing to judge
-    };
-
-    // Strip the trailing provenance comment, then surrounding quotes.
+        .or_else(|| trimmed.strip_prefix("- uses:"))?;
     let value = rest.split('#').next().unwrap_or("").trim();
     let value = value.trim_matches(|c| c == '"' || c == '\'');
-
     if value.is_empty() {
-        return true;
-    }
-    if value.starts_with("./") || value.starts_with(".\\") || value.starts_with("docker://") {
-        return true;
-    }
-
-    match value.rsplit_once('@') {
-        Some((_, git_ref)) => git_ref.len() == 40 && git_ref.chars().all(|c| c.is_ascii_hexdigit()),
-        None => false, // no ref at all — unpinned
+        None
+    } else {
+        Some(value.to_string())
     }
 }
 
+/// SECURITY: Decide whether a `uses:` value is pinned.
+///
+/// A value is pinned when the ref after the final `@` is exactly 40
+/// hexadecimal characters (a full-length Git SHA-1) — or when it is
+/// covered by the repo's `actions.lock` (`locked`: the locked refs for
+/// this workflow file; empty when there is no lockfile, in which case
+/// only full SHAs pass).
+///
+/// Lock matching follows the estate convention (governance-reusable:
+/// tags in YAML plus a verified lockfile are the authoritative
+/// resolution; inline SHAs alongside a lock are forbidden because they
+/// break the lock tooling). A lock entry covers the exact `repo@ref` and
+/// any sub-path action under it (`github/codeql-action@vX` covers
+/// `github/codeql-action/init@vX`).
+///
+/// Exempt (treated as pinned):
+///   - local actions and reusable workflows — `./…`
+///   - `docker://` image references (different digest syntax)
+///   - `actions/github-script` (governance parity exemption)
+fn uses_value_is_pinned(value: &str, locked: &[String]) -> bool {
+    if value.starts_with("./") || value.starts_with(".\\") || value.starts_with("docker://") {
+        return true;
+    }
+    if value == "actions/github-script" || value.starts_with("actions/github-script@") {
+        return true;
+    }
+    let Some((repo, git_ref)) = value.rsplit_once('@') else {
+        return false; // no ref at all — unpinned
+    };
+    if git_ref.len() == 40 && git_ref.chars().all(|c| c.is_ascii_hexdigit()) {
+        return true;
+    }
+    // Lock coverage: same ref on the same repo (or a sub-path of it).
+    locked.iter().any(|entry| {
+        let Some((locked_repo, locked_ref)) = entry.rsplit_once('@') else {
+            return false;
+        };
+        locked_ref == git_ref
+            && (repo == locked_repo
+                || (repo.starts_with(locked_repo)
+                    && repo.as_bytes().get(locked_repo.len()) == Some(&b'/')))
+    })
+}
+
+/// SECURITY: Decide whether one workflow line satisfies SHA pinning.
+///
+/// Strict form (no lockfile): only full 40-hex SHAs pass. Unit-test
+/// entry point — production uses the lock-aware verdict in
+/// [`uses_value_is_pinned`].
+#[cfg(test)]
+fn uses_line_is_pinned(line: &str) -> bool {
+    match parse_uses_value(line) {
+        None => true, // not a uses: line — nothing to judge
+        Some(value) => uses_value_is_pinned(&value, &[]),
+    }
+}
+
+/// Extract the locked action refs for one workflow file from an
+/// `actions.lock` document. Minimal line parser for the known shape
+/// (`workflows:` map of file → ref list). Unknown shapes yield no refs —
+/// a lockfile this parser cannot read falls back to the strict SHA
+/// test rather than silently passing everything.
+fn locked_refs_for(lock_content: &str, rel_path: &str) -> Vec<String> {
+    let mut refs = Vec::new();
+    let mut in_workflows = false;
+    let mut current: Option<&str> = None;
+    for line in lock_content.lines() {
+        let trimmed = line.trim();
+        if trimmed.is_empty() {
+            continue;
+        }
+        if !line.starts_with([' ', '\t']) {
+            // Top-level key: entering or leaving the workflows map.
+            in_workflows = trimmed == "workflows:";
+            current = None;
+            continue;
+        }
+        if !in_workflows {
+            continue;
+        }
+        // File entries look like `'.github/workflows/ci.yml':`.
+        if let Some(path) = trimmed
+            .strip_suffix(':')
+            .map(str::trim)
+            .and_then(|quoted| quoted.strip_prefix('\''))
+            .and_then(|quoted| quoted.strip_suffix('\''))
+        {
+            current = Some(path);
+            continue;
+        }
+        // Ref entries look like `- 'actions/checkout@v7.0.1'`.
+        if current == Some(rel_path) {
+            if let Some(entry) = trimmed
+                .strip_prefix('-')
+                .map(str::trim)
+                .and_then(|quoted| quoted.strip_prefix('\''))
+                .and_then(|quoted| quoted.strip_suffix('\''))
+            {
+                refs.push(entry.to_string());
+            }
+        }
+    }
+    refs
+}
+
 /// 4.1.3 sha-pinned: GitHub Actions SHA pinning.
-/// SECURITY: Rejects `uses: actions/checkout@v4`, requires
-/// `uses: actions/checkout@<full-sha>`.
+///
+/// A `uses:` ref passes with a full 40-char SHA, or with a tag covered
+/// by `.github/workflows/actions.lock` for that file (the estate
+/// mechanism: tags in YAML plus a verified lockfile; governance forbids
+/// inline SHAs alongside a lock because they break the lock tooling).
+/// Repos without a lockfile are held to strict SHAs — mirroring the
+/// governance-reusable no-lock branch.
 fn check_workflow_pins(scanner: &Scanner) -> Outcome {
     let workflows_path = scanner.root.join(".github/workflows");
     if !workflows_path.is_dir() {
@@ -1063,6 +1161,10 @@ fn check_workflow_pins(scanner: &Scanner) -> Outcome {
         // here rather than double-reporting the same gap.
         return Outcome::pass();
     }
+    let lock = read_head(
+        &scanner.root.join(".github/workflows/actions.lock"),
+        MAX_CONTENT_BYTES,
+    );
     let entries = match fs::read_dir(&workflows_path) {
         Ok(entries) => entries,
         Err(_) => return Outcome::pass(),
@@ -1076,9 +1178,18 @@ fn check_workflow_pins(scanner: &Scanner) -> Outcome {
         {
             continue;
         }
+        let rel = scanner.rel(&path);
+        let locked = lock
+            .as_ref()
+            .map(|content| locked_refs_for(content, &rel))
+            .unwrap_or_default();
         if let Some(content) = read_head(&path, MAX_CONTENT_BYTES) {
-            if content.lines().any(|line| !uses_line_is_pinned(line)) {
-                unpinned_files.push(scanner.rel(&path));
+            let unpinned = content.lines().any(|line| match parse_uses_value(line) {
+                None => false,
+                Some(value) => !uses_value_is_pinned(&value, &locked),
+            });
+            if unpinned {
+                unpinned_files.push(rel);
             }
         }
     }
@@ -1088,7 +1199,7 @@ fn check_workflow_pins(scanner: &Scanner) -> Outcome {
         unpinned_files.sort();
         unpinned_files.truncate(5);
         Outcome::fail(format!(
-            "Pin actions to full 40-char SHAs in: {}; v2 4.1.3.",
+            "Pin actions to full 40-char SHAs (or cover the tag in actions.lock) in: {}; v2 4.1.3.",
             unpinned_files.join(", ")
         ))
     }
@@ -1668,6 +1779,84 @@ mod tests {
         ));
         // Docker refs use a different digest syntax; out of scope.
         assert!(uses_line_is_pinned("        uses: docker://alpine:3.20"));
+    }
+
+    #[test]
+    fn test_secret_markers_assemble() {
+        let markers = secret_markers();
+        assert_eq!(markers.len(), SECRET_MARKER_FRAGMENTS.len());
+        // Expectations assembled from halves too: a whole marker
+        // literal here would trip the scanner on its own source.
+        let rsa_block = format!("{}{}", "-----BEGIN RSA ", "PRIVATE KEY-----");
+        assert!(markers.contains(&rsa_block));
+        let aws_prefix = format!("{}{}", "AK", "IA");
+        assert!(markers.contains(&aws_prefix));
+        assert!(markers.iter().all(|m| !m.is_empty()));
+    }
+
+    #[test]
+    fn test_parse_uses_value() {
+        assert_eq!(
+            parse_uses_value("      - uses: actions/checkout@v4 # v4"),
+            Some("actions/checkout@v4".to_string())
+        );
+        assert_eq!(
+            parse_uses_value("uses: \"./local/action\""),
+            Some("./local/action".to_string())
+        );
+        assert_eq!(parse_uses_value("      - name: Checkout"), None);
+        assert_eq!(parse_uses_value(""), None);
+        assert_eq!(parse_uses_value("        uses:   "), None);
+    }
+
+    #[test]
+    fn test_uses_value_is_pinned_with_lock() {
+        let locked = vec![
+            "actions/checkout@v7.0.1".to_string(),
+            "github/codeql-action@v4.38.0".to_string(),
+        ];
+        // Full SHA passes with or without a lock.
+        assert!(uses_value_is_pinned(
+            "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+            &[]
+        ));
+        // Locked tag passes; unlocked tag fails.
+        assert!(uses_value_is_pinned("actions/checkout@v7.0.1", &locked));
+        assert!(!uses_value_is_pinned("actions/checkout@v7.0.1", &[]));
+        assert!(!uses_value_is_pinned("actions/checkout@v4", &locked));
+        // Repo-level lock entry covers sub-path actions at the same ref.
+        assert!(uses_value_is_pinned(
+            "github/codeql-action/init@v4.38.0",
+            &locked
+        ));
+        assert!(!uses_value_is_pinned(
+            "github/codeql-action/init@v4.37.0",
+            &locked
+        ));
+        // A different repo sharing the prefix must not match.
+        assert!(!uses_value_is_pinned(
+            "github/codeql-action-evil@v4.38.0",
+            &locked
+        ));
+        // No ref at all is unpinned even with a lock present.
+        assert!(!uses_value_is_pinned("actions/checkout", &locked));
+        // Exemptions hold regardless of lock state.
+        assert!(uses_value_is_pinned("./.github/actions/setup", &[]));
+        assert!(uses_value_is_pinned("docker://alpine:3.20", &[]));
+        assert!(uses_value_is_pinned("actions/github-script@v7", &[]));
+    }
+
+    #[test]
+    fn test_locked_refs_for() {
+        let lock = "version: 'v0.0.2'\nworkflows:\n    '.github/workflows/ci.yml':\n        - 'actions/checkout@v7.0.1'\n        - 'actions/cache@v6.1.0'\n    '.github/workflows/empty.yml': []\ndependencies:\n    'actions/checkout@v7.0.1':\n        ref: 'v7.0.1'\n";
+        assert_eq!(
+            locked_refs_for(lock, ".github/workflows/ci.yml"),
+            vec!["actions/checkout@v7.0.1", "actions/cache@v6.1.0"]
+        );
+        assert!(locked_refs_for(lock, ".github/workflows/empty.yml").is_empty());
+        assert!(locked_refs_for(lock, ".github/workflows/other.yml").is_empty());
+        assert!(locked_refs_for("not a lockfile\n", ".github/workflows/ci.yml").is_empty());
+        assert!(locked_refs_for("", ".github/workflows/ci.yml").is_empty());
     }
 
     #[test]

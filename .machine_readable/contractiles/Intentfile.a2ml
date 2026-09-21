@@ -61,7 +61,7 @@ status = "declared"
 name = "changelog-automation"
 description = "Adopt changelog-reusable.yml (standards#206) so CHANGELOG.md stays in sync with conventional commits"
 status = "done"
-notes = "Closed #100 on 2026-09-21: changelog.yml (commit-back), CHANGELOG.md seeded, CHANGELOG.adoc frozen as pointer"
+notes = "Closed #100 on 2026-09-21: changelog.yml (pr-back — Optimus-Branch ruleset rejects direct pushes), CHANGELOG.md seeded, CHANGELOG.adoc frozen as pointer"
 
 [[intents]]
 name = "root-justfile-wiring"

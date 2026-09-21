@@ -17,12 +17,12 @@ build:
     cd aletheia && cargo build --locked --all-targets
     cd aletheia && cargo build --locked --release
 
-# Run aletheia's unit tests (--bins only; see #124 note in recipe)
+# Run aletheia's full test suite (unit + integration; mirrors rust-ci.yml)
 test:
-    # `--bins` is deliberate. The integration suite is a specification for a CLI
-    # that has not been built yet — 27 of 29 fail by design (issue #124).
-    # Do NOT add `--tests` here to make the bar look green.
-    cd aletheia && cargo test --locked --bins
+    # The integration suite used to be a specification for an unbuilt CLI
+    # (issue #124: 27 of 29 failing by design). It is green now, so the
+    # full suite runs here and in CI.
+    cd aletheia && cargo test --locked
 
 # Check formatting (does not modify files)
 fmt:
@@ -32,13 +32,11 @@ fmt:
 fmt-fix:
     cd aletheia && cargo fmt
 
-# Lint aletheia (not yet -D warnings — issue #125)
+# Lint aletheia, warnings denied (mirrors rust-ci.yml; issue #125)
 lint:
-    # 23 findings remain, mostly dead code that exists because the CLI is
-    # unwired (#124). When #125 closes, add `-- -D warnings` here AND to
-    # rust-ci.yml in the same change, so local and CI never disagree about
-    # what "lint passes" means.
-    cd aletheia && cargo clippy --locked --all-targets
+    # The `-- -D warnings` flag is here AND in rust-ci.yml in the same
+    # change, so local and CI never disagree about what "lint passes" means.
+    cd aletheia && cargo clippy --locked --all-targets -- -D warnings
 
 # Enforce the zero-dependency RSR Bronze constraint (mirrors rust-ci.yml)
 deps-check:
@@ -53,7 +51,7 @@ deps-check:
     echo "OK: zero dependencies"
 
 # Everything the root CI gate runs, in the same order
-check: build test fmt deps-check
+check: build test fmt lint deps-check
 
 # Self-verify: run aletheia against this repository
 self-verify:

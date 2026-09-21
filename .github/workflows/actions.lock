@@ -30,6 +30,8 @@ workflows:
         - 'actions/upload-pages-artifact@v5.0.0'
     '.github/workflows/push-email-notify.yml':
         - 'hyperpolymath/smtp-notify-action@v0.3.0'
+    '.github/workflows/rust-ci.yml':
+        - 'actions/checkout@v7.0.1'
     '.github/workflows/scorecard.yml': []
     '.github/workflows/secret-scanner.yml': []
 dependencies:

@@ -12,6 +12,7 @@ workflows:
         - 'actions/deploy-pages@v5.0.1'
         - 'actions/upload-pages-artifact@v5.0.0'
         - 'haskell-actions/setup@v2.12.0'
+    '.github/workflows/changelog.yml': []
     '.github/workflows/codeql.yml':
         - 'actions/checkout@v7.0.1'
         - 'github/codeql-action@v4.38.0'

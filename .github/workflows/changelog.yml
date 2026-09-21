@@ -1,0 +1,26 @@
+# SPDX-License-Identifier: MPL-2.0
+# CHANGELOG automation (issue #100): regenerates CHANGELOG.md from
+# conventional commits on every push to main and commits it straight back
+# (commit-back). Main has no branch protection (verified 2026-09-21), so no
+# PR round-trip is needed; if protection is ever enabled, switch `mode` to
+# `pr-back`. Uses the canonical cliff.toml from standards (no local
+# cliff.toml by design — one config for the estate). CHANGELOG.adoc is
+# retained as a frozen pointer to the generated CHANGELOG.md.
+name: changelog
+on:
+  push:
+    branches: [main]
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+permissions:
+  contents: read
+jobs:
+  changelog:
+    permissions:
+      contents: write
+      pull-requests: write
+    # Pinned to standards@main as of 2026-09-21 (commits/changelog: #886).
+    uses: hyperpolymath/standards/.github/workflows/changelog-reusable.yml@b77c53c85e5734756a793497845735485c9dc933
+    with:
+      mode: commit-back

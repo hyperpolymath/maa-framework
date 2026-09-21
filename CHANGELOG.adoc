@@ -1,3 +1,11 @@
+[NOTE]
+====
+The live changelog is link:CHANGELOG.md[CHANGELOG.md], generated from
+conventional commits by `.github/workflows/changelog.yml` (issue #100) on
+every push to `main`. This `.adoc` file is frozen as of 2026-09-21 and
+retained for history only — do not add entries here.
+====
+
 == Changelog
 
 All notable changes to `+maa-framework+` will be documented in this

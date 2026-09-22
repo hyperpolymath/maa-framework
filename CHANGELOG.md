@@ -24,6 +24,7 @@ and the project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 
 ### CI
 
+- Re-pin codeql-action to the true v4.38.0 commit (#224) (a330c21)
 - Standardise the wrapper caller id to the canonical `hypatia` (#182) (0cd1756)
 - Gate the dispatch on FARM_DISPATCH_TOKEN being present (#178) (97ca1cb)
 - Cron weekly→monthly (cut 3, standards#288) (#146) (a9cfa26)

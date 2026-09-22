@@ -62,6 +62,7 @@ and the project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 
 ### Chores
 
+- Regenerate from conventional commits (#195) (90b075e)
 - Regenerate from conventional commits (#192) (e22eacb)
 - Remove dead Codecov upload steps + lock pins (#181) (443a4e4)
 - Migrate root .well-known/ to www/.well-known/ (#175) (1cb4d52)

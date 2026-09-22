@@ -39,7 +39,7 @@ ____
 *Resolved 2026-09-21 (issue #124).* The CLI the suite specified has been
 written — against the upstream RSR criteria, not against the suite's
 strings, exactly as the caution below demanded. `+tests/integration_tests.rs+`
-(45 tests) runs the built binary end to end: 26 checks over the offline
+(47 tests) runs the built binary end to end: 26 checks over the offline
 file-presence subset, `+--help+`, `+--version+`, `+--verbose+`,
 `+--badge+`, `+--init-hook+`, `+--format=+`, HTML output. The suite is in
 the CI gate and in `+just test+` (full `+cargo test --locked+`).

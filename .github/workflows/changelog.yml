@@ -1,11 +1,17 @@
 # SPDX-License-Identifier: MPL-2.0
 # CHANGELOG automation (issue #100): regenerates CHANGELOG.md from
-# conventional commits on every push to main and commits it straight back
-# (commit-back). Main has no branch protection (verified 2026-09-21), so no
-# PR round-trip is needed; if protection is ever enabled, switch `mode` to
-# `pr-back`. Uses the canonical cliff.toml from standards (no local
-# cliff.toml by design — one config for the estate). CHANGELOG.adoc is
-# retained as a frozen pointer to the generated CHANGELOG.md.
+# conventional commits on every push to main and opens a PR with the result
+# (pr-back). Two hard lessons baked in: (1) main is guarded by the
+# Optimus-Branch ruleset (PR-required, signed commits, zero bypass actors —
+# see the optimus-branch-ruleset landmine in STATE.a2ml), which rejects a
+# commit-back direct push; (2) the reusable requests `actions: read`, so the
+# caller MUST declare top-level `actions: read` — omitting it makes GitHub
+# reject the run at startup_failure with zero jobs and no log (both main
+# runs did exactly that on 2026-09-21). Merge the changelog PRs it opens
+# (squash keeps required_signatures satisfied — GitHub signs the squash
+# commit). Uses the canonical cliff.toml from standards (no local cliff.toml
+# by design — one config for the estate). CHANGELOG.adoc is retained as a
+# frozen pointer.
 name: changelog
 on:
   push:
@@ -14,13 +20,17 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 permissions:
+  actions: read
   contents: read
 jobs:
   changelog:
     permissions:
       contents: write
+      # REQUIRED for pr-back: the reusable opens the changelog PR via the
+      # API. (Review T1 on #185 asked to drop this; that was correct for
+      # commit-back and wrong for pr-back — see the header.)
       pull-requests: write
     # Pinned to standards@main as of 2026-09-21 (commits/changelog: #886).
     uses: hyperpolymath/standards/.github/workflows/changelog-reusable.yml@b77c53c85e5734756a793497845735485c9dc933
     with:
-      mode: commit-back
+      mode: pr-back

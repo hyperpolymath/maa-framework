@@ -22,7 +22,8 @@ fn aletheia() -> Command {
 
 /// Helper to create a temporary test repository.
 fn create_test_repo(name: &str) -> PathBuf {
-    let test_dir = std::env::temp_dir().join(format!("aletheia_test_{name}"));
+    let pid = std::process::id();
+    let test_dir = std::env::temp_dir().join(format!("aletheia_test_{pid}_{name}"));
 
     // Clean up if it exists
     if test_dir.exists() {
@@ -734,6 +735,32 @@ fn test_html_output() {
     fs::remove_dir_all(repo).ok();
 }
 
+/// Test the HTML verdict label follows the configured tier (review T8).
+#[test]
+fn test_html_output_silver_label() {
+    let repo = create_fully_compliant_repo("html_silver");
+    // Break a Silver-only check so the verdict is meaningfully Silver's.
+    fs::remove_file(repo.join("CHANGELOG.adoc")).ok();
+    create_file(&repo, ".aletheia.toml", "[aletheia]\nlevel = \"silver\"\n");
+    let output = aletheia()
+        .args(["--format", "html"])
+        .arg(repo.to_str().unwrap())
+        .output()
+        .expect("Failed to run aletheia with HTML format");
+
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    assert!(
+        stdout.contains("Silver-level RSR compliance"),
+        "HTML label should name the configured tier"
+    );
+    assert!(
+        !stdout.contains("Bronze-level"),
+        "HTML label must not claim Bronze for a Silver verdict"
+    );
+
+    fs::remove_dir_all(repo).ok();
+}
+
 /// Test --format=html syntax.
 #[test]
 fn test_html_format_equals_syntax() {
@@ -978,11 +1005,11 @@ fn test_submodule_skipped() {
     create_file(
         &repo,
         ".gitmodules",
-        "[submodule \"vendor\"]\n\tpath = vendor\n\turl = https://example.test/vendor.git\n",
+        "[submodule \"third_party\"]\n\tpath = third_party\n\turl = https://example.test/vendor.git\n",
     );
     // Banned content inside the submodule must not fail the outer scan.
-    create_file(&repo, "vendor/evil.py", "print('hi')\n");
-    create_file(&repo, "vendor/Makefile", "all:\n\techo hi\n");
+    create_file(&repo, "third_party/evil.py", "print('hi')\n");
+    create_file(&repo, "third_party/Makefile", "all:\n\techo hi\n");
 
     let output = aletheia()
         .arg(repo.to_str().unwrap())
@@ -1085,6 +1112,47 @@ fn test_symlink_escape() {
     fs::remove_dir_all(outside).ok();
 }
 
+/// Test a symlink sweep cut short by depth warns instead of passing silently (review T4).
+#[test]
+#[cfg(unix)]
+fn test_symlink_depth_truncation_warns() {
+    let outside = create_test_repo("symlink_deep_outside");
+    create_file(&outside, "secret.txt", "outside\n");
+    let repo = create_fully_compliant_repo("symlink_deep_repo");
+
+    // Nest deeper than the sweep reaches; the escaping link at the bottom
+    // is never observed, so the run must say the results are partial.
+    let mut deep = repo.clone();
+    for i in 0..18 {
+        deep = deep.join(format!("d{i}"));
+    }
+    fs::create_dir_all(&deep).expect("Failed to create deep fixture");
+    std::os::unix::fs::symlink(outside.join("secret.txt"), deep.join("leak"))
+        .expect("Failed to create symlink");
+
+    let output = aletheia()
+        .arg(repo.to_str().unwrap())
+        .output()
+        .expect("Failed to run aletheia");
+
+    assert!(
+        output.status.success(),
+        "Compliant repo with unobserved depth should still exit 0"
+    );
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    assert!(
+        stdout.contains("results are partial"),
+        "Depth-truncated sweep must warn"
+    );
+    assert!(
+        !stdout.contains("escapes repository"),
+        "The unobserved link must not be reported as seen"
+    );
+
+    fs::remove_dir_all(repo).ok();
+    fs::remove_dir_all(outside).ok();
+}
+
 /// Test init-hook subcommand.
 #[test]
 fn test_init_hook() {
@@ -1123,6 +1191,35 @@ fn test_init_hook() {
         hook_content.contains("aletheia"),
         "Hook should reference aletheia"
     );
+    // Review T7: exit codes distinguished, missing binary caught.
+    assert!(
+        hook_content.contains("command -v aletheia"),
+        "Hook should check the binary exists"
+    );
+    assert!(
+        hook_content.contains("Bronze compliance NOT MET"),
+        "Status 1 keeps the compliance message"
+    );
+    assert!(
+        hook_content.contains("verification error"),
+        "Other statuses report a verification error"
+    );
+
+    #[cfg(unix)]
+    {
+        // The hook must be valid shell; skip where sh is unavailable.
+        match Command::new("sh")
+            .args(["-n", hook_path.to_str().unwrap()])
+            .output()
+        {
+            Ok(output) => assert!(
+                output.status.success(),
+                "Hook should pass sh -n: {}",
+                String::from_utf8_lossy(&output.stderr)
+            ),
+            Err(_) => eprintln!("skipping sh -n check: sh unavailable"),
+        }
+    }
 
     fs::remove_dir_all(repo).ok();
 }

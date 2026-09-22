@@ -22,7 +22,7 @@ aletheia-integration-tests = "45 pass, 0 fail — CLI built to the RSR v2 SSOT; 
 aletheia-clippy = "0 findings; `clippy --all-targets -- -D warnings` blocks in rust-ci.yml + `just lint` (issue #125 closed 2026-09-21)"
 absolute-zero-tests = "13 brainfuck + 5 whitespace unit, 10 E2E, 11 property, 11 aspect — run in the upstream repo, not here"
 benchmarks = "criterion-based (absolute-zero/benches/cno_benchmarks.rs)"
-test-result = "ON THIS BRANCH: build + full suite (66+45) + fmt + clippy -D + zero-dep all GREEN via `just check`; root rust-ci.yml restored to run the same on main"
+test-result = "main: build + full suite (68+47) + fmt + clippy -D + zero-dep all GREEN via `just check`; root rust-ci.yml restored to run the same on main"
 integration-test-caveat = "RETIRED 2026-09-21 (the warning was heeded): the suite still asserts on stdout substrings (a UI contract), but the checks were built to the upstream SSOT criteria — each cites its v2 criterion — not to the strings. Keep that direction: SSOT first, strings second."
 note = "absolute-zero/ is a git submodule since PR #89; aletheia/ is VENDORED plain files, not a submodule"
 
@@ -86,11 +86,13 @@ pr-145 = "removed the stray worktree gitlink breaking every recursive checkout �
 
 [recent-work-2026-09]
 # The all-open-issues campaign, 2026-09-21. All five open issues closed.
-issue-124 = "Aletheia CLI rebuilt on the RSR v2 SSOT (standards rsr-criteria-v2.a2ml v2.1.0-draft): 26-check offline subset, TOML config, human/JSON/SARIF/HTML/badge/quiet/verbose output, exit codes 0-4; 66 unit + 45 integration green"
+issue-124 = "Aletheia CLI rebuilt on the RSR v2 SSOT (standards rsr-criteria-v2.a2ml v2.1.0-draft): 26-check offline subset, TOML config, human/JSON/SARIF/HTML/badge/quiet/verbose output, exit codes 0-4; 68 unit + 47 integration green (review-response R1: T1/T2/T4-T10 addressed)"
 issue-125 = "Clippy findings wired away (no allow(dead_code)); `clippy --all-targets -- -D warnings` blocks in rust-ci.yml + `just lint`"
 issue-102 = "Root Justfile declared canonical; contractiles/Justfile stub (fake gates) replaced by a forwarding shim; repaired crg-grade/crg-badge (Make-style $$ broke every run)"
-issue-100 = "changelog.yml adopted (commit-back); CHANGELOG.md seeded; CHANGELOG.adoc frozen as pointer"
+issue-100 = "changelog.yml adopted (pr-back; commit-back blocked by Optimus-Branch ruleset); CHANGELOG.md seeded; CHANGELOG.adoc frozen as pointer"
 issue-98 = ".hypatia-ignore pruned to a comments-only audit record (all 10 entries verified dead); upstream residue in absolute-zero#77"
+review-response-185 = "CodeRabbit T1-T10 triaged: T6 parser (flags after positional), T4 symlink depth/truncation, T5 unterminated array, T7 hook exit codes, T8 HTML tier label, T9 pid fixtures, T10 submodule test, T2 SHA pin, T1 perm kept+documented; T3 perf consolidation deferred with reason"
+main-health-red-to-green = "2026-09-21: changelog caller fixed (top-level actions:read — the reusable requests it — plus pr-back for the ruleset-guarded main); actions.lock reconciled to codeql-action v4.38.1 (#187 fallout); U+200B removed from CHANGELOG.md (empty-linter); root CONTRIBUTING.adoc added (docs-gate cutoff passed)"
 rust-ci-restore = "Root rust-ci.yml restored re-pointed at aletheia/ (5 jobs mirroring `just check`); pin check taught the estate tags+actions.lock mechanism; Bun lockfile carve-out for no-node-runtime"
 
 [incidents]
@@ -99,6 +101,7 @@ clobber-is-a-policy-violation = "absolute-zero/.claude/CLAUDE.md lists PMPL-1.0 
 stray-worktree-gitlink = ".claude/worktrees/maa-ci-repair was committed as a gitlink (mode 160000) with NO .gitmodules entry. Git refuses: 'fatal: No url found for submodule path ... in .gitmodules'. This broke OSSF Scorecard AT CHECKOUT, before a single probe ran, and breaks any recursive clone. Fixed in #145; .claude/worktrees/ now gitignored."
 gitlink-shape-is-a-repeat = "639f389 (2026-02-21) left aletheia as a gitlink with no .gitmodules entry. A gitlink WITHOUT its mapping resolves to a silently-empty directory — git's quietest failure — and went unnoticed for over a month."
 dead-sha-pin-check = "aletheia's own Silver-level 'GitHub Actions SHA pinning' check used `line.contains(\"@v\") && !line.contains(\"@\")`, which is UNSATISFIABLE — every repo passed unconditionally, including this one while it carried the unpinned @master action that had broken Governance and CodeQL. Fixed with 3 tests in #144."
+changelog-startup-failure = "2026-09-21: both changelog runs on main (900c141, e6d02db) startup_failed with zero jobs and no log — the caller declared top-level permissions without actions:read while the reusable requests it (standards own caller documents this exact trap). Fixed same-day with actions:read + pr-back."
 
 [open-questions]
 # These need a human ruling; they are not research tasks.
@@ -115,7 +118,7 @@ proof-debt = "See [proof-state]. Note the older figure in docs/proof-debt.md (80
 resolve-rsr-source-of-truth = "RESOLVED 2026-09-21: oracle normative, criteria in standards SSOT, aletheia takes the offline subset (see [open-questions].rsr-source-of-truth)"
 empty-merged-prs = "#146 (ci(codeql) cron weekly->monthly) and #147 (Worktree maa ci repair) are BOTH EMPTY — git diff between parent and merge is blank. #146 stated change was already present. A merged PR title is not evidence the change happened; check git diff --stat."
 soundness-axioms = "Fix or delete prob_nonneg, prob_normalized, shannon_entropy_maximum while they are still unused"
-changelog-automation = "RESOLVED 2026-09-21 (#100): changelog.yml adopted (commit-back), CHANGELOG.md seeded with the exact reusable recipe, CHANGELOG.adoc frozen as a pointer"
+changelog-automation = "RESOLVED 2026-09-21 (#100): changelog.yml adopted (pr-back — commit-back rejected by the Optimus-Branch ruleset, zero bypass actors; caller also needed top-level actions:read after both main runs startup_failed), CHANGELOG.md seeded with the exact reusable recipe, CHANGELOG.adoc frozen as a pointer"
 hypatia-ignore-prune = "RESOLVED 2026-09-21 (#98): all 10 entries verified dead at the pinned submodule commit; .hypatia-ignore is a comments-only audit record, upstream residue in absolute-zero#77"
 submodule-docs = "RESOLVED 2026-09-21: clone block in QUICKSTART-DEV documents `git submodule update --init`"
 
@@ -128,3 +131,4 @@ generic-summary-is-not-detection = "The staleness job prints 'Remove legacy scor
 never-commit-dash-a = "Two separate defects reached main in one `git commit -a` (#142). Never use it in this repo."
 never-allow-dead-code = "Do not silence #125 with #![allow(dead_code)]. The dead code is the specification of the missing feature, and rust-ci.yml's header forbids it."
 never-restore-aletheia-from-mirror = "The in-tree copy is AHEAD — 134 tracked files vs 108, 45 in-tree only. The mirrors' only unique asset is 62 commits of history to 2026-01-03."
+optimus-branch-ruleset = "main is guarded by the Optimus-Branch RULESET (not branch protection — the legacy API 404s): PR-required, signed commits, strict CodeRabbit+governance checks, code-scanning gates, ZERO bypass actors. Direct pushes fail; workflows use pr-back, humans squash-merge."

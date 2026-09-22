@@ -415,68 +415,68 @@ releases</a>.</em></p>
 <h2>What's Changed</h2>
 <ul>
 <li>[INS-206] Store Gitlab Project ID in secret location metadata by <a
-href="https://github.com/mustansir14"><code>@​mustansir14</code></a> in
+href="https://github.com/mustansir14"><code>@mustansir14</code></a> in
 <a
 href="https://redirect.github.com/trufflesecurity/trufflehog/pull/4601">trufflesecurity/trufflehog#4601</a></li>
 <li>[INS-242] Add more validations to Custom Detector config by <a
-href="https://github.com/mustansir14"><code>@​mustansir14</code></a> in
+href="https://github.com/mustansir14"><code>@mustansir14</code></a> in
 <a
 href="https://redirect.github.com/trufflesecurity/trufflehog/pull/4642">trufflesecurity/trufflehog#4642</a></li>
 <li>Fix syslog test failing due to hardcoded timestamp by <a
-href="https://github.com/MuneebUllahKhan222"><code>@​MuneebUllahKhan222</code></a>
+href="https://github.com/MuneebUllahKhan222"><code>@MuneebUllahKhan222</code></a>
 in <a
 href="https://redirect.github.com/trufflesecurity/trufflehog/pull/4646">trufflesecurity/trufflehog#4646</a></li>
 <li>[INS-120] Increase code coverage for Postman's source scanItem
 function by <a
-href="https://github.com/MuneebUllahKhan222"><code>@​MuneebUllahKhan222</code></a>
+href="https://github.com/MuneebUllahKhan222"><code>@MuneebUllahKhan222</code></a>
 in <a
 href="https://redirect.github.com/trufflesecurity/trufflehog/pull/4648">trufflesecurity/trufflehog#4648</a></li>
 <li>[INS-232] Fix S3 Source &quot;panic: runtime error: index out of
 range&quot; bug by <a
-href="https://github.com/mustansir14"><code>@​mustansir14</code></a> in
+href="https://github.com/mustansir14"><code>@mustansir14</code></a> in
 <a
 href="https://redirect.github.com/trufflesecurity/trufflehog/pull/4610">trufflesecurity/trufflehog#4610</a></li>
 <li>[INS-170] Unify JDBC URL Parsing Across Detector and Analyzer
 (Continued) by <a
-href="https://github.com/mustansir14"><code>@​mustansir14</code></a> in
+href="https://github.com/mustansir14"><code>@mustansir14</code></a> in
 <a
 href="https://redirect.github.com/trufflesecurity/trufflehog/pull/4606">trufflesecurity/trufflehog#4606</a></li>
 <li>Add exponential backoff retry logic in Twilio detector by <a
-href="https://github.com/shahzadhaider1"><code>@​shahzadhaider1</code></a>
+href="https://github.com/shahzadhaider1"><code>@shahzadhaider1</code></a>
 in <a
 href="https://redirect.github.com/trufflesecurity/trufflehog/pull/4652">trufflesecurity/trufflehog#4652</a></li>
 <li>Fix typo in help description for Postman API metric by <a
-href="https://github.com/shahzadhaider1"><code>@​shahzadhaider1</code></a>
+href="https://github.com/shahzadhaider1"><code>@shahzadhaider1</code></a>
 in <a
 href="https://redirect.github.com/trufflesecurity/trufflehog/pull/4656">trufflesecurity/trufflehog#4656</a></li>
 <li>Rework JWT detector to better block local IPs by <a
-href="https://github.com/bradlarsen"><code>@​bradlarsen</code></a> in <a
+href="https://github.com/bradlarsen"><code>@bradlarsen</code></a> in <a
 href="https://redirect.github.com/trufflesecurity/trufflehog/pull/4607">trufflesecurity/trufflehog#4607</a></li>
 <li>Gitlab Source: Backoff from Scan2 which is experimental to legacy
 pagination API call by <a
-href="https://github.com/kashifkhan0771"><code>@​kashifkhan0771</code></a>
+href="https://github.com/kashifkhan0771"><code>@kashifkhan0771</code></a>
 in <a
 href="https://redirect.github.com/trufflesecurity/trufflehog/pull/4608">trufflesecurity/trufflehog#4608</a></li>
 <li>fix: git commit date parsing for non-English locales by <a
-href="https://github.com/GLEF1X"><code>@​GLEF1X</code></a> in <a
+href="https://github.com/GLEF1X"><code>@GLEF1X</code></a> in <a
 href="https://redirect.github.com/trufflesecurity/trufflehog/pull/4653">trufflesecurity/trufflehog#4653</a></li>
 <li>fix: report accurate line numbers for chunked file scanning (<a
 href="https://redirect.github.com/trufflesecurity/trufflehog/issues/1876">#1876</a>)
-by <a href="https://github.com/GLEF1X"><code>@​GLEF1X</code></a> in <a
+by <a href="https://github.com/GLEF1X"><code>@GLEF1X</code></a> in <a
 href="https://redirect.github.com/trufflesecurity/trufflehog/pull/4615">trufflesecurity/trufflehog#4615</a></li>
 <li>Add Postman API monthly request limit metric by <a
-href="https://github.com/shahzadhaider1"><code>@​shahzadhaider1</code></a>
+href="https://github.com/shahzadhaider1"><code>@shahzadhaider1</code></a>
 in <a
 href="https://redirect.github.com/trufflesecurity/trufflehog/pull/4667">trufflesecurity/trufflehog#4667</a></li>
 <li>[INS-243] Fix jdbc detector detecting incomplete connection string
 and fixed invalid… by <a
-href="https://github.com/MuneebUllahKhan222"><code>@​MuneebUllahKhan222</code></a>
+href="https://github.com/MuneebUllahKhan222"><code>@MuneebUllahKhan222</code></a>
 in <a
 href="https://redirect.github.com/trufflesecurity/trufflehog/pull/4636">trufflesecurity/trufflehog#4636</a></li>
 </ul>
 <h2>New Contributors</h2>
 <ul>
-<li><a href="https://github.com/GLEF1X"><code>@​GLEF1X</code></a> made
+<li><a href="https://github.com/GLEF1X"><code>@GLEF1X</code></a> made
 their first contribution in <a
 href="https://redirect.github.com/trufflesecurity/trufflehog/pull/4653">trufflesecurity/trufflehog#4653</a></li>
 </ul>
@@ -603,11 +603,11 @@ releases</a>.</em></p>
 <ul>
 <li>Add orchestration_id to git user-agent when ACTIONS_ORCHESTRATION_ID
 is set by <a
-href="https://github.com/TingluoHuang"><code>@​TingluoHuang</code></a>
+href="https://github.com/TingluoHuang"><code>@TingluoHuang</code></a>
 in <a
 href="https://redirect.github.com/actions/checkout/pull/2355">actions/checkout#2355</a></li>
 <li>Fix tag handling: preserve annotations and explicit fetch-tags by <a
-href="https://github.com/ericsciple"><code>@​ericsciple</code></a> in <a
+href="https://github.com/ericsciple"><code>@ericsciple</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/2356">actions/checkout#2356</a></li>
 </ul>
 <p><strong>Full Changelog</strong>: <a
@@ -624,91 +624,91 @@ changelog</a>.</em></p>
 <h2>v6.0.2</h2>
 <ul>
 <li>Fix tag handling: preserve annotations and explicit fetch-tags by <a
-href="https://github.com/ericsciple"><code>@​ericsciple</code></a> in <a
+href="https://github.com/ericsciple"><code>@ericsciple</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/2356">actions/checkout#2356</a></li>
 </ul>
 <h2>v6.0.1</h2>
 <ul>
 <li>Add worktree support for persist-credentials includeIf by <a
-href="https://github.com/ericsciple"><code>@​ericsciple</code></a> in <a
+href="https://github.com/ericsciple"><code>@ericsciple</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/2327">actions/checkout#2327</a></li>
 </ul>
 <h2>v6.0.0</h2>
 <ul>
 <li>Persist creds to a separate file by <a
-href="https://github.com/ericsciple"><code>@​ericsciple</code></a> in <a
+href="https://github.com/ericsciple"><code>@ericsciple</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/2286">actions/checkout#2286</a></li>
 <li>Update README to include Node.js 24 support details and requirements
-by <a href="https://github.com/salmanmkc"><code>@​salmanmkc</code></a>
+by <a href="https://github.com/salmanmkc"><code>@salmanmkc</code></a>
 in <a
 href="https://redirect.github.com/actions/checkout/pull/2248">actions/checkout#2248</a></li>
 </ul>
 <h2>v5.0.1</h2>
 <ul>
 <li>Port v6 cleanup to v5 by <a
-href="https://github.com/ericsciple"><code>@​ericsciple</code></a> in <a
+href="https://github.com/ericsciple"><code>@ericsciple</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/2301">actions/checkout#2301</a></li>
 </ul>
 <h2>v5.0.0</h2>
 <ul>
 <li>Update actions checkout to use node 24 by <a
-href="https://github.com/salmanmkc"><code>@​salmanmkc</code></a> in <a
+href="https://github.com/salmanmkc"><code>@salmanmkc</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/2226">actions/checkout#2226</a></li>
 </ul>
 <h2>v4.3.1</h2>
 <ul>
 <li>Port v6 cleanup to v4 by <a
-href="https://github.com/ericsciple"><code>@​ericsciple</code></a> in <a
+href="https://github.com/ericsciple"><code>@ericsciple</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/2305">actions/checkout#2305</a></li>
 </ul>
 <h2>v4.3.0</h2>
 <ul>
 <li>docs: update README.md by <a
-href="https://github.com/motss"><code>@​motss</code></a> in <a
+href="https://github.com/motss"><code>@motss</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/1971">actions/checkout#1971</a></li>
 <li>Add internal repos for checking out multiple repositories by <a
-href="https://github.com/mouismail"><code>@​mouismail</code></a> in <a
+href="https://github.com/mouismail"><code>@mouismail</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/1977">actions/checkout#1977</a></li>
 <li>Documentation update - add recommended permissions to Readme by <a
-href="https://github.com/benwells"><code>@​benwells</code></a> in <a
+href="https://github.com/benwells"><code>@benwells</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/2043">actions/checkout#2043</a></li>
 <li>Adjust positioning of user email note and permissions heading by <a
-href="https://github.com/joshmgross"><code>@​joshmgross</code></a> in <a
+href="https://github.com/joshmgross"><code>@joshmgross</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/2044">actions/checkout#2044</a></li>
 <li>Update README.md by <a
-href="https://github.com/nebuk89"><code>@​nebuk89</code></a> in <a
+href="https://github.com/nebuk89"><code>@nebuk89</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/2194">actions/checkout#2194</a></li>
 <li>Update CODEOWNERS for actions by <a
-href="https://github.com/TingluoHuang"><code>@​TingluoHuang</code></a>
+href="https://github.com/TingluoHuang"><code>@TingluoHuang</code></a>
 in <a
 href="https://redirect.github.com/actions/checkout/pull/2224">actions/checkout#2224</a></li>
 <li>Update package dependencies by <a
-href="https://github.com/salmanmkc"><code>@​salmanmkc</code></a> in <a
+href="https://github.com/salmanmkc"><code>@salmanmkc</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/2236">actions/checkout#2236</a></li>
 </ul>
 <h2>v4.2.2</h2>
 <ul>
 <li><code>url-helper.ts</code> now leverages well-known environment
-variables by <a href="https://github.com/jww3"><code>@​jww3</code></a>
+variables by <a href="https://github.com/jww3"><code>@jww3</code></a>
 in <a
 href="https://redirect.github.com/actions/checkout/pull/1941">actions/checkout#1941</a></li>
 <li>Expand unit test coverage for <code>isGhes</code> by <a
-href="https://github.com/jww3"><code>@​jww3</code></a> in <a
+href="https://github.com/jww3"><code>@jww3</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/1946">actions/checkout#1946</a></li>
 </ul>
 <h2>v4.2.1</h2>
 <ul>
 <li>Check out other refs/* by commit if provided, fall back to ref by <a
-href="https://github.com/orhantoy"><code>@​orhantoy</code></a> in <a
+href="https://github.com/orhantoy"><code>@orhantoy</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/1924">actions/checkout#1924</a></li>
 </ul>
 <h2>v4.2.0</h2>
 <ul>
 <li>Add Ref and Commit outputs by <a
-href="https://github.com/lucacome"><code>@​lucacome</code></a> in <a
+href="https://github.com/lucacome"><code>@lucacome</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/1180">actions/checkout#1180</a></li>
 <li>Dependency updates by <a
-href="https://github.com/dependabot"><code>@​dependabot</code></a>- <a
+href="https://github.com/dependabot"><code>@dependabot</code></a>- <a
 href="https://redirect.github.com/actions/checkout/pull/1777">actions/checkout#1777</a>,
 <a
 href="https://redirect.github.com/actions/checkout/pull/1872">actions/checkout#1872</a></li>
@@ -717,23 +717,23 @@ href="https://redirect.github.com/actions/checkout/pull/1872">actions/checkout#1
 <ul>
 <li>Bump the minor-npm-dependencies group across 1 directory with 4
 updates by <a
-href="https://github.com/dependabot"><code>@​dependabot</code></a> in <a
+href="https://github.com/dependabot"><code>@dependabot</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/1739">actions/checkout#1739</a></li>
 <li>Bump actions/checkout from 3 to 4 by <a
-href="https://github.com/dependabot"><code>@​dependabot</code></a> in <a
+href="https://github.com/dependabot"><code>@dependabot</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/1697">actions/checkout#1697</a></li>
 <li>Check out other refs/* by commit by <a
-href="https://github.com/orhantoy"><code>@​orhantoy</code></a> in <a
+href="https://github.com/orhantoy"><code>@orhantoy</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/1774">actions/checkout#1774</a></li>
 <li>Pin actions/checkout's own workflows to a known, good, stable
-version. by <a href="https://github.com/jww3"><code>@​jww3</code></a> in
+version. by <a href="https://github.com/jww3"><code>@jww3</code></a> in
 <a
 href="https://redirect.github.com/actions/checkout/pull/1776">actions/checkout#1776</a></li>
 </ul>
 <h2>v4.1.6</h2>
 <ul>
 <li>Check platform to set archive extension appropriately by <a
-href="https://github.com/cory-miller"><code>@​cory-miller</code></a> in
+href="https://github.com/cory-miller"><code>@cory-miller</code></a> in
 <a
 href="https://redirect.github.com/actions/checkout/pull/1732">actions/checkout#1732</a></li>
 </ul>
@@ -1079,27 +1079,27 @@ releases</a>.</em></p>
 <h2>What's Changed</h2>
 <ul>
 <li>[INS-170] Unify JDBC URL parsing across detectors and analyzers by
-<a href="https://github.com/mustansir14"><code>@​mustansir14</code></a>
+<a href="https://github.com/mustansir14"><code>@mustansir14</code></a>
 in <a
 href="https://redirect.github.com/trufflesecurity/trufflehog/pull/4574">trufflesecurity/trufflehog#4574</a></li>
 <li>Pagination and Rate-Limit Handling In Docker Registry Namespace API
 Calls by <a
-href="https://github.com/nabeelalam"><code>@​nabeelalam</code></a> in <a
+href="https://github.com/nabeelalam"><code>@nabeelalam</code></a> in <a
 href="https://redirect.github.com/trufflesecurity/trufflehog/pull/4557">trufflesecurity/trufflehog#4557</a></li>
 <li>[INS-226] Use pinned image for Quay registry Integration test by <a
-href="https://github.com/mustansir14"><code>@​mustansir14</code></a> in
+href="https://github.com/mustansir14"><code>@mustansir14</code></a> in
 <a
 href="https://redirect.github.com/trufflesecurity/trufflehog/pull/4602">trufflesecurity/trufflehog#4602</a></li>
 <li>Update module golang.org/x/crypto to v0.45.0 [SECURITY] by <a
-href="https://github.com/renovate"><code>@​renovate</code></a>[bot] in
+href="https://github.com/renovate"><code>@renovate</code></a>[bot] in
 <a
 href="https://redirect.github.com/trufflesecurity/trufflehog/pull/4562">trufflesecurity/trufflehog#4562</a></li>
 <li>[INS-207] Add Role-Aware Resumption Support for Legacy S3 Scan by <a
-href="https://github.com/MuneebUllahKhan222"><code>@​MuneebUllahKhan222</code></a>
+href="https://github.com/MuneebUllahKhan222"><code>@MuneebUllahKhan222</code></a>
 in <a
 href="https://redirect.github.com/trufflesecurity/trufflehog/pull/4600">trufflesecurity/trufflehog#4600</a></li>
 <li>Enable line numbers for GitHub Real-time by <a
-href="https://github.com/rosecodym"><code>@​rosecodym</code></a> in <a
+href="https://github.com/rosecodym"><code>@rosecodym</code></a> in <a
 href="https://redirect.github.com/trufflesecurity/trufflehog/pull/4611">trufflesecurity/trufflehog#4611</a></li>
 </ul>
 <p><strong>Full Changelog</strong>: <a
@@ -1202,13 +1202,13 @@ releases</a>.</em></p>
 <h2>What's Changed</h2>
 <ul>
 <li>Update all references from v5 and v4 to v6 by <a
-href="https://github.com/ericsciple"><code>@​ericsciple</code></a> in <a
+href="https://github.com/ericsciple"><code>@ericsciple</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/2314">actions/checkout#2314</a></li>
 <li>Add worktree support for persist-credentials includeIf by <a
-href="https://github.com/ericsciple"><code>@​ericsciple</code></a> in <a
+href="https://github.com/ericsciple"><code>@ericsciple</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/2327">actions/checkout#2327</a></li>
 <li>Clarify v6 README by <a
-href="https://github.com/ericsciple"><code>@​ericsciple</code></a> in <a
+href="https://github.com/ericsciple"><code>@ericsciple</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/2328">actions/checkout#2328</a></li>
 </ul>
 <p><strong>Full Changelog</strong>: <a
@@ -1217,17 +1217,17 @@ href="https://github.com/actions/checkout/compare/v6...v6.0.1">https://github.co
 <h2>What's Changed</h2>
 <ul>
 <li>Update README to include Node.js 24 support details and requirements
-by <a href="https://github.com/salmanmkc"><code>@​salmanmkc</code></a>
+by <a href="https://github.com/salmanmkc"><code>@salmanmkc</code></a>
 in <a
 href="https://redirect.github.com/actions/checkout/pull/2248">actions/checkout#2248</a></li>
 <li>Persist creds to a separate file by <a
-href="https://github.com/ericsciple"><code>@​ericsciple</code></a> in <a
+href="https://github.com/ericsciple"><code>@ericsciple</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/2286">actions/checkout#2286</a></li>
 <li>v6-beta by <a
-href="https://github.com/ericsciple"><code>@​ericsciple</code></a> in <a
+href="https://github.com/ericsciple"><code>@ericsciple</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/2298">actions/checkout#2298</a></li>
 <li>update readme/changelog for v6 by <a
-href="https://github.com/ericsciple"><code>@​ericsciple</code></a> in <a
+href="https://github.com/ericsciple"><code>@ericsciple</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/2311">actions/checkout#2311</a></li>
 </ul>
 <p><strong>Full Changelog</strong>: <a
@@ -1246,7 +1246,7 @@ container action</a> scenarios.</p>
 <h2>What's Changed</h2>
 <ul>
 <li>Port v6 cleanup to v5 by <a
-href="https://github.com/ericsciple"><code>@​ericsciple</code></a> in <a
+href="https://github.com/ericsciple"><code>@ericsciple</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/2301">actions/checkout#2301</a></li>
 </ul>
 <p><strong>Full Changelog</strong>: <a
@@ -1255,10 +1255,10 @@ href="https://github.com/actions/checkout/compare/v5...v5.0.1">https://github.co
 <h2>What's Changed</h2>
 <ul>
 <li>Update actions checkout to use node 24 by <a
-href="https://github.com/salmanmkc"><code>@​salmanmkc</code></a> in <a
+href="https://github.com/salmanmkc"><code>@salmanmkc</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/2226">actions/checkout#2226</a></li>
 <li>Prepare v5.0.0 release by <a
-href="https://github.com/salmanmkc"><code>@​salmanmkc</code></a> in <a
+href="https://github.com/salmanmkc"><code>@salmanmkc</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/2238">actions/checkout#2238</a></li>
 </ul>
 <h2>⚠️ Minimum Compatible Runner Version</h2>
@@ -1274,7 +1274,7 @@ href="https://github.com/actions/checkout/compare/v4...v5.0.0">https://github.co
 <h2>What's Changed</h2>
 <ul>
 <li>Port v6 cleanup to v4 by <a
-href="https://github.com/ericsciple"><code>@​ericsciple</code></a> in <a
+href="https://github.com/ericsciple"><code>@ericsciple</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/2305">actions/checkout#2305</a></li>
 </ul>
 <!-- raw HTML omitted -->
@@ -1291,79 +1291,79 @@ changelog</a>.</em></p>
 <h2>v6.0.0</h2>
 <ul>
 <li>Persist creds to a separate file by <a
-href="https://github.com/ericsciple"><code>@​ericsciple</code></a> in <a
+href="https://github.com/ericsciple"><code>@ericsciple</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/2286">actions/checkout#2286</a></li>
 <li>Update README to include Node.js 24 support details and requirements
-by <a href="https://github.com/salmanmkc"><code>@​salmanmkc</code></a>
+by <a href="https://github.com/salmanmkc"><code>@salmanmkc</code></a>
 in <a
 href="https://redirect.github.com/actions/checkout/pull/2248">actions/checkout#2248</a></li>
 </ul>
 <h2>v5.0.1</h2>
 <ul>
 <li>Port v6 cleanup to v5 by <a
-href="https://github.com/ericsciple"><code>@​ericsciple</code></a> in <a
+href="https://github.com/ericsciple"><code>@ericsciple</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/2301">actions/checkout#2301</a></li>
 </ul>
 <h2>v5.0.0</h2>
 <ul>
 <li>Update actions checkout to use node 24 by <a
-href="https://github.com/salmanmkc"><code>@​salmanmkc</code></a> in <a
+href="https://github.com/salmanmkc"><code>@salmanmkc</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/2226">actions/checkout#2226</a></li>
 </ul>
 <h2>v4.3.1</h2>
 <ul>
 <li>Port v6 cleanup to v4 by <a
-href="https://github.com/ericsciple"><code>@​ericsciple</code></a> in <a
+href="https://github.com/ericsciple"><code>@ericsciple</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/2305">actions/checkout#2305</a></li>
 </ul>
 <h2>v4.3.0</h2>
 <ul>
 <li>docs: update README.md by <a
-href="https://github.com/motss"><code>@​motss</code></a> in <a
+href="https://github.com/motss"><code>@motss</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/1971">actions/checkout#1971</a></li>
 <li>Add internal repos for checking out multiple repositories by <a
-href="https://github.com/mouismail"><code>@​mouismail</code></a> in <a
+href="https://github.com/mouismail"><code>@mouismail</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/1977">actions/checkout#1977</a></li>
 <li>Documentation update - add recommended permissions to Readme by <a
-href="https://github.com/benwells"><code>@​benwells</code></a> in <a
+href="https://github.com/benwells"><code>@benwells</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/2043">actions/checkout#2043</a></li>
 <li>Adjust positioning of user email note and permissions heading by <a
-href="https://github.com/joshmgross"><code>@​joshmgross</code></a> in <a
+href="https://github.com/joshmgross"><code>@joshmgross</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/2044">actions/checkout#2044</a></li>
 <li>Update README.md by <a
-href="https://github.com/nebuk89"><code>@​nebuk89</code></a> in <a
+href="https://github.com/nebuk89"><code>@nebuk89</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/2194">actions/checkout#2194</a></li>
 <li>Update CODEOWNERS for actions by <a
-href="https://github.com/TingluoHuang"><code>@​TingluoHuang</code></a>
+href="https://github.com/TingluoHuang"><code>@TingluoHuang</code></a>
 in <a
 href="https://redirect.github.com/actions/checkout/pull/2224">actions/checkout#2224</a></li>
 <li>Update package dependencies by <a
-href="https://github.com/salmanmkc"><code>@​salmanmkc</code></a> in <a
+href="https://github.com/salmanmkc"><code>@salmanmkc</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/2236">actions/checkout#2236</a></li>
 </ul>
 <h2>v4.2.2</h2>
 <ul>
 <li><code>url-helper.ts</code> now leverages well-known environment
-variables by <a href="https://github.com/jww3"><code>@​jww3</code></a>
+variables by <a href="https://github.com/jww3"><code>@jww3</code></a>
 in <a
 href="https://redirect.github.com/actions/checkout/pull/1941">actions/checkout#1941</a></li>
 <li>Expand unit test coverage for <code>isGhes</code> by <a
-href="https://github.com/jww3"><code>@​jww3</code></a> in <a
+href="https://github.com/jww3"><code>@jww3</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/1946">actions/checkout#1946</a></li>
 </ul>
 <h2>v4.2.1</h2>
 <ul>
 <li>Check out other refs/* by commit if provided, fall back to ref by <a
-href="https://github.com/orhantoy"><code>@​orhantoy</code></a> in <a
+href="https://github.com/orhantoy"><code>@orhantoy</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/1924">actions/checkout#1924</a></li>
 </ul>
 <h2>v4.2.0</h2>
 <ul>
 <li>Add Ref and Commit outputs by <a
-href="https://github.com/lucacome"><code>@​lucacome</code></a> in <a
+href="https://github.com/lucacome"><code>@lucacome</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/1180">actions/checkout#1180</a></li>
 <li>Dependency updates by <a
-href="https://github.com/dependabot"><code>@​dependabot</code></a>- <a
+href="https://github.com/dependabot"><code>@dependabot</code></a>- <a
 href="https://redirect.github.com/actions/checkout/pull/1777">actions/checkout#1777</a>,
 <a
 href="https://redirect.github.com/actions/checkout/pull/1872">actions/checkout#1872</a></li>
@@ -1372,40 +1372,40 @@ href="https://redirect.github.com/actions/checkout/pull/1872">actions/checkout#1
 <ul>
 <li>Bump the minor-npm-dependencies group across 1 directory with 4
 updates by <a
-href="https://github.com/dependabot"><code>@​dependabot</code></a> in <a
+href="https://github.com/dependabot"><code>@dependabot</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/1739">actions/checkout#1739</a></li>
 <li>Bump actions/checkout from 3 to 4 by <a
-href="https://github.com/dependabot"><code>@​dependabot</code></a> in <a
+href="https://github.com/dependabot"><code>@dependabot</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/1697">actions/checkout#1697</a></li>
 <li>Check out other refs/* by commit by <a
-href="https://github.com/orhantoy"><code>@​orhantoy</code></a> in <a
+href="https://github.com/orhantoy"><code>@orhantoy</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/1774">actions/checkout#1774</a></li>
 <li>Pin actions/checkout's own workflows to a known, good, stable
-version. by <a href="https://github.com/jww3"><code>@​jww3</code></a> in
+version. by <a href="https://github.com/jww3"><code>@jww3</code></a> in
 <a
 href="https://redirect.github.com/actions/checkout/pull/1776">actions/checkout#1776</a></li>
 </ul>
 <h2>v4.1.6</h2>
 <ul>
 <li>Check platform to set archive extension appropriately by <a
-href="https://github.com/cory-miller"><code>@​cory-miller</code></a> in
+href="https://github.com/cory-miller"><code>@cory-miller</code></a> in
 <a
 href="https://redirect.github.com/actions/checkout/pull/1732">actions/checkout#1732</a></li>
 </ul>
 <h2>v4.1.5</h2>
 <ul>
 <li>Update NPM dependencies by <a
-href="https://github.com/cory-miller"><code>@​cory-miller</code></a> in
+href="https://github.com/cory-miller"><code>@cory-miller</code></a> in
 <a
 href="https://redirect.github.com/actions/checkout/pull/1703">actions/checkout#1703</a></li>
 <li>Bump github/codeql-action from 2 to 3 by <a
-href="https://github.com/dependabot"><code>@​dependabot</code></a> in <a
+href="https://github.com/dependabot"><code>@dependabot</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/1694">actions/checkout#1694</a></li>
 <li>Bump actions/setup-node from 1 to 4 by <a
-href="https://github.com/dependabot"><code>@​dependabot</code></a> in <a
+href="https://github.com/dependabot"><code>@dependabot</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/1696">actions/checkout#1696</a></li>
 <li>Bump actions/upload-artifact from 2 to 4 by <a
-href="https://github.com/dependabot"><code>@​dependabot</code></a> in <a
+href="https://github.com/dependabot"><code>@dependabot</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/1695">actions/checkout#1695</a></li>
 </ul>
 <!-- raw HTML omitted -->
@@ -1522,12 +1522,12 @@ releases</a>.</em></p>
 <h2>What's Changed</h2>
 <ul>
 <li>Acknowledge custom command inputs in cleanup.js by <a
-href="https://github.com/janopae"><code>@​janopae</code></a> in <a
+href="https://github.com/janopae"><code>@janopae</code></a> in <a
 href="https://redirect.github.com/webfactory/ssh-agent/pull/235">webfactory/ssh-agent#235</a></li>
 </ul>
 <h2>New Contributors</h2>
 <ul>
-<li><a href="https://github.com/janopae"><code>@​janopae</code></a> made
+<li><a href="https://github.com/janopae"><code>@janopae</code></a> made
 their first contribution in <a
 href="https://redirect.github.com/webfactory/ssh-agent/pull/235">webfactory/ssh-agent#235</a></li>
 </ul>
@@ -1694,42 +1694,42 @@ v5.3.0 release notes</a>.</p>
 <ul>
 <li>docs: clarify <code>GITHUB_TOKEN</code> permissions needed for
 private repos by <a
-href="https://github.com/pankajtaneja5"><code>@​pankajtaneja5</code></a>
+href="https://github.com/pankajtaneja5"><code>@pankajtaneja5</code></a>
 in <a
 href="https://redirect.github.com/ossf/scorecard-action/pull/1574">ossf/scorecard-action#1574</a></li>
 <li>:book: Fix recommended command to test the image in development by
 <a
-href="https://github.com/deivid-rodriguez"><code>@​deivid-rodriguez</code></a>
+href="https://github.com/deivid-rodriguez"><code>@deivid-rodriguez</code></a>
 in <a
 href="https://redirect.github.com/ossf/scorecard-action/pull/1583">ossf/scorecard-action#1583</a></li>
 </ul>
 <h2>Other</h2>
 <ul>
 <li>add missing top-level token permissions to workflows by <a
-href="https://github.com/timothyklee"><code>@​timothyklee</code></a> in
+href="https://github.com/timothyklee"><code>@timothyklee</code></a> in
 <a
 href="https://redirect.github.com/ossf/scorecard-action/pull/1566">ossf/scorecard-action#1566</a></li>
 <li>setup codeowners for requesting reviews by <a
-href="https://github.com/spencerschrock"><code>@​spencerschrock</code></a>
+href="https://github.com/spencerschrock"><code>@spencerschrock</code></a>
 in <a
 href="https://redirect.github.com/ossf/scorecard-action/pull/1576">ossf/scorecard-action#1576</a></li>
 <li>:seedling: Improve printing options by <a
-href="https://github.com/deivid-rodriguez"><code>@​deivid-rodriguez</code></a>
+href="https://github.com/deivid-rodriguez"><code>@deivid-rodriguez</code></a>
 in <a
 href="https://redirect.github.com/ossf/scorecard-action/pull/1584">ossf/scorecard-action#1584</a></li>
 </ul>
 <h2>New Contributors</h2>
 <ul>
 <li><a
-href="https://github.com/timothyklee"><code>@​timothyklee</code></a>
+href="https://github.com/timothyklee"><code>@timothyklee</code></a>
 made their first contribution in <a
 href="https://redirect.github.com/ossf/scorecard-action/pull/1566">ossf/scorecard-action#1566</a></li>
 <li><a
-href="https://github.com/pankajtaneja5"><code>@​pankajtaneja5</code></a>
+href="https://github.com/pankajtaneja5"><code>@pankajtaneja5</code></a>
 made their first contribution in <a
 href="https://redirect.github.com/ossf/scorecard-action/pull/1574">ossf/scorecard-action#1574</a></li>
 <li><a
-href="https://github.com/deivid-rodriguez"><code>@​deivid-rodriguez</code></a>
+href="https://github.com/deivid-rodriguez"><code>@deivid-rodriguez</code></a>
 made their first contribution in <a
 href="https://redirect.github.com/ossf/scorecard-action/pull/1584">ossf/scorecard-action#1584</a></li>
 </ul>
@@ -1758,7 +1758,7 @@ release notes.</li>
 savings depends on the repository in question.
 <ul>
 <li>use Scorecard library entrypoint instead of Cobra hooking by <a
-href="https://github.com/spencerschrock"><code>@​spencerschrock</code></a>
+href="https://github.com/spencerschrock"><code>@spencerschrock</code></a>
 in <a
 href="https://redirect.github.com/ossf/scorecard-action/pull/1423">ossf/scorecard-action#1423</a></li>
 </ul>
@@ -1766,7 +1766,7 @@ href="https://redirect.github.com/ossf/scorecard-action/pull/1423">ossf/scorecar
 <li>Some errors were made into annotations to make them more visible
 <ul>
 <li>Make default branch error more prominent by <a
-href="https://github.com/jsoref"><code>@​jsoref</code></a> in <a
+href="https://github.com/jsoref"><code>@jsoref</code></a> in <a
 href="https://redirect.github.com/ossf/scorecard-action/pull/1459">ossf/scorecard-action#1459</a></li>
 </ul>
 </li>
@@ -1777,7 +1777,7 @@ results for repositories with <code>.gitattributes</code> files at the
 cost of analysis speed.
 <ul>
 <li>add input for specifying <code>--file-mode</code> by <a
-href="https://github.com/spencerschrock"><code>@​spencerschrock</code></a>
+href="https://github.com/spencerschrock"><code>@spencerschrock</code></a>
 in <a
 href="https://redirect.github.com/ossf/scorecard-action/pull/1509">ossf/scorecard-action#1509</a></li>
 </ul>
@@ -1787,7 +1787,7 @@ href="https://github.com/ossf/scorecard-action/pkgs/container/scorecard-action">
 on GitHub Container Registry</a>. There should be no functional changes.
 <ul>
 <li>:seedling: publish docker images to GitHub Container Registry by <a
-href="https://github.com/spencerschrock"><code>@​spencerschrock</code></a>
+href="https://github.com/spencerschrock"><code>@spencerschrock</code></a>
 in <a
 href="https://redirect.github.com/ossf/scorecard-action/pull/1453">ossf/scorecard-action#1453</a></li>
 </ul>
@@ -1796,17 +1796,17 @@ href="https://redirect.github.com/ossf/scorecard-action/pull/1453">ossf/scorecar
 <h3>Docs</h3>
 <ul>
 <li>Installation docs update by <a
-href="https://github.com/JeremiahAHoward"><code>@​JeremiahAHoward</code></a>
+href="https://github.com/JeremiahAHoward"><code>@JeremiahAHoward</code></a>
 in <a
 href="https://redirect.github.com/ossf/scorecard-action/pull/1416">ossf/scorecard-action#1416</a></li>
 </ul>
 <h2>New Contributors</h2>
 <ul>
 <li><a
-href="https://github.com/JeremiahAHoward"><code>@​JeremiahAHoward</code></a>
+href="https://github.com/JeremiahAHoward"><code>@JeremiahAHoward</code></a>
 made their first contribution in <a
 href="https://redirect.github.com/ossf/scorecard-action/pull/1416">ossf/scorecard-action#1416</a></li>
-<li><a href="https://github.com/jsoref"><code>@​jsoref</code></a> made
+<li><a href="https://github.com/jsoref"><code>@jsoref</code></a> made
 their first contribution in <a
 href="https://redirect.github.com/ossf/scorecard-action/pull/1459">ossf/scorecard-action#1459</a>
 <strong>Full Changelog</strong>: <a
@@ -2284,13 +2284,13 @@ releases</a>.</em></p>
 <h2>What's Changed</h2>
 <ul>
 <li>Update all references from v5 and v4 to v6 by <a
-href="https://github.com/ericsciple"><code>@​ericsciple</code></a> in <a
+href="https://github.com/ericsciple"><code>@ericsciple</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/2314">actions/checkout#2314</a></li>
 <li>Add worktree support for persist-credentials includeIf by <a
-href="https://github.com/ericsciple"><code>@​ericsciple</code></a> in <a
+href="https://github.com/ericsciple"><code>@ericsciple</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/2327">actions/checkout#2327</a></li>
 <li>Clarify v6 README by <a
-href="https://github.com/ericsciple"><code>@​ericsciple</code></a> in <a
+href="https://github.com/ericsciple"><code>@ericsciple</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/2328">actions/checkout#2328</a></li>
 </ul>
 <p><strong>Full Changelog</strong>: <a
@@ -2299,17 +2299,17 @@ href="https://github.com/actions/checkout/compare/v6...v6.0.1">https://github.co
 <h2>What's Changed</h2>
 <ul>
 <li>Update README to include Node.js 24 support details and requirements
-by <a href="https://github.com/salmanmkc"><code>@​salmanmkc</code></a>
+by <a href="https://github.com/salmanmkc"><code>@salmanmkc</code></a>
 in <a
 href="https://redirect.github.com/actions/checkout/pull/2248">actions/checkout#2248</a></li>
 <li>Persist creds to a separate file by <a
-href="https://github.com/ericsciple"><code>@​ericsciple</code></a> in <a
+href="https://github.com/ericsciple"><code>@ericsciple</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/2286">actions/checkout#2286</a></li>
 <li>v6-beta by <a
-href="https://github.com/ericsciple"><code>@​ericsciple</code></a> in <a
+href="https://github.com/ericsciple"><code>@ericsciple</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/2298">actions/checkout#2298</a></li>
 <li>update readme/changelog for v6 by <a
-href="https://github.com/ericsciple"><code>@​ericsciple</code></a> in <a
+href="https://github.com/ericsciple"><code>@ericsciple</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/2311">actions/checkout#2311</a></li>
 </ul>
 <p><strong>Full Changelog</strong>: <a
@@ -2328,7 +2328,7 @@ container action</a> scenarios.</p>
 <h2>What's Changed</h2>
 <ul>
 <li>Port v6 cleanup to v5 by <a
-href="https://github.com/ericsciple"><code>@​ericsciple</code></a> in <a
+href="https://github.com/ericsciple"><code>@ericsciple</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/2301">actions/checkout#2301</a></li>
 </ul>
 <p><strong>Full Changelog</strong>: <a
@@ -2337,10 +2337,10 @@ href="https://github.com/actions/checkout/compare/v5...v5.0.1">https://github.co
 <h2>What's Changed</h2>
 <ul>
 <li>Update actions checkout to use node 24 by <a
-href="https://github.com/salmanmkc"><code>@​salmanmkc</code></a> in <a
+href="https://github.com/salmanmkc"><code>@salmanmkc</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/2226">actions/checkout#2226</a></li>
 <li>Prepare v5.0.0 release by <a
-href="https://github.com/salmanmkc"><code>@​salmanmkc</code></a> in <a
+href="https://github.com/salmanmkc"><code>@salmanmkc</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/2238">actions/checkout#2238</a></li>
 </ul>
 <h2>⚠️ Minimum Compatible Runner Version</h2>
@@ -2356,7 +2356,7 @@ href="https://github.com/actions/checkout/compare/v4...v5.0.0">https://github.co
 <h2>What's Changed</h2>
 <ul>
 <li>Port v6 cleanup to v4 by <a
-href="https://github.com/ericsciple"><code>@​ericsciple</code></a> in <a
+href="https://github.com/ericsciple"><code>@ericsciple</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/2305">actions/checkout#2305</a></li>
 </ul>
 <!-- raw HTML omitted -->
@@ -2373,79 +2373,79 @@ changelog</a>.</em></p>
 <h2>v6.0.0</h2>
 <ul>
 <li>Persist creds to a separate file by <a
-href="https://github.com/ericsciple"><code>@​ericsciple</code></a> in <a
+href="https://github.com/ericsciple"><code>@ericsciple</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/2286">actions/checkout#2286</a></li>
 <li>Update README to include Node.js 24 support details and requirements
-by <a href="https://github.com/salmanmkc"><code>@​salmanmkc</code></a>
+by <a href="https://github.com/salmanmkc"><code>@salmanmkc</code></a>
 in <a
 href="https://redirect.github.com/actions/checkout/pull/2248">actions/checkout#2248</a></li>
 </ul>
 <h2>v5.0.1</h2>
 <ul>
 <li>Port v6 cleanup to v5 by <a
-href="https://github.com/ericsciple"><code>@​ericsciple</code></a> in <a
+href="https://github.com/ericsciple"><code>@ericsciple</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/2301">actions/checkout#2301</a></li>
 </ul>
 <h2>v5.0.0</h2>
 <ul>
 <li>Update actions checkout to use node 24 by <a
-href="https://github.com/salmanmkc"><code>@​salmanmkc</code></a> in <a
+href="https://github.com/salmanmkc"><code>@salmanmkc</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/2226">actions/checkout#2226</a></li>
 </ul>
 <h2>v4.3.1</h2>
 <ul>
 <li>Port v6 cleanup to v4 by <a
-href="https://github.com/ericsciple"><code>@​ericsciple</code></a> in <a
+href="https://github.com/ericsciple"><code>@ericsciple</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/2305">actions/checkout#2305</a></li>
 </ul>
 <h2>v4.3.0</h2>
 <ul>
 <li>docs: update README.md by <a
-href="https://github.com/motss"><code>@​motss</code></a> in <a
+href="https://github.com/motss"><code>@motss</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/1971">actions/checkout#1971</a></li>
 <li>Add internal repos for checking out multiple repositories by <a
-href="https://github.com/mouismail"><code>@​mouismail</code></a> in <a
+href="https://github.com/mouismail"><code>@mouismail</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/1977">actions/checkout#1977</a></li>
 <li>Documentation update - add recommended permissions to Readme by <a
-href="https://github.com/benwells"><code>@​benwells</code></a> in <a
+href="https://github.com/benwells"><code>@benwells</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/2043">actions/checkout#2043</a></li>
 <li>Adjust positioning of user email note and permissions heading by <a
-href="https://github.com/joshmgross"><code>@​joshmgross</code></a> in <a
+href="https://github.com/joshmgross"><code>@joshmgross</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/2044">actions/checkout#2044</a></li>
 <li>Update README.md by <a
-href="https://github.com/nebuk89"><code>@​nebuk89</code></a> in <a
+href="https://github.com/nebuk89"><code>@nebuk89</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/2194">actions/checkout#2194</a></li>
 <li>Update CODEOWNERS for actions by <a
-href="https://github.com/TingluoHuang"><code>@​TingluoHuang</code></a>
+href="https://github.com/TingluoHuang"><code>@TingluoHuang</code></a>
 in <a
 href="https://redirect.github.com/actions/checkout/pull/2224">actions/checkout#2224</a></li>
 <li>Update package dependencies by <a
-href="https://github.com/salmanmkc"><code>@​salmanmkc</code></a> in <a
+href="https://github.com/salmanmkc"><code>@salmanmkc</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/2236">actions/checkout#2236</a></li>
 </ul>
 <h2>v4.2.2</h2>
 <ul>
 <li><code>url-helper.ts</code> now leverages well-known environment
-variables by <a href="https://github.com/jww3"><code>@​jww3</code></a>
+variables by <a href="https://github.com/jww3"><code>@jww3</code></a>
 in <a
 href="https://redirect.github.com/actions/checkout/pull/1941">actions/checkout#1941</a></li>
 <li>Expand unit test coverage for <code>isGhes</code> by <a
-href="https://github.com/jww3"><code>@​jww3</code></a> in <a
+href="https://github.com/jww3"><code>@jww3</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/1946">actions/checkout#1946</a></li>
 </ul>
 <h2>v4.2.1</h2>
 <ul>
 <li>Check out other refs/* by commit if provided, fall back to ref by <a
-href="https://github.com/orhantoy"><code>@​orhantoy</code></a> in <a
+href="https://github.com/orhantoy"><code>@orhantoy</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/1924">actions/checkout#1924</a></li>
 </ul>
 <h2>v4.2.0</h2>
 <ul>
 <li>Add Ref and Commit outputs by <a
-href="https://github.com/lucacome"><code>@​lucacome</code></a> in <a
+href="https://github.com/lucacome"><code>@lucacome</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/1180">actions/checkout#1180</a></li>
 <li>Dependency updates by <a
-href="https://github.com/dependabot"><code>@​dependabot</code></a>- <a
+href="https://github.com/dependabot"><code>@dependabot</code></a>- <a
 href="https://redirect.github.com/actions/checkout/pull/1777">actions/checkout#1777</a>,
 <a
 href="https://redirect.github.com/actions/checkout/pull/1872">actions/checkout#1872</a></li>
@@ -2454,40 +2454,40 @@ href="https://redirect.github.com/actions/checkout/pull/1872">actions/checkout#1
 <ul>
 <li>Bump the minor-npm-dependencies group across 1 directory with 4
 updates by <a
-href="https://github.com/dependabot"><code>@​dependabot</code></a> in <a
+href="https://github.com/dependabot"><code>@dependabot</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/1739">actions/checkout#1739</a></li>
 <li>Bump actions/checkout from 3 to 4 by <a
-href="https://github.com/dependabot"><code>@​dependabot</code></a> in <a
+href="https://github.com/dependabot"><code>@dependabot</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/1697">actions/checkout#1697</a></li>
 <li>Check out other refs/* by commit by <a
-href="https://github.com/orhantoy"><code>@​orhantoy</code></a> in <a
+href="https://github.com/orhantoy"><code>@orhantoy</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/1774">actions/checkout#1774</a></li>
 <li>Pin actions/checkout's own workflows to a known, good, stable
-version. by <a href="https://github.com/jww3"><code>@​jww3</code></a> in
+version. by <a href="https://github.com/jww3"><code>@jww3</code></a> in
 <a
 href="https://redirect.github.com/actions/checkout/pull/1776">actions/checkout#1776</a></li>
 </ul>
 <h2>v4.1.6</h2>
 <ul>
 <li>Check platform to set archive extension appropriately by <a
-href="https://github.com/cory-miller"><code>@​cory-miller</code></a> in
+href="https://github.com/cory-miller"><code>@cory-miller</code></a> in
 <a
 href="https://redirect.github.com/actions/checkout/pull/1732">actions/checkout#1732</a></li>
 </ul>
 <h2>v4.1.5</h2>
 <ul>
 <li>Update NPM dependencies by <a
-href="https://github.com/cory-miller"><code>@​cory-miller</code></a> in
+href="https://github.com/cory-miller"><code>@cory-miller</code></a> in
 <a
 href="https://redirect.github.com/actions/checkout/pull/1703">actions/checkout#1703</a></li>
 <li>Bump github/codeql-action from 2 to 3 by <a
-href="https://github.com/dependabot"><code>@​dependabot</code></a> in <a
+href="https://github.com/dependabot"><code>@dependabot</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/1694">actions/checkout#1694</a></li>
 <li>Bump actions/setup-node from 1 to 4 by <a
-href="https://github.com/dependabot"><code>@​dependabot</code></a> in <a
+href="https://github.com/dependabot"><code>@dependabot</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/1696">actions/checkout#1696</a></li>
 <li>Bump actions/upload-artifact from 2 to 4 by <a
-href="https://github.com/dependabot"><code>@​dependabot</code></a> in <a
+href="https://github.com/dependabot"><code>@dependabot</code></a> in <a
 href="https://redirect.github.com/actions/checkout/pull/1695">actions/checkout#1695</a></li>
 </ul>
 <!-- raw HTML omitted -->
@@ -2606,25 +2606,25 @@ releases</a>.</em></p>
 <h2>What's Changed</h2>
 <ul>
 <li>build(deps): bump peter-evans/repository-dispatch from 3 to 4 by <a
-href="https://github.com/dependabot"><code>@​dependabot</code></a>[bot]
+href="https://github.com/dependabot"><code>@dependabot</code></a>[bot]
 in <a
 href="https://redirect.github.com/peter-evans/repository-dispatch/pull/428">peter-evans/repository-dispatch#428</a></li>
-<li>build(deps-dev): bump <code>@​types/node</code> from 18.19.127 to
+<li>build(deps-dev): bump <code>@types/node</code> from 18.19.127 to
 18.19.129 by <a
-href="https://github.com/dependabot"><code>@​dependabot</code></a>[bot]
+href="https://github.com/dependabot"><code>@dependabot</code></a>[bot]
 in <a
 href="https://redirect.github.com/peter-evans/repository-dispatch/pull/429">peter-evans/repository-dispatch#429</a></li>
 <li>build(deps): bump the github-actions group with 3 updates by <a
-href="https://github.com/dependabot"><code>@​dependabot</code></a>[bot]
+href="https://github.com/dependabot"><code>@dependabot</code></a>[bot]
 in <a
 href="https://redirect.github.com/peter-evans/repository-dispatch/pull/431">peter-evans/repository-dispatch#431</a></li>
-<li>build(deps-dev): bump <code>@​types/node</code> from 18.19.129 to
+<li>build(deps-dev): bump <code>@types/node</code> from 18.19.129 to
 18.19.130 in the npm group by <a
-href="https://github.com/dependabot"><code>@​dependabot</code></a>[bot]
+href="https://github.com/dependabot"><code>@dependabot</code></a>[bot]
 in <a
 href="https://redirect.github.com/peter-evans/repository-dispatch/pull/432">peter-evans/repository-dispatch#432</a></li>
 <li>Fix node version in actions.yml by <a
-href="https://github.com/peter-evans"><code>@​peter-evans</code></a> in
+href="https://github.com/peter-evans"><code>@peter-evans</code></a> in
 <a
 href="https://redirect.github.com/peter-evans/repository-dispatch/pull/433">peter-evans/repository-dispatch#433</a></li>
 </ul>
@@ -2637,169 +2637,169 @@ Runner v2.327.1</a> or later if you are using a self-hosted runner for
 Node 24 support.</p>
 <h2>What's Changed</h2>
 <ul>
-<li>build(deps-dev): bump <code>@​types/node</code> from 18.19.8 to
+<li>build(deps-dev): bump <code>@types/node</code> from 18.19.8 to
 18.19.10 by <a
-href="https://github.com/dependabot"><code>@​dependabot</code></a>[bot]
+href="https://github.com/dependabot"><code>@dependabot</code></a>[bot]
 in <a
 href="https://redirect.github.com/peter-evans/repository-dispatch/pull/306">peter-evans/repository-dispatch#306</a></li>
 <li>build(deps): bump peter-evans/repository-dispatch from 2 to 3 by <a
-href="https://github.com/dependabot"><code>@​dependabot</code></a>[bot]
+href="https://github.com/dependabot"><code>@dependabot</code></a>[bot]
 in <a
 href="https://redirect.github.com/peter-evans/repository-dispatch/pull/307">peter-evans/repository-dispatch#307</a></li>
-<li>build(deps-dev): bump <code>@​types/node</code> from 18.19.10 to
+<li>build(deps-dev): bump <code>@types/node</code> from 18.19.10 to
 18.19.14 by <a
-href="https://github.com/dependabot"><code>@​dependabot</code></a>[bot]
+href="https://github.com/dependabot"><code>@dependabot</code></a>[bot]
 in <a
 href="https://redirect.github.com/peter-evans/repository-dispatch/pull/308">peter-evans/repository-dispatch#308</a></li>
 <li>build(deps): bump peter-evans/create-pull-request from 5 to 6 by <a
-href="https://github.com/dependabot"><code>@​dependabot</code></a>[bot]
+href="https://github.com/dependabot"><code>@dependabot</code></a>[bot]
 in <a
 href="https://redirect.github.com/peter-evans/repository-dispatch/pull/310">peter-evans/repository-dispatch#310</a></li>
 <li>build(deps): bump peter-evans/slash-command-dispatch from 3 to 4 by
 <a
-href="https://github.com/dependabot"><code>@​dependabot</code></a>[bot]
+href="https://github.com/dependabot"><code>@dependabot</code></a>[bot]
 in <a
 href="https://redirect.github.com/peter-evans/repository-dispatch/pull/309">peter-evans/repository-dispatch#309</a></li>
-<li>build(deps-dev): bump <code>@​types/node</code> from 18.19.14 to
+<li>build(deps-dev): bump <code>@types/node</code> from 18.19.14 to
 18.19.15 by <a
-href="https://github.com/dependabot"><code>@​dependabot</code></a>[bot]
+href="https://github.com/dependabot"><code>@dependabot</code></a>[bot]
 in <a
 href="https://redirect.github.com/peter-evans/repository-dispatch/pull/311">peter-evans/repository-dispatch#311</a></li>
 <li>build(deps-dev): bump prettier from 3.2.4 to 3.2.5 by <a
-href="https://github.com/dependabot"><code>@​dependabot</code></a>[bot]
+href="https://github.com/dependabot"><code>@dependabot</code></a>[bot]
 in <a
 href="https://redirect.github.com/peter-evans/repository-dispatch/pull/312">peter-evans/repository-dispatch#312</a></li>
-<li>build(deps-dev): bump <code>@​types/node</code> from 18.19.15 to
+<li>build(deps-dev): bump <code>@types/node</code> from 18.19.15 to
 18.19.17 by <a
-href="https://github.com/dependabot"><code>@​dependabot</code></a>[bot]
+href="https://github.com/dependabot"><code>@dependabot</code></a>[bot]
 in <a
 href="https://redirect.github.com/peter-evans/repository-dispatch/pull/313">peter-evans/repository-dispatch#313</a></li>
-<li>build(deps-dev): bump <code>@​types/node</code> from 18.19.17 to
+<li>build(deps-dev): bump <code>@types/node</code> from 18.19.17 to
 18.19.18 by <a
-href="https://github.com/dependabot"><code>@​dependabot</code></a>[bot]
+href="https://github.com/dependabot"><code>@dependabot</code></a>[bot]
 in <a
 href="https://redirect.github.com/peter-evans/repository-dispatch/pull/314">peter-evans/repository-dispatch#314</a></li>
 <li>build(deps-dev): bump eslint-plugin-github from 4.10.1 to 4.10.2 by
 <a
-href="https://github.com/dependabot"><code>@​dependabot</code></a>[bot]
+href="https://github.com/dependabot"><code>@dependabot</code></a>[bot]
 in <a
 href="https://redirect.github.com/peter-evans/repository-dispatch/pull/316">peter-evans/repository-dispatch#316</a></li>
-<li>build(deps-dev): bump <code>@​types/node</code> from 18.19.18 to
+<li>build(deps-dev): bump <code>@types/node</code> from 18.19.18 to
 18.19.21 by <a
-href="https://github.com/dependabot"><code>@​dependabot</code></a>[bot]
+href="https://github.com/dependabot"><code>@dependabot</code></a>[bot]
 in <a
 href="https://redirect.github.com/peter-evans/repository-dispatch/pull/317">peter-evans/repository-dispatch#317</a></li>
 <li>build(deps-dev): bump eslint from 8.56.0 to 8.57.0 by <a
-href="https://github.com/dependabot"><code>@​dependabot</code></a>[bot]
+href="https://github.com/dependabot"><code>@dependabot</code></a>[bot]
 in <a
 href="https://redirect.github.com/peter-evans/repository-dispatch/pull/318">peter-evans/repository-dispatch#318</a></li>
-<li>build(deps-dev): bump <code>@​types/node</code> from 18.19.21 to
+<li>build(deps-dev): bump <code>@types/node</code> from 18.19.21 to
 18.19.22 by <a
-href="https://github.com/dependabot"><code>@​dependabot</code></a>[bot]
+href="https://github.com/dependabot"><code>@dependabot</code></a>[bot]
 in <a
 href="https://redirect.github.com/peter-evans/repository-dispatch/pull/319">peter-evans/repository-dispatch#319</a></li>
-<li>build(deps-dev): bump <code>@​types/node</code> from 18.19.22 to
+<li>build(deps-dev): bump <code>@types/node</code> from 18.19.22 to
 18.19.24 by <a
-href="https://github.com/dependabot"><code>@​dependabot</code></a>[bot]
+href="https://github.com/dependabot"><code>@dependabot</code></a>[bot]
 in <a
 href="https://redirect.github.com/peter-evans/repository-dispatch/pull/320">peter-evans/repository-dispatch#320</a></li>
-<li>build(deps-dev): bump <code>@​types/node</code> from 18.19.24 to
+<li>build(deps-dev): bump <code>@types/node</code> from 18.19.24 to
 18.19.26 by <a
-href="https://github.com/dependabot"><code>@​dependabot</code></a>[bot]
+href="https://github.com/dependabot"><code>@dependabot</code></a>[bot]
 in <a
 href="https://redirect.github.com/peter-evans/repository-dispatch/pull/321">peter-evans/repository-dispatch#321</a></li>
-<li>build(deps-dev): bump <code>@​types/node</code> from 18.19.26 to
+<li>build(deps-dev): bump <code>@types/node</code> from 18.19.26 to
 18.19.29 by <a
-href="https://github.com/dependabot"><code>@​dependabot</code></a>[bot]
+href="https://github.com/dependabot"><code>@dependabot</code></a>[bot]
 in <a
 href="https://redirect.github.com/peter-evans/repository-dispatch/pull/322">peter-evans/repository-dispatch#322</a></li>
-<li>build(deps-dev): bump <code>@​types/node</code> from 18.19.29 to
+<li>build(deps-dev): bump <code>@types/node</code> from 18.19.29 to
 18.19.31 by <a
-href="https://github.com/dependabot"><code>@​dependabot</code></a>[bot]
+href="https://github.com/dependabot"><code>@dependabot</code></a>[bot]
 in <a
 href="https://redirect.github.com/peter-evans/repository-dispatch/pull/323">peter-evans/repository-dispatch#323</a></li>
-<li>build(deps-dev): bump <code>@​types/node</code> from 18.19.31 to
+<li>build(deps-dev): bump <code>@types/node</code> from 18.19.31 to
 18.19.33 by <a
-href="https://github.com/dependabot"><code>@​dependabot</code></a>[bot]
+href="https://github.com/dependabot"><code>@dependabot</code></a>[bot]
 in <a
 href="https://redirect.github.com/peter-evans/repository-dispatch/pull/324">peter-evans/repository-dispatch#324</a></li>
-<li>build(deps-dev): bump <code>@​types/node</code> from 18.19.33 to
+<li>build(deps-dev): bump <code>@types/node</code> from 18.19.33 to
 18.19.34 by <a
-href="https://github.com/dependabot"><code>@​dependabot</code></a>[bot]
+href="https://github.com/dependabot"><code>@dependabot</code></a>[bot]
 in <a
 href="https://redirect.github.com/peter-evans/repository-dispatch/pull/325">peter-evans/repository-dispatch#325</a></li>
 <li>build(deps-dev): bump prettier from 3.2.5 to 3.3.1 by <a
-href="https://github.com/dependabot"><code>@​dependabot</code></a>[bot]
+href="https://github.com/dependabot"><code>@dependabot</code></a>[bot]
 in <a
 href="https://redirect.github.com/peter-evans/repository-dispatch/pull/326">peter-evans/repository-dispatch#326</a></li>
 <li>build(deps-dev): bump prettier from 3.3.1 to 3.3.2 by <a
-href="https://github.com/dependabot"><code>@​dependabot</code></a>[bot]
+href="https://github.com/dependabot"><code>@dependabot</code></a>[bot]
 in <a
 href="https://redirect.github.com/peter-evans/repository-dispatch/pull/327">peter-evans/repository-dispatch#327</a></li>
 <li>build(deps-dev): bump braces from 3.0.2 to 3.0.3 by <a
-href="https://github.com/dependabot"><code>@​dependabot</code></a>[bot]
+href="https://github.com/dependabot"><code>@dependabot</code></a>[bot]
 in <a
 href="https://redirect.github.com/peter-evans/repository-dispatch/pull/328">peter-evans/repository-dispatch#328</a></li>
 <li>build(deps-dev): bump ws from 7.5.9 to 7.5.10 by <a
-href="https://github.com/dependabot"><code>@​dependabot</code></a>[bot]
+href="https://github.com/dependabot"><code>@dependabot</code></a>[bot]
 in <a
 href="https://redirect.github.com/peter-evans/repository-dispatch/pull/329">peter-evans/repository-dispatch#329</a></li>
-<li>build(deps-dev): bump <code>@​types/node</code> from 18.19.34 to
+<li>build(deps-dev): bump <code>@types/node</code> from 18.19.34 to
 18.19.38 by <a
-href="https://github.com/dependabot"><code>@​dependabot</code></a>[bot]
+href="https://github.com/dependabot"><code>@dependabot</code></a>[bot]
 in <a
 href="https://redirect.github.com/peter-evans/repository-dispatch/pull/330">peter-evans/repository-dispatch#330</a></li>
-<li>build(deps-dev): bump <code>@​types/node</code> from 18.19.38 to
+<li>build(deps-dev): bump <code>@types/node</code> from 18.19.38 to
 18.19.39 by <a
-href="https://github.com/dependabot"><code>@​dependabot</code></a>[bot]
+href="https://github.com/dependabot"><code>@dependabot</code></a>[bot]
 in <a
 href="https://redirect.github.com/peter-evans/repository-dispatch/pull/332">peter-evans/repository-dispatch#332</a></li>
 <li>build(deps-dev): bump prettier from 3.3.2 to 3.3.3 by <a
-href="https://github.com/dependabot"><code>@​dependabot</code></a>[bot]
+href="https://github.com/dependabot"><code>@dependabot</code></a>[bot]
 in <a
 href="https://redirect.github.com/peter-evans/repository-dispatch/pull/334">peter-evans/repository-dispatch#334</a></li>
-<li>build(deps-dev): bump <code>@​types/node</code> from 18.19.39 to
+<li>build(deps-dev): bump <code>@types/node</code> from 18.19.39 to
 18.19.41 by <a
-href="https://github.com/dependabot"><code>@​dependabot</code></a>[bot]
+href="https://github.com/dependabot"><code>@dependabot</code></a>[bot]
 in <a
 href="https://redirect.github.com/peter-evans/repository-dispatch/pull/335">peter-evans/repository-dispatch#335</a></li>
 <li>build(deps-dev): bump eslint-plugin-prettier from 5.1.3 to 5.2.1 by
 <a
-href="https://github.com/dependabot"><code>@​dependabot</code></a>[bot]
+href="https://github.com/dependabot"><code>@dependabot</code></a>[bot]
 in <a
 href="https://redirect.github.com/peter-evans/repository-dispatch/pull/336">peter-evans/repository-dispatch#336</a></li>
-<li>build(deps-dev): bump <code>@​types/node</code> from 18.19.41 to
+<li>build(deps-dev): bump <code>@types/node</code> from 18.19.41 to
 18.19.42 by <a
-href="https://github.com/dependabot"><code>@​dependabot</code></a>[bot]
+href="https://github.com/dependabot"><code>@dependabot</code></a>[bot]
 in <a
 href="https://redirect.github.com/peter-evans/repository-dispatch/pull/337">peter-evans/repository-dispatch#337</a></li>
-<li>build(deps-dev): bump <code>@​types/node</code> from 18.19.42 to
+<li>build(deps-dev): bump <code>@types/node</code> from 18.19.42 to
 18.19.43 by <a
-href="https://github.com/dependabot"><code>@​dependabot</code></a>[bot]
+href="https://github.com/dependabot"><code>@dependabot</code></a>[bot]
 in <a
 href="https://redirect.github.com/peter-evans/repository-dispatch/pull/338">peter-evans/repository-dispatch#338</a></li>
-<li>build(deps-dev): bump <code>@​types/node</code> from 18.19.43 to
+<li>build(deps-dev): bump <code>@types/node</code> from 18.19.43 to
 18.19.44 by <a
-href="https://github.com/dependabot"><code>@​dependabot</code></a>[bot]
+href="https://github.com/dependabot"><code>@dependabot</code></a>[bot]
 in <a
 href="https://redirect.github.com/peter-evans/repository-dispatch/pull/339">peter-evans/repository-dispatch#339</a></li>
-<li>build(deps-dev): bump <code>@​types/node</code> from 18.19.44 to
+<li>build(deps-dev): bump <code>@types/node</code> from 18.19.44 to
 18.19.45 by <a
-href="https://github.com/dependabot"><code>@​dependabot</code></a>[bot]
+href="https://github.com/dependabot"><code>@dependabot</code></a>[bot]
 in <a
 href="https://redirect.github.com/peter-evans/repository-dispatch/pull/340">peter-evans/repository-dispatch#340</a></li>
-<li>build(deps-dev): bump <code>@​types/node</code> from 18.19.45 to
+<li>build(deps-dev): bump <code>@types/node</code> from 18.19.45 to
 18.19.47 by <a
-href="https://github.com/dependabot"><code>@​dependabot</code></a>[bot]
+href="https://github.com/dependabot"><code>@dependabot</code></a>[bot]
 in <a
 href="https://redirect.github.com/peter-evans/repository-dispatch/pull/341">peter-evans/repository-dispatch#341</a></li>
-<li>build(deps-dev): bump <code>@​types/node</code> from 18.19.47 to
+<li>build(deps-dev): bump <code>@types/node</code> from 18.19.47 to
 18.19.50 by <a
-href="https://github.com/dependabot"><code>@​dependabot</code></a>[bot]
+href="https://github.com/dependabot"><code>@dependabot</code></a>[bot]
 in <a
 href="https://redirect.github.com/peter-evans/repository-dispatch/pull/343">peter-evans/repository-dispatch#343</a></li>
 <li>build(deps): bump peter-evans/create-pull-request from 6 to 7 by <a
-href="https://github.com/dependabot"><code>@​dependabot</code></a>[bot]
+href="https://github.com/dependabot"><code>@dependabot</code></a>[bot]
 in <a
 href="https://redirect.github.com/peter-evans/repository-dispatch/pull/342">peter-evans/repository-dispatch#342</a></li>
 </ul>
@@ -2816,7 +2816,7 @@ Fix node version in actions.yml (<a
 href="https://redirect.github.com/peter-evans/repository-dispatch/issues/433">#433</a>)</li>
 <li><a
 href="https://github.com/peter-evans/repository-dispatch/commit/25d29c2bbf9b1fd1e3e924e485d754498fdc84fd"><code>25d29c2</code></a>
-build(deps-dev): bump <code>@​types/node</code> in the npm group (<a
+build(deps-dev): bump <code>@types/node</code> in the npm group (<a
 href="https://redirect.github.com/peter-evans/repository-dispatch/issues/432">#432</a>)</li>
 <li><a
 href="https://github.com/peter-evans/repository-dispatch/commit/830136c66487b256600fec7788578990092647bc"><code>830136c</code></a>
@@ -2827,7 +2827,7 @@ href="https://github.com/peter-evans/repository-dispatch/commit/2c856c63feddee61
 ci: update dependabot config</li>
 <li><a
 href="https://github.com/peter-evans/repository-dispatch/commit/66739071c2122a05106fc2a2c306fdaf33bb9cda"><code>6673907</code></a>
-build(deps-dev): bump <code>@​types/node</code> from 18.19.127 to
+build(deps-dev): bump <code>@types/node</code> from 18.19.127 to
 18.19.129 (<a
 href="https://redirect.github.com/peter-evans/repository-dispatch/issues/429">#429</a>)</li>
 <li><a
@@ -2843,12 +2843,12 @@ feat: v4 (<a
 href="https://redirect.github.com/peter-evans/repository-dispatch/issues/427">#427</a>)</li>
 <li><a
 href="https://github.com/peter-evans/repository-dispatch/commit/de78ac1a711fc6f29e77338f843065faf5335227"><code>de78ac1</code></a>
-build(deps-dev): bump <code>@​vercel/ncc</code> from 0.38.3 to 0.38.4
+build(deps-dev): bump <code>@vercel/ncc</code> from 0.38.3 to 0.38.4
 (<a
 href="https://redirect.github.com/peter-evans/repository-dispatch/issues/425">#425</a>)</li>
 <li><a
 href="https://github.com/peter-evans/repository-dispatch/commit/f49fa7f26b8b0e8335fd4f702b177e1a0e2eb9c7"><code>f49fa7f</code></a>
-build(deps-dev): bump <code>@​types/node</code> from 18.19.124 to
+build(deps-dev): bump <code>@types/node</code> from 18.19.124 to
 18.19.127 (<a
 href="https://redirect.github.com/peter-evans/repository-dispatch/issues/426">#426</a>)</li>
 <li>Additional commits viewable in <a

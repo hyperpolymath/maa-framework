@@ -80,18 +80,18 @@ fn parse_args_from(argv: &[String]) -> Result<Options, String> {
     let mut init_hook = false;
     let mut help = false;
     let mut version = false;
-    let mut positional_done = false;
+    let mut end_of_flags = false;
 
     let mut args = argv.iter().peekable();
     // Skip argv[0].
     args.next();
 
     while let Some(arg) = args.next() {
-        if !positional_done && arg == "--" {
-            positional_done = true;
+        if !end_of_flags && arg == "--" {
+            end_of_flags = true;
             continue;
         }
-        if !positional_done && arg.starts_with('-') && arg.len() > 1 {
+        if !end_of_flags && arg.starts_with('-') && arg.len() > 1 {
             if arg == "--help" || arg == "-h" {
                 help = true;
             } else if arg == "--version" || arg == "-V" {
@@ -139,14 +139,13 @@ fn parse_args_from(argv: &[String]) -> Result<Options, String> {
             }
             continue;
         }
-        if !positional_done && (arg == "init-hook" && repo_path.is_none() && !init_hook) {
+        if !end_of_flags && arg == "init-hook" && repo_path.is_none() && !init_hook {
             init_hook = true;
             continue;
         }
         if repo_path.is_some() {
             return Err(format!("Unexpected extra argument '{arg}'."));
         }
-        positional_done = true;
         repo_path = Some(PathBuf::from(arg));
     }
 
@@ -241,8 +240,24 @@ fn run_init_hook(repo_path: &Path) -> i32 {
         return exit_codes::INVALID_PATH;
     }
     let hook_path = hooks_dir.join("pre-commit");
-    let hook_body = "#!/bin/sh\n# Installed by `aletheia init-hook`: gate commits on RSR Bronze.\n\
-        aletheia --quiet .\nstatus=$?\nif [ \"$status\" -ne 0 ]; then\n    echo \"aletheia: Bronze compliance NOT MET - commit blocked\" >&2\n    exit 1\nfi\n";
+    let hook_body = r#"#!/bin/sh
+# Installed by `aletheia init-hook`: gate commits on RSR Bronze.
+command -v aletheia >/dev/null 2>&1 || {
+    echo "aletheia: binary not found on PATH - commit blocked" >&2
+    exit 1
+}
+aletheia --quiet .
+status=$?
+if [ "$status" -eq 0 ]; then
+    exit 0
+fi
+if [ "$status" -eq 1 ]; then
+    echo "aletheia: Bronze compliance NOT MET - commit blocked" >&2
+else
+    echo "aletheia: verification error (exit $status) - commit blocked" >&2
+fi
+exit 1
+"#;
     if let Err(err) = std::fs::write(&hook_path, hook_body) {
         eprintln!("Error: cannot write pre-commit hook: {err}");
         return exit_codes::INVALID_PATH;
@@ -418,5 +433,14 @@ mod cli_tests {
         assert_eq!(OutputFormat::from_name("text"), Some(OutputFormat::Human));
         assert_eq!(OutputFormat::from_name("svg"), Some(OutputFormat::Badge));
         assert_eq!(OutputFormat::from_name("yaml"), None);
+    }
+
+    #[test]
+    fn test_parse_flags_after_positional() {
+        // Review T6: options must stay valid after the positional path.
+        let options = parse_args_from(&argv(&["aletheia", "/tmp/repo", "--json"]))
+            .expect("flag after positional parses");
+        assert_eq!(options.repo_path, PathBuf::from("/tmp/repo"));
+        assert_eq!(options.format, OutputFormat::Json);
     }
 }

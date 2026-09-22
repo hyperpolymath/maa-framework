@@ -179,7 +179,7 @@ files = ["CHANGELOG.adoc"]   # glob patterns, repo-relative
 [source,yaml]
 ----
 # No published image or crate: build from the vendored tree.
-- uses: actions/checkout@v7.0.1
+- uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
 - run: cargo build --locked --release
   working-directory: aletheia
 - run: ./aletheia/target/release/aletheia -q .

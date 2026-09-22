@@ -149,6 +149,7 @@ and the project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- Break infinite changelog-regenerate loop (#221) (ad34228)
 - Codeql-action v4.38.1 -> v4.38.0 SHA pin + dependabot hold (estate-wide startup_failure) (#198) (918f434)
 - Strip reintroduced ZWSP + exclude generated CHANGELOG.md from empty-lint (#194) (9730f65)
 - Grant contents+PR write at caller TOP level (5/5 caller evidence) (#191) (270f65d)

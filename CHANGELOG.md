@@ -62,6 +62,8 @@ and the project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 
 ### Chores
 
+- Regenerate from conventional commits (#199) (d6011f1)
+- Regenerate from conventional commits (#201) (201510f)
 - Regenerate from conventional commits (#195) (90b075e)
 - Regenerate from conventional commits (#192) (e22eacb)
 - Remove dead Codecov upload steps + lock pins (#181) (443a4e4)

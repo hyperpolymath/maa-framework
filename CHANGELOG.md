@@ -62,6 +62,7 @@ and the project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 
 ### Chores
 
+- Regenerate from conventional commits (#195) (90b075e)
 - Regenerate from conventional commits (#192) (e22eacb)
 - Remove dead Codecov upload steps + lock pins (#181) (443a4e4)
 - Migrate root .well-known/ to www/.well-known/ (#175) (1cb4d52)
@@ -150,6 +151,7 @@ and the project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- Codeql-action v4.38.1 -> v4.38.0 SHA pin + dependabot hold (estate-wide startup_failure) (#198) (918f434)
 - Strip reintroduced ZWSP + exclude generated CHANGELOG.md from empty-lint (#194) (9730f65)
 - Grant contents+PR write at caller TOP level (5/5 caller evidence) (#191) (270f65d)
 - Changelog caller needs actions:read on the JOB block (top-level is replaced, not merged) (#190) (dc4514e)

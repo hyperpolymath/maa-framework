@@ -62,6 +62,7 @@ and the project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 
 ### Chores
 
+- Regenerate from conventional commits (#206) (ddf9670)
 - Regenerate from conventional commits (#205) (c066522)
 - Regenerate from conventional commits (#204) (d2e435f)
 - Regenerate from conventional commits (#203) (818f339)

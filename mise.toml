@@ -1,57 +1,17 @@
+# SPDX-License-Identifier: MPL-2.0
+# Toolchain pins for mise (https://mise.jdx.dev). Kept in sync with
+# .tool-versions (the asdf-compatible spelling the RSR tool-versions
+# check reads). Pins measured 2026-09-21 from the stable channels.
 [tools]
-# Language runtimes
-node = "latest"
-python = "latest"
-rust = "latest"
-go = "latest"
-zig = "latest"
-java = "latest"
-bun = "latest"
-denojs = "latest"
+# Rust: the only compiled language in tree (aletheia crate, edition 2021,
+# MSRV 1.80). Pinned to current stable — what CI's ambient toolchain is.
+rust = "1.98.1"
 
-# Package managers
-npm = "latest"
-yarn = "latest"
-pnpm = "latest"
-pip = "latest"
-cargo = "latest"
-go-task = "latest"
-
-# Formatting & Linting
-gofmt = "latest"
-black = "latest"
-isort = "latest"
-ruff = "latest"
-prettier = "latest"
-shfmt = "latest"
-stylua = "latest"
-
-# Build tools
-cmake = "latest"
-make = "latest"
-ninja = "latest"
-
-# Shell tools
-git = "latest"
-gnu-sed = "latest"
-gnu-tar = "latest"
-gnu-grep = "latest"
-
-# Testing
-vitest = "latest"
-pytest = "latest"
-jest = "latest"
-
-[env]
-# Common environment variables
-NODE_ENV = "development"
-PYTHONDONTWRITEBYTECODE = "1"
-PYTHONUNBUFFERED = "1"
-
-# Task runner alias
-[alias]
-task = "go-task"
-build = "cargo build --release || npm run build || go build"
-test = "cargo test || npm test || go test ./..."
-lint = "ruff check . || prettier --check . || black --check ."
-fmt = "ruff format . || prettier --write . || black ."
+# just is intentionally NOT pinned: any recent just runs these Justfiles.
+# Install via cargo (`cargo install just`) or your package manager.
+# git is system-provided, not toolchain-managed.
+#
+# The 30-entry all-"latest" template this replaced installed runtimes the
+# estate bans here (node/python/go) and pinned nothing — "latest" is not a
+# pin. Task shortcuts live in the Justfile (`just build/test/check/...`),
+# not in mise aliases, so the old [alias] command table went with it.

@@ -4,10 +4,13 @@
 # (pr-back). Two hard lessons baked in: (1) main is guarded by the
 # Optimus-Branch ruleset (PR-required, signed commits, zero bypass actors —
 # see the optimus-branch-ruleset landmine in STATE.a2ml), which rejects a
-# commit-back direct push; (2) the reusable requests `actions: read`, so the
-# caller MUST declare top-level `actions: read` — omitting it makes GitHub
-# reject the run at startup_failure with zero jobs and no log (both main
-# runs did exactly that on 2026-09-21). Merge the changelog PRs it opens
+# commit-back direct push; (2) the reusable requests `actions: read`, and a
+# job-level `permissions:` block REPLACES the top-level one for that job
+# (it does not merge) — so `actions: read` must ALSO be declared on the
+# job, or GitHub rejects the run at startup_failure with zero jobs and no
+# log ("requesting 'actions: read', but is only allowed 'actions: none'").
+# Three main runs died exactly that way on 2026-09-21/22 before the job
+# key was added. Merge the changelog PRs it opens
 # (squash keeps required_signatures satisfied — GitHub signs the squash
 # commit). Uses the canonical cliff.toml from standards (no local cliff.toml
 # by design — one config for the estate). CHANGELOG.adoc is retained as a

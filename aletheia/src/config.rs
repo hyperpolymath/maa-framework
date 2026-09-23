@@ -85,10 +85,194 @@ pub struct IgnoreConfig {
 
 impl IgnoreConfig {
     /// Whether a repo-relative path is ignored by any pattern.
-    pub fn is_ignored(&self, rel_path: &str) -> bool {
+    pub(crate) fn is_ignored(&self, rel_path: &str) -> bool {
         self.patterns
             .iter()
             .any(|pat| crate::checks::glob_match(pat, rel_path))
+    }
+}
+
+/// GITIGNORE SUPPORT: the repository's own `.gitignore` rules, honoured by
+/// the scanner so that build output (`target/`, `obj/`, `_build/`, …) does
+/// not pollute the audit.
+///
+/// Deliberately separate from [`IgnoreConfig`]: `[ignore]` patterns come from
+/// aletheia's own configuration and are a *choice*, whereas `.gitignore` is
+/// the repository's own declaration of what is not part of the published
+/// artefact. Auditing a tree that has just been built should produce the same
+/// verdict as auditing a clean checkout.
+///
+/// Implemented (a documented subset of git's behaviour):
+///   * `#` comments and blank lines are skipped;
+///   * `!pattern` re-includes, and the *last* matching rule wins;
+///   * a trailing `/` restricts the rule to directories and their contents;
+///   * a pattern containing `/` is anchored to the directory holding the
+///     `.gitignore`; otherwise it matches at any depth below that directory;
+///   * `*` crosses directory boundaries, matching this crate's `glob_match`.
+///
+/// Not implemented, and not claimed: character classes (`[a-z]`), backslash
+/// escapes, and re-inclusion of a file *inside* an ignored directory (git
+/// itself forbids the last one).
+#[derive(Debug, Clone, Default)]
+pub struct GitIgnore {
+    rules: Vec<GitIgnoreRule>,
+}
+
+#[derive(Debug, Clone)]
+struct GitIgnoreRule {
+    pattern: String,
+    negated: bool,
+    /// Rule carried a trailing `/`: matches directories, so it also covers
+    /// everything beneath them.
+    dir_only: bool,
+    /// Rule contained a `/`, making it relative to `base` rather than
+    /// matching at any depth.
+    anchored: bool,
+    /// Repo-relative directory holding the `.gitignore` that declared the
+    /// rule ("" for the repository root).
+    base: String,
+}
+
+impl GitIgnore {
+    /// Add the rules from one `.gitignore` file.
+    ///
+    /// `base` is the repo-relative directory containing it. Rules are stored
+    /// in load order, and [`GitIgnore::is_ignored`] resolves conflicts by
+    /// last-match-wins, so a nested file overrides the root one.
+    pub(crate) fn push_file(&mut self, base: &str, contents: &str) {
+        for raw in contents.lines() {
+            // Trailing whitespace is not significant in git; leading whitespace
+            // is (it is part of the pattern), so only trim the end.
+            let line = raw.trim_end();
+            if line.is_empty() || line.starts_with('#') {
+                continue;
+            }
+            let (negated, body) = match line.strip_prefix('!') {
+                Some(rest) => (true, rest),
+                None => (false, line),
+            };
+            let body = body.trim_end();
+            if body.is_empty() {
+                continue;
+            }
+            let (dir_only, body) = match body.strip_suffix('/') {
+                Some(rest) => (true, rest),
+                None => (false, body),
+            };
+            if body.is_empty() {
+                continue;
+            }
+            // A leading `/` anchors without appearing in the pattern; a `/`
+            // anywhere else does the same thing by virtue of being present.
+            let stripped = body.strip_prefix('/').unwrap_or(body);
+            let anchored = body.starts_with('/') || stripped.contains('/');
+            self.rules.push(GitIgnoreRule {
+                pattern: stripped.to_string(),
+                negated,
+                dir_only,
+                anchored,
+                base: base.to_string(),
+            });
+        }
+    }
+
+    /// Whether a repo-relative *file* path is ignored. Last matching rule
+    /// wins, so a later `!rule` can re-include something an earlier rule
+    /// excluded.
+    pub fn is_ignored(&self, rel_path: &str) -> bool {
+        self.decide(rel_path, false)
+    }
+
+    /// Whether a repo-relative *directory* path is ignored.
+    ///
+    /// Separate from [`GitIgnore::is_ignored`] because a directory-only rule
+    /// (`obj/`) matches a directory named `obj` but not a file of that name,
+    /// and a path string alone cannot tell the two apart. The scanner knows
+    /// the entry's file type, so it can ask the precise question.
+    pub(crate) fn is_ignored_dir(&self, rel_path: &str) -> bool {
+        self.decide(rel_path, true)
+    }
+
+    fn decide(&self, rel_path: &str, is_dir: bool) -> bool {
+        if rel_path.is_empty() {
+            return false;
+        }
+        let mut verdict = false;
+        let mut matched = false;
+        for rule in &self.rules {
+            if rule.matches(rel_path, is_dir) {
+                verdict = !rule.negated;
+                matched = true;
+            }
+        }
+        matched && verdict
+    }
+
+    /// Drop rules back to an earlier [`GitIgnore::len`]. The scanner uses this
+    /// to pop a directory's rules when the walk leaves that directory, so a
+    /// nested `.gitignore` cannot leak into sibling subtrees.
+    pub(crate) fn truncate(&mut self, len: usize) {
+        self.rules.truncate(len);
+    }
+
+    /// Number of rules loaded. Used by tests and diagnostics.
+    pub(crate) fn len(&self) -> usize {
+        self.rules.len()
+    }
+}
+
+impl GitIgnoreRule {
+    fn matches(&self, path: &str, is_dir: bool) -> bool {
+        // A rule only governs paths at or below the directory that declared it.
+        let sub = match self.base.as_str() {
+            "" => path,
+            base => match path.strip_prefix(base) {
+                Some(rest) => match rest.strip_prefix('/') {
+                    Some(rest) => rest,
+                    None => return false,
+                },
+                None => return false,
+            },
+        };
+        if sub.is_empty() {
+            return false;
+        }
+        if self.anchored {
+            return self.test(sub, is_dir);
+        }
+        // Unanchored: try at every depth below `base`, i.e. at every component
+        // boundary of the remaining path.
+        let mut candidate = sub;
+        loop {
+            if self.test(candidate, is_dir) {
+                return true;
+            }
+            match candidate.find('/') {
+                Some(i) => candidate = &candidate[i + 1..],
+                None => return false,
+            }
+        }
+    }
+
+    /// Match one candidate path.
+    ///
+    /// A pattern that matches a *directory* excludes everything beneath it, so
+    /// every ancestor directory is a match candidate too — that is how `obj/`
+    /// comes to ignore `obj/x.o`. A directory-only rule may only match a real
+    /// directory: a proper ancestor always is one, but the path itself counts
+    /// only when the caller says so.
+    fn test(&self, candidate: &str, is_dir: bool) -> bool {
+        if (is_dir || !self.dir_only) && crate::checks::glob_match(&self.pattern, candidate) {
+            return true;
+        }
+        let mut node = candidate;
+        while let Some(i) = node.rfind('/') {
+            node = &node[..i];
+            if crate::checks::glob_match(&self.pattern, node) {
+                return true;
+            }
+        }
+        false
     }
 }
 
@@ -344,6 +528,120 @@ fn strip_comment(line: &str) -> &str {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    // --- .gitignore support -------------------------------------------------
+    // The scanner honours the repository's own `.gitignore`, so auditing a
+    // freshly built tree gives the same verdict as auditing a clean checkout.
+
+    /// Build a rule set from one root-level `.gitignore`.
+    fn gi(contents: &str) -> GitIgnore {
+        let mut ig = GitIgnore::default();
+        ig.push_file("", contents);
+        ig
+    }
+
+    #[test]
+    fn gitignore_matches_build_output_directories() {
+        let ig = gi("target/\nobj/\ndist-newstyle/\n");
+        // Files beneath an ignored directory are ignored.
+        assert!(ig.is_ignored("target/debug/app"));
+        assert!(ig.is_ignored("crate/obj/b__main.ads"), "nested obj/");
+        assert!(ig.is_ignored("dist-newstyle/build/x/y"));
+        // And the directory itself is ignored — asked as a directory, because
+        // `target/` does not match a *file* called `target`.
+        assert!(ig.is_ignored_dir("target"));
+        assert!(ig.is_ignored_dir("crate/obj"));
+        // Nothing else is touched.
+        assert!(!ig.is_ignored("src/main.adb"));
+        assert!(!ig.is_ignored_dir("src"));
+    }
+
+    #[test]
+    fn gitignore_plain_pattern_that_matches_a_directory_covers_its_subtree() {
+        // git ignores everything under a directory any rule matches, even
+        // without a trailing slash.
+        let ig = gi("/build\n");
+        assert!(ig.is_ignored_dir("build"));
+        assert!(ig.is_ignored("build/x.coma"));
+        assert!(!ig.is_ignored("src/build/x.coma"), "anchored to the root");
+    }
+
+    #[test]
+    fn gitignore_dir_only_rule_does_not_match_a_file_of_that_name() {
+        // `obj/` ignores the directory; a *file* called `obj` is untouched.
+        let ig = gi("obj/\n");
+        assert!(ig.is_ignored("obj/x.o"));
+        assert!(!ig.is_ignored("obj"));
+    }
+
+    #[test]
+    fn gitignore_skips_comments_and_blank_lines() {
+        let ig = gi("# a comment\n\n   \n/build/\n");
+        assert_eq!(ig.len(), 1);
+        assert!(ig.is_ignored("build/x"));
+    }
+
+    #[test]
+    fn gitignore_leading_slash_anchors_to_the_root() {
+        let ig = gi("/build\n");
+        assert!(ig.is_ignored("build/x"));
+        assert!(!ig.is_ignored("src/build/x"), "anchored, so not at depth");
+    }
+
+    #[test]
+    fn gitignore_unanchored_pattern_matches_at_any_depth() {
+        let ig = gi("*.coma\n");
+        assert!(ig.is_ignored("a.coma"));
+        assert!(ig.is_ignored("deep/nested/b.coma"));
+        assert!(!ig.is_ignored("a.rs"));
+    }
+
+    #[test]
+    fn gitignore_wildcard_crosses_directories() {
+        let ig = gi("verification/verif/\n");
+        assert!(ig.is_ignored("verification/verif/x/y.coma"));
+    }
+
+    #[test]
+    fn gitignore_negation_reincludes_and_last_rule_wins() {
+        let ig = gi("*.log\n!keep.log\n");
+        assert!(ig.is_ignored("debug.log"));
+        assert!(!ig.is_ignored("keep.log"), "negated by the later rule");
+
+        // Order matters: a later ignore beats an earlier negation.
+        let ig2 = gi("!keep.log\n*.log\n");
+        assert!(ig2.is_ignored("keep.log"));
+    }
+
+    #[test]
+    fn gitignore_nested_file_is_scoped_to_its_own_subtree() {
+        let mut ig = GitIgnore::default();
+        ig.push_file("", "");
+        ig.push_file("vendor", "*.md\n");
+        assert!(ig.is_ignored("vendor/README.md"));
+        assert!(
+            !ig.is_ignored("docs/README.md"),
+            "nested rule must not escape"
+        );
+        assert!(
+            !ig.is_ignored("vendor"),
+            "the directory itself is not matched"
+        );
+    }
+
+    #[test]
+    fn gitignore_empty_and_root_paths_are_never_ignored() {
+        let ig = gi("*\n");
+        assert!(!ig.is_ignored(""), "the repo root is not a file");
+        assert!(ig.is_ignored("anything.txt"));
+    }
+
+    #[test]
+    fn gitignore_with_only_comments_ignores_nothing() {
+        let ig = gi("# nothing here\n\n");
+        assert_eq!(ig.len(), 0);
+        assert!(!ig.is_ignored("target/x"));
+    }
 
     #[test]
     fn test_config_default() {

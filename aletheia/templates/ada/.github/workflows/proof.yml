@@ -46,9 +46,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
+      # gnatprove is a frontend, not a toolchain: the archive below contains
+      # one binary, no compiler and no gprbuild. It needs GNAT and gprbuild to
+      # be present, exactly as ci.yml installs them - without this step the job
+      # dies at `gprbuild --version` in the next step.
+      - name: Install GNAT and gprbuild
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends gnat gprbuild
+
       # gnatprove ships its own Why3 and versions of Alt-Ergo/CVC5, so there is
-      # nothing else to install and no solver version to drift. Pinned by URL
-      # and checksum: this artefact is a release asset, not a mutable tag.
+      # no solver version to drift. Pinned by URL and checksum: this artefact is
+      # a release asset, not a mutable tag.
       - name: Install gnatprove 13.2.0
         run: |
           set -euo pipefail
@@ -65,7 +74,9 @@ jobs:
           gprbuild --version | head -1
 
       # The GPR's Prove package carries --level=2 and --checks-as-errors, so
-      # this fails on any unproved check. `just proof` runs the same command.
+      # this fails on any unproved check. `just proof` runs gnatprove on the
+      # same project; the explicit gprbuild first builds the object directory
+      # the prover reads.
       - name: Prove
         run: |
           gprbuild -p -P @@MOD_NAME@@.gpr

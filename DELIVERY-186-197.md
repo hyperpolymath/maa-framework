@@ -659,10 +659,18 @@ construction. Locally, the lesson is to treat proof artefacts as build output: d
 around with them attached, and if a proof result looks wrong, force re-translation before believing
 it. `cargo creusot clean` is a no-op in the healthy case ("No dangling files found", exit 0).
 
+**The Ada workflow had the same kind of hole.** Not the same hole — the same *species*. `gnatprove`
+is a frontend, not a toolchain: the release archive that job downloads contains a single binary, no
+compiler and no `gprbuild`. Nothing in `proof.yml` installed those, so the job would have failed at
+`gprbuild --version` one step later. `ci.yml` in the same template has installed `gnat gprbuild`
+since it was written; `proof.yml` was added later and forgot. Both files being in the same directory
+is what makes that findable — and it is not findable by reading either one alone.
+
 **Ada, re-checked on the rebuilt toolchain.** The `gnatprove` asset the Ada workflow installs was
 downloaded and its SHA-256 checked against the value hard-coded in the workflow
 (`28fc3583…f4017` — matched), then the proof was run end-to-end on a freshly generated template:
-**35 checks, 100% proved, exit 0**. The negative control fails as it should:
+**35 checks proved, 0 unproved, exit 0** (`Adafix.Clamp` 1 check, `Adafix.Midpoint` 34). The
+negative control fails as it should:
 
 ```
 $ just proof                       # false postcondition: Clamp'Result in Lo .. Hi - 1
@@ -783,9 +791,14 @@ cd g-rust && just proof          # Proved (2 files) ✔  exit 0
                                  # then `touch verification/src/lib.rs` → fails correctly, exit 1
                                  # (templates .gitignore verif/ and target/, so CI never sees this)
 
+# the Ada proof, re-run on a regenerated template after fixing proof.yml
+rm -rf obj/gnatprove && just proof        # exit 0
+# obj/gnatprove/gnatprove.out: Clamp 1 check + Midpoint 34 checks proved, 0 unproved
+
 # the proof workflows: commands run for real, not simulated
 python3 -c "import yaml; yaml.safe_load(open('.../proof.yml'))"   # valid YAML for both
 # rust-toolchain channel parsed from the clone → nightly-2026-08-03
 # why3/why3find pins derived from creusot-deps.opam (the hard-coded one had gone stale)
 # gnatprove asset sha256 verified against the workflow's pinned value
+# four defects found (three Rust, one Ada) — all fixed; neither job has run on a runner yet
 ```

@@ -531,7 +531,7 @@ rule is still audited.
 
 ## Commits
 
-Three commits, split so each is coherent and individually green when checked out. `#197` and the
+Six commits, split so each is coherent and individually green when checked out. `#197` and the
 `.gitignore` work share a file *and* interleave within the same function, so they are one commit
 rather than a fabricated split.
 
@@ -543,9 +543,19 @@ rather than a fabricated split.
         aletheia/templates/**, aletheia/scripts/create-template.sh,
         aletheia/tests/integration_tests.rs
 
-<this>  docs: delivery write-up
+123710a docs: delivery write-up for #186 and #197
+de3e2e9 docs: explain why the six templates do not share one sample API
+
+b28e539 fix(ci): the Rust proof workflow could not have worked as written
+a318d02 fix(ci): finish the Creusot install, and stop hard-coding the Why3 pin
+        aletheia/templates/rust/.github/workflows/proof.yml
+
+<this>  docs: record what running the proof workflows actually found
         DELIVERY-186-197.md
 ```
+
+The last two exist because the first version of that workflow was wrong and no amount of reading it
+had shown that — see "Proof workflows: what *not yet executed* was hiding".
 
 Two things were deliberately left uncommitted:
 
@@ -560,52 +570,99 @@ Two things were deliberately left uncommitted:
 
 ## Proof workflows: what "not yet executed" was hiding
 
-When the two `.github/workflows/proof.yml` files went in, they were flagged as unvalidated. They
-have been exercised since, because the sandbox lost the Creusot toolchain between sessions and
-rebuilding it meant running the workflow's own commands by hand. That turned out to be worth the
-trouble.
+Both proof workflows shipped with a caveat: written from commands run by hand, never executed as
+workflows. Exercising them properly meant rebuilding the Creusot toolchain from nothing, because
+this sandbox had lost it. That was worth doing — the Rust one was wrong in three separate ways.
 
-**What held up.** Every command in the toolchain half executed exactly as written and succeeded:
-the apt package list, `git clone --depth 1`, reading the channel out of Creusot's `rust-toolchain`
-file, `rustup toolchain install --component rustc-dev,llvm-tools`, `opam init --bare
+**What already held up.** Every command in the toolchain half ran exactly as written: the apt list,
+`git clone`, `rustup toolchain install --component rustc-dev,llvm-tools`, `opam init --bare
 --disable-sandboxing`, `opam switch create creusot ocaml-system`, and both `opam pin` commands for
 Creusot's forks of why3 and why3find.
 
-One of those was only correct because it was tested. Creusot's `rust-toolchain` file is TOML —
-`channel = "nightly-2026-08-03"` — but without the `.toml` extension, so the obvious first parse
-(`head -1`) yields `[toolchain]` and the whole job installs the wrong toolchain. The workflow now
-parses the `channel` key and fails loudly if it cannot.
+One of those was already fixed for the right reason. Creusot's `rust-toolchain` file is TOML —
+`channel = "nightly-2026-08-03"` — but has no `.toml` extension, so the obvious `head -1` yields
+`[toolchain]` and the job installs the wrong toolchain. The workflow parses the key and fails
+loudly if it cannot; Creusot's own installer parses the same key, so this is not just belt-and-braces.
 
-**What was wrong.** The Rust workflow installed the two binaries and stopped. That is not enough,
-because `cargo creusot` does not look for `creusot-rustc` on `PATH`:
+**What was wrong.**
+
+1. *It never installed `creusot-rustc` where `cargo creusot` looks.* Not on `PATH` — under its data
+   dir, along with the prelude and the generated `why3.conf`:
+
+   ```
+   creusot-rustc not found (expected at
+     "/home/user/.local/share/creusot/toolchains/nightly-2026-08-03/bin/creusot-rustc").
+   You should reinstall Creusot.
+   ```
+
+   Installing the two binaries and running `cargo creusot config --update` leaves all three pieces
+   missing. Fixed by running Creusot's own installer for the rest.
+
+2. *It never installed the provers, or why3/why3find in the data dir either.* This is the
+   interesting one, because it fails much later and more confusingly. `why3` is launched with the
+   data dir's `bin` **first on `PATH`**, and `creusot_why3.conf` names provers by bare name
+   (`alt-ergo --timelimit %.t %f`). So:
+
+   ```
+   $ just proof
+   Error: 'why3find prove' failed to launch
+   Caused by: No such file or directory (os error 2)
+   ```
+
+   That is `alt-ergo` not existing. `cargo creusot` also resolves `why3` and `why3find` themselves
+   as `$XDG_DATA_HOME/creusot/bin/why3[find]`, not from `PATH` — so having them in an opam switch
+   is not enough either. The installer's `provers` component fetches the exact versions the drivers
+   name (alt-ergo 2.6.2, z3 4.15.3, cvc4 1.8, cvc5 1.3.1); apt `z3` is a different build behind the
+   same driver name, which is a quiet way to get different answers from the same proof. The
+   workflow now installs those, provides `why3`/`why3find` the way the installer's own `why3`
+   component does (it builds a second opam switch inside the data dir and pulls in the GTK why3
+   IDE for the privilege; its last act is to symlink those two binaries, so we do that directly),
+   and asserts `cargo creusot version` resolves all four provers before attempting to prove.
+
+3. *Its Why3 pin was already stale.* The workflow hard-coded the fork commits; the checkout now
+   declares a different Why3 commit. A proof gate that silently changes toolchain underneath a
+   passing build is not a gate. The workflow now pins the Creusot revision and **derives** both
+   forks from that revision's `creusot-deps.opam`, failing if the parse comes up empty.
+
+**The gate, run for real.** On the rebuilt toolchain, `cargo creusot version` resolves all four
+provers, and `just proof` in the generated template reports:
 
 ```
-creusot-rustc not found (expected at
-  "/home/user/.local/share/creusot/toolchains/nightly-2026-08-03/bin/creusot-rustc").
-You should reinstall Creusot.
+$ just proof
+Proved (2 files) ✔
+exit 0
 ```
 
-It wants its own data-dir layout: the binary under `toolchains/<channel>/bin/`, the Creusot prelude
-installed as a why3find package, and a generated `why3.conf`. Installing the binaries by hand
-leaves all three missing. The workflow now runs Creusot's own installer for exactly those pieces:
+with Why3 pinned to the same commit the workflow will use. The negative control — a false
+postcondition, `result@ == (a@ + b@) / 2 + 1` — gives:
 
-```yaml
-cargo run --quiet --release --bin creusot-install -- \
-  --external z3 --external cvc5 \
-  prelude why3-conf creusot-rustc cargo-creusot cargo-creusot-config
+```
+File ".../src/impl.rs", line 45: proof failed
+Goal Coma.vc_midpoint: ✘ (4/5)
+Error: 1 unproved file
+Error: 'why3find prove' failed
+exit 1
 ```
 
-A second gap: `creusot-rustc` **must** be built on Creusot's pinned nightly. On stable it fails to
-compile (`why3` binding errors). The workflow already set `rustup default "$channel"` before the
-installs, so it was right — but only a real run shows that it needed to be.
+**A false pass, and why it is written down here.** My first attempt at that negative control
+reported `Proved (2 files)` and exit 0 — a false gate, which is the one result that must never be
+waved away. It reproduced, deliberately: take a tree *together with its build output and its
+`verif/` directory*, plant a false obligation in the shared `src/impl.rs`, run `just proof`, and
+the run finishes in 0.01 s and reports success without re-translating the changed source file. Hit
+the same tree after forcing a re-translation (`touch verification/src/lib.rs`) and it fails
+correctly, as it does on a freshly generated tree.
 
-Neither of these would have surfaced from reading the file. That is the argument for the caveat
-that was written on them.
+The practical consequence is small, and the templates are already safe: `verification/verif/`,
+`verification/target/`, `*.coma` and `.why3find/` are all in the templates' `.gitignore`, so a
+clone or a CI checkout never starts with stale proof state — CI runs from a clean tree by
+construction. Locally, the lesson is to treat proof artefacts as build output: don't move a tree
+around with them attached, and if a proof result looks wrong, force re-translation before believing
+it. `cargo creusot clean` is a no-op in the healthy case ("No dangling files found", exit 0).
 
-**Ada.** The `gnatprove` release asset the Ada workflow installs was downloaded and its SHA-256
-checked against the value hard-coded in the workflow (`28fc3583…f4017` — matched), and the proof
-was re-run end-to-end on the freshly generated template: **35 checks, 100% proved, exit 0**, with
-the negative control failing as it should:
+**Ada, re-checked on the rebuilt toolchain.** The `gnatprove` asset the Ada workflow installs was
+downloaded and its SHA-256 checked against the value hard-coded in the workflow
+(`28fc3583…f4017` — matched), then the proof was run end-to-end on a freshly generated template:
+**35 checks, 100% proved, exit 0**. The negative control fails as it should:
 
 ```
 $ just proof                       # false postcondition: Clamp'Result in Lo .. Hi - 1
@@ -614,10 +671,22 @@ gnatprove: unproved check messages considered as errors
 exit 1
 ```
 
-The first attempt at that negative control reported exit 0 and looked alarming. It was a stale
-`PIPESTATUS` in the shell I typed, not a false gate: rerun from a clean proof state, with the exit
-code captured directly, it fails correctly. Worth recording, because "the gate looked green when it
-should not have" is the one result that must never be waved away.
+**Two environment traps that look like template bugs and are not.** Worth recording because both
+cost time here and will cost time for anyone else running these proofs in a small container:
+
+- *Memory.* Translating `creusot-std` on a 2 GB, swapless box gets SIGKILLed ("signal: 9") partway
+  through — it looks like a slow build, then dies. Dropping debuginfo for the proof run
+  (`CARGO_PROFILE_DEV_DEBUG=0 CARGO_INCREMENTAL=0`) makes it fit, and translation then takes about
+  35 seconds. CI runners have room; a small local VM may not.
+- *Disk.* `/tmp` here is a 993 MB tmpfs, and filling it with build trees makes the **generator**
+  fail with `cp: error writing '…/.gitattributes': No space left on device`. That reads as a
+  template defect and is nothing of the sort: a full disk fails whichever step needs to write next.
+  Generate and build under a directory on the main filesystem, and check `df` before diagnosing.
+
+**Still unproven.** Neither workflow has run on a GitHub runner. That caveat stays until it does:
+the commands are known-good, but "known-good commands in the right order in a YAML file" is a
+weaker claim than a green run, and the templates are not claiming the stronger one.
+
 
 ---
 
@@ -655,10 +724,18 @@ excluded from the workspace snapshot; between sessions the directory was reclaim
 toolchain went with it. Reinstalling outside `/home/user` means the install survives, and — more to
 the point — that a toolchain can no longer be lost in a way that looks like a repo problem.
 
-`gnatprove` is not currently installed in this sandbox; the Ada proof evidence above was produced
-with `gnatprove 13.2.0` from `alire-project/GNAT-FSF-builds`, and the CI workflow installs that same
-release asset by URL **and verifies its SHA-256** (`28fc3583…f4017`, checked against the real
-download).
+`gnatprove` lives at `/usr/local/gnatprove` (13.2.0-1, from `alire-project/GNAT-FSF-builds` — it is
+not an Alire toolchain component and `alr install` does not exist, so the release archive is the
+only route). The CI workflow installs that same asset by URL **and verifies its SHA-256**
+(`28fc3583…f4017`, checked against the real download).
+
+Creusot is the one that needs care. It is at `/usr/local/creusot` (source) with the pinned nightly
+in `/usr/local/rustup`, an opam switch at `/usr/local/opam`, and its runtime layout under
+`/usr/local/share/creusot` (`bin/{why3,why3find,alt-ergo,z3,cvc4,cvc5}`, `toolchains/<channel>/`,
+`share/why3find/packages/creusot`). That last part matters: `XDG_DATA_HOME` decides where
+`cargo-creusot` looks, and the default (`~/.local/share`) is *excluded from this sandbox's workspace
+snapshot*, so a toolchain installed there evaporates between sessions. Pointing `XDG_DATA_HOME` at
+`/usr/local/share` makes it survive.
 
 ## Follow-on verification log
 
@@ -694,8 +771,21 @@ just check && aletheia .        # 26/26 AFTER a build (was 18/26, Bronze NOT MET
 # negative control: remove .gitignore from the same tree
                                 # 18/26, Bronze NOT MET, flags obj/b__main.ads
 
-# the proof workflows are valid and their shell logic was exercised
+# the Creusot toolchain, rebuilt from nothing and then used
+cargo creusot version            # alt-ergo 2.6.2 / z3 4.15.3 / cvc4 1.8 / cvc5 1.3.1 — all resolved
+                                 # (before the `provers` component: all four "not found")
+cd g-rust && just proof          # Proved (2 files) ✔  exit 0
+                                 # re-run after re-pinning Why3 to the commit creusot-deps.opam
+                                 # declares: Proved (2 files) ✔  exit 0
+# negative control on a fresh tree: midpoint identity + 1
+                                 # Goal Coma.vc_midpoint: ✘ (4/5), 1 unproved file, exit 1
+# same negative control on a tree copied WITH its verif/ + target/: "Proved (2 files)", exit 0
+                                 # then `touch verification/src/lib.rs` → fails correctly, exit 1
+                                 # (templates .gitignore verif/ and target/, so CI never sees this)
+
+# the proof workflows: commands run for real, not simulated
 python3 -c "import yaml; yaml.safe_load(open('.../proof.yml'))"   # valid YAML for both
-# (steps simulated with stub rustup/cargo; channel parses to nightly-2026-08-03;
-#  the apt package list and opam commands ran for real)
+# rust-toolchain channel parsed from the clone → nightly-2026-08-03
+# why3/why3find pins derived from creusot-deps.opam (the hard-coded one had gone stale)
+# gnatprove asset sha256 verified against the workflow's pinned value
 ```

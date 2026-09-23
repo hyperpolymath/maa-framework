@@ -718,7 +718,14 @@ weaker claim than a green run, and the templates are not claiming the stronger o
    So the six templates are not identical on purpose. Each README states which formulation it ships
    and why; if you would rather have uniformity over totality, say so and it is a small change.
 
-3. **`aletheia/LICENSE` still says PMPL-1.0-or-later** while its sources say MPL-2.0. Carried over
+3. **`agda/.github/workflows/ci.yml` installs the distro's Agda**, not the 2.6.4.3 that
+   `agda/.tool-versions` pins. They happened to be the same version here (Debian 13's `agda` is
+   2.6.4.3), so the local run says nothing either way about a different base image. The typecheck
+   is simple enough that a patch-level difference is unlikely to matter, but it is a pin the
+   workflow does not honour. Building 2.6.4.3 from source in CI would take longer than the job's
+   whole timeout, so the fix would be to relax the pin in `.tool-versions` rather than chase it.
+
+4. **`aletheia/LICENSE` still says PMPL-1.0-or-later** while its sources say MPL-2.0. Carried over
    from the first delivery; unchanged, since you had not asked for it.
 
 ## Where the toolchains live

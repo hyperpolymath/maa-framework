@@ -99,18 +99,36 @@ jobs:
           # with a confusing parse error.
           why3 --version
 
-      - name: Install Creusot
+      # `cargo creusot` does not just want the two binaries on PATH. It looks
+      # for creusot-rustc inside its own data dir
+      # ($XDG_DATA_HOME/creusot/toolchains/<channel>/bin) and for the Creusot
+      # prelude as a why3find package. Running the project's own installer is
+      # the supported way to lay all of that out; installing the binaries by
+      # hand leaves `cargo creusot` failing with "creusot-rustc not found
+      # (expected at ...)".
+      #
+      # `--external z3 --external cvc5` uses the apt solvers rather than
+      # downloading Creusot's pinned copies. This step compiles Creusot for the
+      # install prefix, so it is the slowest part of the job.
+      - name: Install Creusot (binaries, prelude, why3 config)
+        working-directory: ${{ runner.temp }}/creusot
         run: |
           set -euo pipefail
           eval "$(opam env --switch=creusot --set-switch)"
-          cargo install --locked --path "$RUNNER_TEMP/creusot/cargo-creusot"
-          cargo install --locked --path "$RUNNER_TEMP/creusot/creusot-rustc"
+          cargo run --quiet --release --bin creusot-install -- \
+            --external z3 --external cvc5 \
+            prelude why3-conf creusot-rustc cargo-creusot cargo-creusot-config
 
-      - name: Point cargo at the local creusot-std
-        run: cargo creusot config --update
-
-      - name: Detect provers
-        run: why3 config detect
+      # Verifies the pieces cargo-creusot resolves at runtime, rather than
+      # assuming the installer worked. Empty output for a prover here means the
+      # proof step will fail confusingly, so check first.
+      - name: Check the Creusot install
+        run: |
+          set -euo pipefail
+          eval "$(opam env --switch=creusot --set-switch)"
+          cargo creusot version
+          why3 --version
+          command -v z3 cvc5
 
       # Fails the job if any goal is unproved. Mirrors `just proof`.
       - name: Prove

@@ -178,10 +178,10 @@ estate root `just check` exit 0; `just self-verify` 26/26.
    `typescript` and `go`. Those extensions are *banned* by the v2 estate language policy, so those
    paths could never pass Bronze — I removed them rather than port them. Zig, Elixir, Haskell, Ada,
    Agda and AffineScript are Tier-1 per your `standards` canon and are reasonable follow-on templates.
-4. **Wire the proof gates into CI.** **Partly done in this pass.** Both templates now ship an
-   opt-in `.github/workflows/proof.yml`, pinned and matching commands that were run by hand. They
-   have not yet executed on a GitHub runner, so the templates still do not claim CI-verified
-   proofs — the first green run is what makes them load-bearing.
+4. **Wire the proof gates into CI.** **Partly done in this pass.** Both templates ship an opt-in
+   `.github/workflows/proof.yml`. Attempting to execute them from scratch (below) found one real
+   defect in the Rust one, now fixed. Neither has run on a GitHub runner yet, so the templates
+   still do not claim CI-verified proofs — the first green run is what makes them load-bearing.
 5. **Close #186 and #197** with the acceptance evidence above.
 
 ---
@@ -555,6 +555,69 @@ Two things were deliberately left uncommitted:
 * The lost executable bits on `setup.sh`, the `.github/hooks/*` scripts and
   `aletheia/scripts/install.sh` are restored, not committed — they changed because the sandbox
   restore does not preserve modes, not because anything meant to change.
+
+---
+
+## Proof workflows: what "not yet executed" was hiding
+
+When the two `.github/workflows/proof.yml` files went in, they were flagged as unvalidated. They
+have been exercised since, because the sandbox lost the Creusot toolchain between sessions and
+rebuilding it meant running the workflow's own commands by hand. That turned out to be worth the
+trouble.
+
+**What held up.** Every command in the toolchain half executed exactly as written and succeeded:
+the apt package list, `git clone --depth 1`, reading the channel out of Creusot's `rust-toolchain`
+file, `rustup toolchain install --component rustc-dev,llvm-tools`, `opam init --bare
+--disable-sandboxing`, `opam switch create creusot ocaml-system`, and both `opam pin` commands for
+Creusot's forks of why3 and why3find.
+
+One of those was only correct because it was tested. Creusot's `rust-toolchain` file is TOML —
+`channel = "nightly-2026-08-03"` — but without the `.toml` extension, so the obvious first parse
+(`head -1`) yields `[toolchain]` and the whole job installs the wrong toolchain. The workflow now
+parses the `channel` key and fails loudly if it cannot.
+
+**What was wrong.** The Rust workflow installed the two binaries and stopped. That is not enough,
+because `cargo creusot` does not look for `creusot-rustc` on `PATH`:
+
+```
+creusot-rustc not found (expected at
+  "/home/user/.local/share/creusot/toolchains/nightly-2026-08-03/bin/creusot-rustc").
+You should reinstall Creusot.
+```
+
+It wants its own data-dir layout: the binary under `toolchains/<channel>/bin/`, the Creusot prelude
+installed as a why3find package, and a generated `why3.conf`. Installing the binaries by hand
+leaves all three missing. The workflow now runs Creusot's own installer for exactly those pieces:
+
+```yaml
+cargo run --quiet --release --bin creusot-install -- \
+  --external z3 --external cvc5 \
+  prelude why3-conf creusot-rustc cargo-creusot cargo-creusot-config
+```
+
+A second gap: `creusot-rustc` **must** be built on Creusot's pinned nightly. On stable it fails to
+compile (`why3` binding errors). The workflow already set `rustup default "$channel"` before the
+installs, so it was right — but only a real run shows that it needed to be.
+
+Neither of these would have surfaced from reading the file. That is the argument for the caveat
+that was written on them.
+
+**Ada.** The `gnatprove` release asset the Ada workflow installs was downloaded and its SHA-256
+checked against the value hard-coded in the workflow (`28fc3583…f4017` — matched), and the proof
+was re-run end-to-end on the freshly generated template: **35 checks, 100% proved, exit 0**, with
+the negative control failing as it should:
+
+```
+$ just proof                       # false postcondition: Clamp'Result in Lo .. Hi - 1
+neg_ada.ads:36:19: high: postcondition might fail
+gnatprove: unproved check messages considered as errors
+exit 1
+```
+
+The first attempt at that negative control reported exit 0 and looked alarming. It was a stale
+`PIPESTATUS` in the shell I typed, not a false gate: rerun from a clean proof state, with the exit
+code captured directly, it fails correctly. Worth recording, because "the gate looked green when it
+should not have" is the one result that must never be waved away.
 
 ---
 

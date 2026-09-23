@@ -198,6 +198,7 @@ and the project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 
 ### Other
 
+- Bump the github-actions group with 2 updates (#226) (7b1b3c1)
 - Bump the github-actions group with 2 updates (#200) (3be3969)
 - Close all open issues: aletheia rebuild (#124/#125), rust-ci restore, just shim (#102), changelog (#100), hypatia prune (#98) (#185)
 

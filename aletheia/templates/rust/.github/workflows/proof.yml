@@ -1,0 +1,122 @@
+# SPDX-License-Identifier: MPL-2.0
+# Creusot proof gate. Separate from ci.yml on purpose: the offline Bronze job
+# must stay fast and dependency-free, while proving needs a pinned nightly
+# plus Creusot's forks of Why3 and why3find.
+#
+# This is a real gate — `cargo creusot` exits non-zero when any obligation is
+# unproved. It is deliberately *not* part of `just check`.
+#
+# Every command below was run by hand against this template before being
+# written down here; the pins are the ones Creusot declares in
+# creusot-deps.opam. It has not yet been executed on a GitHub runner, so treat
+# its first green run as the moment it becomes load-bearing.
+name: Proof (Creusot)
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - 'src/**'
+      - 'verification/**'
+      - 'Cargo.toml'
+      - 'Justfile'
+      - '.github/workflows/proof.yml'
+  pull_request:
+    branches: [main, master]
+    paths:
+      - 'src/**'
+      - 'verification/**'
+      - 'Cargo.toml'
+      - 'Justfile'
+      - '.github/workflows/proof.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: proof-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  actions: read
+  contents: read
+
+env:
+  # Keep these in step with the forks pinned in creusot-deps.opam. A stock
+  # Why3 cannot even parse the Coma that a given Creusot emits, and a stock
+  # why3find will not compile against the pinned Why3.
+  WHY3_PIN: git+https://gitlab.inria.fr/why3/why3.git#c369bc4cdc22d1e714255bb3675a2ce6b7242f19
+  WHY3FIND_PIN: git+https://github.com/creusot-rs/why3find.git#0f054b93c86ac7ba20bca7df5d1563a9a4434a30
+
+jobs:
+  creusot:
+    name: Translate and discharge (Creusot + Why3)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      # Pinned to a full SHA rather than relying on actions.lock: only two of
+      # the six templates ship this opt-in workflow, and a lock entry for a
+      # file the other four do not have would be noise in a shared file.
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            opam ocaml z3 cvc5 build-essential pkg-config libgmp-dev
+
+      # Creusot pins its own nightly; read it from the clone rather than
+      # hard-coding a second copy that can drift.
+      - name: Clone Creusot
+        run: git clone --depth 1 https://github.com/creusot-rs/creusot "$RUNNER_TEMP/creusot"
+
+      - name: Install the pinned Rust toolchain
+        run: |
+          set -euo pipefail
+          # Creusot pins the channel in a `rust-toolchain` file (TOML, but
+          # without the .toml extension). Parse it rather than duplicating the
+          # version here, where it would silently drift.
+          channel=$(sed -n 's/^[[:space:]]*channel[[:space:]]*=[[:space:]]*"\(.*\)"/\1/p' \
+            "$RUNNER_TEMP/creusot/rust-toolchain")
+          if [ -z "$channel" ]; then
+            echo "::error::could not read the channel from creusot's rust-toolchain file"
+            exit 1
+          fi
+          echo "Creusot pins $channel"
+          rustup toolchain install "$channel" --component rustc-dev,llvm-tools
+          rustup default "$channel"
+
+      - name: Install Why3 and why3find (Creusot's forks)
+        run: |
+          set -euo pipefail
+          opam init --bare --disable-sandboxing -y
+          opam switch create creusot ocaml-system -y
+          eval "$(opam env --switch=creusot --set-switch)"
+          opam pin add -y why3 "$WHY3_PIN"
+          opam pin add -y why3find "$WHY3FIND_PIN"
+          opam install -y why3 why3find
+          opam env --switch=creusot --set-switch >> "$GITHUB_ENV"
+          # The fork must be the one in use; a stock release fails much later,
+          # with a confusing parse error.
+          why3 --version
+
+      - name: Install Creusot
+        run: |
+          set -euo pipefail
+          eval "$(opam env --switch=creusot --set-switch)"
+          cargo install --locked --path "$RUNNER_TEMP/creusot/cargo-creusot"
+          cargo install --locked --path "$RUNNER_TEMP/creusot/creusot-rustc"
+
+      - name: Point cargo at the local creusot-std
+        run: cargo creusot config --update
+
+      - name: Detect provers
+        run: why3 config detect
+
+      # Fails the job if any goal is unproved. Mirrors `just proof`.
+      - name: Prove
+        working-directory: verification
+        run: cargo creusot
+
+      - name: Proof artefacts
+        if: always()
+        run: find verification/verif -name '*.coma' -o -name 'proof.json' 2>/dev/null | head -50 || true

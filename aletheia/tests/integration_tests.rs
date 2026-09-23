@@ -1331,3 +1331,387 @@ fn test_bun_lockfile_carveout() {
     );
     fs::remove_dir_all(bare).ok();
 }
+
+/// REGRESSION GUARD (issue #186): a freshly scaffolded project must pass
+/// aletheia Bronze (and Silver) with no hand edits.
+///
+/// The v1-era generator emitted the retired shape — `LICENSE.txt`,
+/// lowercase `justfile`, `flake.nix`, `.gitlab-ci.yml` — which failed
+/// Bronze on day one. This test runs the real generator and audits its
+/// real output, so the template and the checker cannot drift apart again
+/// without the suite going red.
+#[test]
+fn test_scaffold_passes_bronze_and_silver() {
+    let pid = std::process::id();
+    let work = std::env::temp_dir().join(format!("aletheia_scaffold_{pid}"));
+    if work.exists() {
+        fs::remove_dir_all(&work).ok();
+    }
+    fs::create_dir_all(&work).expect("Failed to create scaffold workspace");
+
+    let generator = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("scripts")
+        .join("create-template.sh");
+
+    // `--no-git` keeps the probe hermetic: it does not depend on the
+    // machine having a configured git identity.
+    let generated = Command::new("bash")
+        .arg(&generator)
+        .arg("scaffold-probe")
+        .arg("--no-git")
+        .arg("-d")
+        .arg("Regression probe for the v2 scaffold")
+        .current_dir(&work)
+        .output()
+        .expect("Failed to run create-template.sh");
+
+    assert!(
+        generated.status.success(),
+        "generator failed (exit {:?}): {}",
+        generated.status.code(),
+        String::from_utf8_lossy(&generated.stderr)
+    );
+
+    let project = work.join("scaffold-probe");
+    assert!(project.is_dir(), "generator produced no project directory");
+
+    // The retired v1 shape must never come back.
+    for stale in ["LICENSE.txt", "justfile", "flake.nix", ".gitlab-ci.yml"] {
+        assert!(
+            !project.join(stale).exists(),
+            "retired v1 artefact regenerated: {stale} (issue #186)"
+        );
+    }
+
+    // The generator must leave no unresolved template placeholder behind.
+    let readme = fs::read_to_string(project.join("README.adoc"))
+        .expect("scaffold should contain README.adoc");
+    assert!(
+        !readme.contains("@@"),
+        "unresolved template placeholder left in README.adoc"
+    );
+
+    let output = aletheia()
+        .arg(project.to_str().unwrap())
+        .output()
+        .expect("Failed to run aletheia");
+    let stdout = String::from_utf8_lossy(&output.stdout);
+
+    assert!(
+        stdout.contains("Bronze-level RSR compliance: ACHIEVED"),
+        "fresh scaffold must pass Bronze with no hand edits (issue #186): {stdout}"
+    );
+    assert!(
+        stdout.contains("Silver-level RSR compliance: ACHIEVED"),
+        "fresh scaffold should also reach Silver: {stdout}"
+    );
+    assert_eq!(
+        output.status.code(),
+        Some(0),
+        "a compliant scaffold must exit 0: {stdout}"
+    );
+
+    fs::remove_dir_all(&work).ok();
+}
+
+/// Build output must not change the verdict.
+///
+/// Reported after the #186/#197 work: running the gate on a tree that had just
+/// been built made it fail, because the scanner counted generated files
+/// (`obj/b__main.ads`, `target/...`, `_build/...`) as sources lacking SPDX
+/// headers. The scanner now honours the repository's own `.gitignore`, so
+/// auditing a freshly built tree gives the same answer as auditing a clean
+/// checkout.
+#[test]
+fn test_gitignore_keeps_build_output_out_of_the_audit() {
+    let repo = create_test_repo("gitignore_build_output");
+
+    // A minimal compliant project.
+    create_file(&repo, "README.md", "# Probe\n");
+    create_file(&repo, "LICENSE", "MPL-2.0\n");
+    create_file(&repo, ".gitattributes", "* text=auto\n");
+    create_file(&repo, ".editorconfig", "root = true\n");
+    create_file(&repo, "justfile", "default:\n    @true\n");
+    create_file(&repo, "SECURITY.md", "# Security\n");
+    create_file(&repo, "CONTRIBUTING.md", "# Contributing\n");
+    create_file(&repo, "CHANGELOG.md", "# Changelog\n");
+    create_file(&repo, "CODE_OF_CONDUCT.md", "# CoC\n");
+    create_file(
+        &repo,
+        ".well-known/security.txt",
+        "Contact: x@example.org\n",
+    );
+    create_file(&repo, ".well-known/ai.txt", "ai\n");
+    create_file(&repo, ".well-known/humans.txt", "humans\n");
+    create_file(&repo, ".github/workflows/ci.yml", PINNED_WORKFLOW);
+    create_file(
+        &repo,
+        "src/main.rs",
+        "// SPDX-License-Identifier: MPL-2.0\nfn main() {}\n",
+    );
+    create_file(&repo, ".gitignore", "target/\nobj/\ndist-newstyle/\n");
+
+    let clean = aletheia()
+        .arg(repo.to_str().unwrap())
+        .output()
+        .expect("run");
+    let clean_out = String::from_utf8_lossy(&clean.stdout);
+    assert!(
+        clean_out.contains("Bronze-level RSR compliance: ACHIEVED"),
+        "the clean tree should be compliant: {clean_out}"
+    );
+
+    // Now simulate a build: generated files, no SPDX headers, inside ignored
+    // directories. This is exactly what broke the gate in practice.
+    create_file(&repo, "target/debug/build.rs", "fn generated() {}\n");
+    create_file(
+        &repo,
+        "obj/b__main.ads",
+        "package B__Main is end B__Main;\n",
+    );
+    create_file(&repo, "dist-newstyle/build/x.rs", "fn y() {}\n");
+
+    let built = aletheia()
+        .arg(repo.to_str().unwrap())
+        .output()
+        .expect("run");
+    let built_out = String::from_utf8_lossy(&built.stdout);
+
+    // The verdict must be identical to the clean run — same score, and the
+    // generated files must not appear in any suggestion.
+    assert!(
+        !built_out.contains("b__main.ads")
+            && !built_out.contains("dist-newstyle")
+            && !built_out.contains("target/debug/build.rs"),
+        "ignored build output leaked back into the audit: {built_out}"
+    );
+    assert!(
+        built_out.contains("Bronze-level RSR compliance: ACHIEVED"),
+        "a built tree must give the clean-tree verdict: {built_out}"
+    );
+    assert_eq!(
+        built.status.code(),
+        clean.status.code(),
+        "exit code changed after a build"
+    );
+
+    // A file that is *not* ignored must still be audited: the mechanism must
+    // not become a blanket exemption.
+    create_file(&repo, "src/unheadered.rs", "fn no_header() {}\n");
+    let leaky = aletheia()
+        .arg(repo.to_str().unwrap())
+        .output()
+        .expect("run");
+    let leaky_out = String::from_utf8_lossy(&leaky.stdout);
+    assert!(
+        leaky_out.contains("unheadered.rs"),
+        "a non-ignored file must still be scanned: {leaky_out}"
+    );
+
+    fs::remove_dir_all(&repo).ok();
+}
+
+/// A directory-only rule must not exempt a *file* of the same name.
+///
+/// `Makefile/` in git matches a directory called `Makefile`; a regular file
+/// called `Makefile` is untouched. The scanner asks the type-aware question,
+/// so it inherits that behaviour instead of blanket-skipping the name. Uses
+/// the banned-build-files check as the probe, because it reports file names
+/// and therefore makes the difference observable.
+#[test]
+fn test_gitignore_directory_rule_does_not_exempt_same_named_file() {
+    let repo = create_test_repo("gitignore_dir_only");
+
+    create_file(&repo, ".gitignore", "Makefile/\n");
+    // A regular file whose name matches a directory-only rule.
+    create_file(&repo, "Makefile", "all:\n\t@true\n");
+
+    let output = aletheia()
+        .arg(repo.to_str().unwrap())
+        .output()
+        .expect("run");
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    assert!(
+        stdout.contains("Makefile"),
+        "a file named `Makefile` must still be audited despite the `Makefile/` rule: {stdout}"
+    );
+
+    fs::remove_dir_all(&repo).ok();
+}
+
+/// The same name as a real directory *is* skipped, contents and all.
+#[test]
+fn test_gitignore_directory_rule_skips_the_directory_and_its_contents() {
+    let repo = create_test_repo("gitignore_dir_real");
+
+    create_file(&repo, ".gitignore", "vendored/\n");
+    // Unmistakably generated, unmistakably headerless — if the scanner reads
+    // this, the score drops and the path shows up in a suggestion.
+    create_file(
+        &repo,
+        "vendored/generated_helper.adb",
+        "package Generated_Helper is end;\n",
+    );
+    create_file(
+        &repo,
+        "vendored/deep/nested/deep_generated.adb",
+        "package Deep is end;\n",
+    );
+
+    let output = aletheia()
+        .arg(repo.to_str().unwrap())
+        .output()
+        .expect("run");
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    assert!(
+        !stdout.contains("generated_helper.adb") && !stdout.contains("deep_generated.adb"),
+        "contents of an ignored directory must be skipped: {stdout}"
+    );
+
+    // And the same file in a directory that is NOT ignored still reports, so
+    // the rule is scoped and not a blanket exemption.
+    create_file(
+        &repo,
+        "src/not_ignored_helper.adb",
+        "package Not_Ignored is end;\n",
+    );
+    let output = aletheia()
+        .arg(repo.to_str().unwrap())
+        .output()
+        .expect("run");
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    assert!(
+        stdout.contains("not_ignored_helper.adb"),
+        "a file outside the ignored directory must still be audited: {stdout}"
+    );
+
+    fs::remove_dir_all(&repo).ok();
+}
+
+/// Regression probe for the six-language template set (follow-on to #186).
+///
+/// Every language `create-template.sh` advertises must scaffold cleanly and
+/// reach Bronze *and* Silver with no hand edits. The single-language probe
+/// above covers the generator's default; this one covers the whole set, so a
+/// template that regresses under a language overlay cannot slip through.
+///
+/// Note on scope: this asserts the *build-time* contract only — file shape,
+/// placeholder resolution and the RSR gate. It does not run Creusot or
+/// gnatprove; those need nightly Rust plus pinned Why3 forks, and a pinned
+/// GNAT, which a unit test must not require. The proof gates are exercised by
+/// `just proof` in each template, and their negative controls live with them.
+#[test]
+fn test_every_language_template_reaches_bronze_and_silver() {
+    /// Recursively collect files containing an unresolved `@@` placeholder.
+    fn files_with_placeholders(dir: &Path, found: &mut Vec<PathBuf>) {
+        let Ok(entries) = fs::read_dir(dir) else {
+            return;
+        };
+        for entry in entries.flatten() {
+            let path = entry.path();
+            if path.file_name().is_some_and(|n| n == ".git") {
+                continue;
+            }
+            if path.is_dir() {
+                files_with_placeholders(&path, found);
+            } else if fs::read_to_string(&path).is_ok_and(|body| body.contains("@@")) {
+                found.push(path);
+            }
+        }
+    }
+
+    const LANGS: &[&str] = &["rust", "zig", "elixir", "haskell", "ada", "agda"];
+
+    let pid = std::process::id();
+    let work = std::env::temp_dir().join(format!("aletheia_langs_{pid}"));
+    if work.exists() {
+        fs::remove_dir_all(&work).ok();
+    }
+    fs::create_dir_all(&work).expect("Failed to create scaffold workspace");
+
+    let generator = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("scripts")
+        .join("create-template.sh");
+
+    for lang in LANGS {
+        let name = format!("probe-{lang}");
+
+        // `--no-git` keeps the probe hermetic: no git identity is needed, and
+        // a working tree without .git exercises the same file set.
+        let generated = Command::new("bash")
+            .arg(&generator)
+            .arg(&name)
+            .arg("-l")
+            .arg(lang)
+            .arg("--no-git")
+            .current_dir(&work)
+            .output()
+            .unwrap_or_else(|e| panic!("Failed to run create-template.sh for {lang}: {e}"));
+
+        assert!(
+            generated.status.success(),
+            "[{lang}] generator failed (exit {:?}): {}",
+            generated.status.code(),
+            String::from_utf8_lossy(&generated.stderr)
+        );
+
+        let project = work.join(&name);
+        assert!(project.is_dir(), "[{lang}] no project directory produced");
+
+        let mut stragglers = Vec::new();
+        files_with_placeholders(&project, &mut stragglers);
+        assert!(
+            stragglers.is_empty(),
+            "[{lang}] unresolved template placeholders in: {stragglers:?}"
+        );
+
+        let output = aletheia()
+            .arg(project.to_str().unwrap())
+            .output()
+            .unwrap_or_else(|e| panic!("Failed to run aletheia for {lang}: {e}"));
+        let stdout = String::from_utf8_lossy(&output.stdout);
+
+        assert!(
+            stdout.contains("Score: 26/26 checks passed (100.0%)"),
+            "[{lang}] template must reach 26/26 with no hand edits: {stdout}"
+        );
+        assert!(
+            stdout.contains("Bronze-level RSR compliance: ACHIEVED"),
+            "[{lang}] Bronze not achieved: {stdout}"
+        );
+        assert!(
+            stdout.contains("Silver-level RSR compliance: ACHIEVED"),
+            "[{lang}] Silver not achieved: {stdout}"
+        );
+        assert_eq!(
+            output.status.code(),
+            Some(0),
+            "[{lang}] a compliant scaffold must exit 0: {stdout}"
+        );
+    }
+
+    // The estate's two proof-carrying templates must actually carry the
+    // markers that make their language label true.
+    let rust_manifest = fs::read_to_string(work.join("probe-rust/verification/Cargo.toml"))
+        .expect("rust template should ship verification/Cargo.toml");
+    assert!(
+        rust_manifest.contains("creusot-std"),
+        "Rust means Rust/Creusot: the verification crate must depend on creusot-std"
+    );
+
+    let rust_impl = fs::read_to_string(work.join("probe-rust/src/impl.rs"))
+        .expect("rust template should ship src/impl.rs");
+    assert!(
+        rust_impl.contains("cfg(creusot)") && rust_impl.contains("requires("),
+        "rust template must carry Creusot contracts gated behind cfg(creusot)"
+    );
+
+    let ada_spec = fs::read_to_string(work.join("probe-ada/src/probe_ada.ads"))
+        .expect("ada template should ship its package spec");
+    assert!(
+        ada_spec.contains("pragma SPARK_Mode (On)"),
+        "Ada means Ada/SPARK: the core package must declare SPARK_Mode (On)"
+    );
+
+    fs::remove_dir_all(&work).ok();
+}

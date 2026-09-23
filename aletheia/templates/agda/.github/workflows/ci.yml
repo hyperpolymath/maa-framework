@@ -1,0 +1,41 @@
+# SPDX-License-Identifier: MPL-2.0
+# This workflow is managed by gh actions-lock.
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  check:
+    name: Build, test, lint (offline)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      # Agda source is Unicode; pin the locale so the gate is deterministic.
+      LC_ALL: C.UTF-8
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7.0.1
+
+      - name: Install Agda
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends agda
+
+      - name: Typecheck (this is the build)
+        run: agda src/@@MOD_CAMEL@@.agda
+
+      - name: Typecheck the proofs
+        run: agda src/Properties.agda

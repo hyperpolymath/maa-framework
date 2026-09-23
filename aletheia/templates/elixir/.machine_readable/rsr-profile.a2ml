@@ -1,0 +1,12 @@
+# SPDX-License-Identifier: MPL-2.0
+# RSR capability profile for @@PROJECT_NAME@@. Declares what this repo
+# carries so the capability gates compute the applicable criterion set.
+[profile]
+capabilities = ["elixir", "cli", "docs"]
+
+[rationale]
+elixir = "true: mix project, Elixir 1.18 / OTP 27"
+cli = "true: lib/<app>/cli.ex exposes a main/1 entry point"
+docs = "true: README + SECURITY + CONTRIBUTING + CODE_OF_CONDUCT + CHANGELOG"
+no-library = "shared: the app is a library plus a CLI wrapper, not published to Hex"
+no-container = "true: no Containerfile in the scaffold"

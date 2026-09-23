@@ -1,0 +1,50 @@
+# SPDX-License-Identifier: MPL-2.0
+# Justfile — build automation for @@PROJECT_NAME@@.
+# See: https://github.com/casey/just
+#
+# Every recipe here is offline: this project has no external dependencies,
+# so nothing is fetched at build time. Recipes fail loudly — a recipe that
+# echoes a message and exits 0 would be a fake gate (RSR v2 6.1.5, Gold).
+
+default:
+    @just --list
+
+# Build the executable into obj/
+build:
+    gprbuild -p -P @@MOD_NAME@@.gpr
+
+# Run the program; pass arguments after the recipe name
+run *ARGS:
+    ./obj/@@PROJECT_NAME@@ {{ARGS}}
+
+# Build and run the test executable
+test:
+    gprbuild -p -P tests/tests.gpr
+    ./obj-tests/run_tests
+
+# The static-analysis gate for this language. The switches live in the GPR
+# files (`-gnatwa -gnatwe`: all warnings on, warnings as errors), so a
+# warning fails the build rather than scrolling past.
+lint:
+    gprbuild -p -P @@MOD_NAME@@.gpr
+    gprbuild -p -P tests/tests.gpr
+
+# --- SPARK deductive verification (opt-in) ----------------------------
+# Needs gnatprove. The default build never requires it — `gnatprove` only
+# reads the sources and the GPR's Prove package (--level=2), so `just
+# check` stays a plain GNAT build. See README.adoc.
+
+# Statically prove every SPARK unit. Exits non-zero on any unproved check.
+proof:
+    gnatprove -P @@MOD_NAME@@.gpr
+
+# Remove gnatprove artefacts (obj/gnatprove, *.siv/*.mlw)
+proof-clean:
+    gnatprove -P @@MOD_NAME@@.gpr --clean
+
+# Verify RSR compliance using the estate checker
+verify:
+    aletheia .
+
+# Everything the CI gate runs, in the same order
+check: build test lint

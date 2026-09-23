@@ -564,10 +564,19 @@ Two things were deliberately left uncommitted:
    "Build output no longer breaks the gate" below. It turned out to be worse than a clean-tree
    annoyance: it also meant the gate would fail in any CI job that ran it after a build.
 
-2. **The sample-function names now differ across templates.** Rust and Ada use `midpoint` (because
-   Creusot forces a provable formulation); Zig, Elixir, Haskell and Agda still use `meanFloor`. All
-   six pass, so this is coherence rather than correctness — worth a decision before the set is
-   published as canon.
+2. ~~**The sample-function names now differ across templates.**~~ **Looked at again, and kept —
+   the difference is load-bearing.** Rust and Ada use `midpoint` (`a + (b - a) / 2`, precondition
+   `a ≤ b`); Zig, Elixir and Haskell use `meanFloor` (`(a & b) + ((a ^ b) >> 1)`, *total*, no
+   precondition). Agda is a proofs library rather than a sample API, and always was.
+
+   The split follows the toolchains, not taste. The bit-trick is the better API — it is total, and
+   it is the reason it was chosen originally — but Creusot has no bitvector theory and SPARK's
+   provers cannot discharge the identity, so a proof-carrying template cannot ship it. Unifying
+   would mean adding an `a ≤ b` precondition to three languages that do not need one, purely for
+   cosmetic symmetry, and would make those three strictly worse.
+
+   So the six templates are not identical on purpose. Each README states which formulation it ships
+   and why; if you would rather have uniformity over totality, say so and it is a small change.
 
 3. **`aletheia/LICENSE` still says PMPL-1.0-or-later** while its sources say MPL-2.0. Carried over
    from the first delivery; unchanged, since you had not asked for it.

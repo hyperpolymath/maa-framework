@@ -1,4 +1,5 @@
-# Toolchain pins, asdf/mise compatible (measured 2026-09-21, stable channel).
-# Kept in sync with mise.toml [tools]. just is intentionally unpinned (any
-# recent just works — install via `cargo install just`).
+# Toolchain pins, asdf/mise compatible.
+# The main crate builds on stable with zero dependencies; verification/
+# additionally needs the Creusot toolchain (nightly Rust + Why3), which is
+# pinned separately in verification/README.adoc.
 rust 1.98.1

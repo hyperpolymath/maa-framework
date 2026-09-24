@@ -1,0 +1,32 @@
+[package]
+name = "proofgateway"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.80"
+license = "MPL-2.0"
+description = "An RSR v2-compliant Rust/Creusot project."
+repository = "https://github.com/hyperpolymath/proofgateway"
+
+# ZERO DEPENDENCIES — keeps this crate buildable with no network at all
+# (`cargo build --offline`) and RSR-Bronze compliant. Adding a dependency
+# breaks both. See 0-AI-MANIFEST.a2ml, invariant 3.
+[dependencies]
+
+# `src/impl.rs` gates its Creusot specifications behind `#[cfg(creusot)]`.
+# Telling rustc that `creusot` is a known cfg keeps the unexpected_cfgs lint
+# quiet without weakening it for genuinely misspelled cfgs.
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ["cfg(creusot)"] }
+
+[workspace]
+# The Creusot proof crate is deliberately detached from this workspace: it
+# needs `creusot-std` plus the Creusot/Why3 toolchain, which the main crate
+# must never require. Excluding it here keeps `cargo build` zero-dependency
+# and air-gapped. See verification/README.adoc.
+exclude = ["verification"]
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+strip = true

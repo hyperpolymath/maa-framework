@@ -1,1 +1,13 @@
-../www/.well-known/humans.txt
+# SPDX-License-Identifier: MPL-2.0
+# humanstxt.org
+
+/* TEAM */
+Maintainer: Jonathan D.A. Jewell
+Contact: j.d.a.jewell@open.ac.uk
+
+/* SITE */
+Last update: 2026-09-24
+Standards: RSR (Rhodium Standard Repository)
+Language: Rust/Creusot
+License: MPL-2.0
+Tools: just, cargo

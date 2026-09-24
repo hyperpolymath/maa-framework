@@ -1,17 +1,43 @@
 // SPDX-License-Identifier: CC-BY-SA-4.0
-// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
-= Contributing to maa-framework
+= Contributing
+:toc:
 
-New contributors start at `QUICKSTART-DEV.adoc` (setup, build, test, and
-the repo layout in one page). The long-form guide is
-`.github/CONTRIBUTING.md` — note it still carries template placeholders
-in places; treat it as an outline, not gospel.
+== Getting Started
 
-The rules that will block your PR if you miss them:
+[source,bash]
+----
+git clone https://github.com/hyperpolymath/proofada
+cd proofada
+just check
+----
 
-* `main` merges squash-only, on PRs only, with signed commits
-  (Optimus-Branch ruleset, zero bypass actors — direct pushes fail).
-* `just check` must pass locally: it mirrors the CI gate exactly
-  (build, test, fmt, clippy with warnings denied, zero-dependency).
-* Normative state lives in `.machine_readable/6a2/STATE.a2ml` — read the
-  `[landmines]` section before touching CI, workflows, or contracts.
+`just check` is the same gate CI runs. It must pass before you open a pull
+request.
+
+== Workflow
+
+. Fork the repository.
+. Create a branch: `+git checkout -b feat/my-feature+`.
+. Make your change, with tests.
+. Run `+just check+`.
+. Commit using Conventional Commits (`+feat:+`, `+fix:+`, `+docs:+`, `+chore:+`).
+. Open a pull request.
+
+== Standards
+
+This project follows the RSR (Rhodium Standard Repository) criteria. Two
+rules bite most often:
+
+* *No silent skips.* A recipe that echoes a message and exits 0 is a fake
+  gate. Fail loudly.
+* *SPDX headers.* Every source file carries an `+SPDX-License-Identifier+`
+  in its first ten lines.
+
+== Language Policy
+
+Ada here is *Ada/SPARK*: the core package declares `+pragma SPARK_Mode (On);+` and its contracts are statically proved by `gnatprove` at proof level 2, not merely checked at run time. The project builds with GNAT and plain GPR projects — no Alire, no crate index, nothing to fetch.
+
+== Review
+
+Pull requests require review before merge. See link:MAINTAINERS.adoc[MAINTAINERS.adoc]
+for decision-making.

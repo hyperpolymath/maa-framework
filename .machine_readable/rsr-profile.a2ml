@@ -1,31 +1,12 @@
 # SPDX-License-Identifier: MPL-2.0
-# RSR capability profile for maa-framework. Declares what this repo
-# carries so the capability gates (template-capability-gates.toml v0.3.0)
-# compute the applicable criterion set. Direct declaration (the policy's
-# primary form) — no preset fits exactly (rust-cli would add `library`,
-# and aletheia is binary-only). [canon] omitted: only canon-bearing repos
-# declare it, and none of the four canon criteria pass here. Role
-# omitted: this repo is neither spine nor canon.
+# RSR capability profile for proofada. Declares what this repo
+# carries so the capability gates compute the applicable criterion set.
 [profile]
-capabilities = ["rust", "bash", "cli", "docs-site"]
+capabilities = ["ada", "cli", "docs"]
 
 [rationale]
-# One line per declared capability and per declined module (policy shape).
-rust = "FORCED + true: rust-ci.yml fires the rust gate; aletheia is a Rust 2021 crate (MSRV 1.80)"
-bash = "true: 6 tracked *.sh (setup.sh, .github/hooks/, aletheia/scripts/) + bash-shebang Just recipes; no criterion gates on bash today"
-cli = "true: aletheia is a binary-only CLI"
-docs-site = "true: pages.yml Ddraig pipeline present (builds a stub index; docs/ not wired in); DEPLOYMENT DISABLED (see STATE) so gold 9.1.4 is carried-but-not-served"
-no-library = "binary-only; no lib target, no published crate"
-no-governance-tier = "PARTIAL QUAD: MAINTAINERS.adoc + root GOVERNANCE.adoc only; AUDIT.adoc + AFFIRMATION.adoc absent and 2.1.8 wants 0-canon/GOVERNANCE.adoc — declaring would fail Silver/Gold criteria it cannot pass"
-no-reproducible-build = "manifest.scm (+ stapeln.toml) ship, but gates v0.3.0 + criterion 1.2.1 only recognise guix.scm — filed upstream"
-no-container = "stapeln.toml is a build manifest, not a Containerfile; container/ absent"
-no-benchmarks = "criterion benches are nested in aletheia/, the gate is root-anchored"
-no-formal-proofs = "Coq proofs live in the absolute-zero submodule (proofs/coq/), not in-tree verification/"
-
-# NOTE: the reference checker (check-rsr-profile.sh @ gates v0.3.0)
-# reports 3 MISSING + 1 VESTIGIAL (exit 1) against this profile, both
-# understood: the MISSINGs are the root-anchored rust rows (the aletheia
-# crate is nested under aletheia/, a legitimate multi-concern-root layout
-# the gate format cannot express), and the VESTIGIAL is MAINTAINERS.adoc
-# (partial governance quad — also unrepresentable). Both tracked as
-# upstream standards gaps; the checker stays unwired in CI until then.
+ada = "true: GPR project, GNAT 14.2 / gprbuild"
+cli = "true: src/main.adb produces an executable"
+docs = "true: README + SECURITY + CONTRIBUTING + CODE_OF_CONDUCT + CHANGELOG"
+no-library = "shared: the library units are part of the same GPR project"
+no-container = "true: no Containerfile in the scaffold"

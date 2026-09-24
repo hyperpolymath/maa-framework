@@ -1,4 +1,3 @@
-# Toolchain pins, asdf/mise compatible (measured 2026-09-21, stable channel).
-# Kept in sync with mise.toml [tools]. just is intentionally unpinned (any
-# recent just works — install via `cargo install just`).
-rust 1.98.1
+# Toolchain pins, asdf/mise compatible.
+gnat 14.2.0
+gprbuild 2025.0.0

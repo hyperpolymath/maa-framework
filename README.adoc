@@ -1,215 +1,118 @@
-// SPDX-License-Identifier: MPL-2.0
-= MAA Framework — Mutually Assured Accountability
-:toc: preamble
-:toc-title: Contents
+// SPDX-License-Identifier: CC-BY-SA-4.0
+= proofada
+:toc:
 :icons: font
-:doctype: article
 
-image:https://img.shields.io/badge/OpenSSF-BestPractices-green[link="https://www.bestpractices.dev/projects/XXXX"]
+____
+An RSR v2-compliant Ada/SPARK project.
+____
 
-Governance hub and microkernel for the Mutually Assured Accountability paradigm: building verifiably-compliant, secure, and sustainable systems where accountability is symmetric and enforceable.
-
-== Overview
-
-Mutually Assured Accountability (MAA) is a paradigm where accountability between system participants is symmetric—each party can verify the other's compliance, and no party is above audit. This repository is the governance hub and implementation centre for the MAA ecosystem.
-
-The ecosystem has three components:
-
-[cols="1,2", options="header"]
-|===
-| Component | Role
-
-| MAA Framework
-| Governance hub, specifications, CI, and integration layer
-
-| Oblíbený
-| Reference language designed for the framework (specification stage)
-
-| Aletheia
-| Microkernel implementation (Rust, in-tree)
-|===
-
-The Certified Null Operation (CNO) formalisation is developed upstream in `link:https://github.com/hyperpolymath/absolute-zero[absolute-zero]` and pinned here as a git submodule.
-
-== What is built and what is planned
-
-[cols="1,2,2", options="header"]
-|===
-| Artefact | Status | Evidence
-
-| Aletheia microkernel (Rust)
-| Builds, 29 unit tests passing, zero dependencies
-| `aletheia/`, CI gate `rust-ci.yml`
-
-| CRG Tier-C test suite
-| Landed 2026-04-04 (unit, E2E, property, aspect, benchmarks)
-| `tests/`
-
-| CI gates at repository root
-| Green across every enabled workflow; each shown capable of failing
-| `.github/workflows/`
-
-| Hub-and-spoke mirroring
-| GitHub → GitLab, Codeberg, Bitbucket (automated)
-| Mirror workflows
-
-| CLI surface for Aletheia
-| **Unbuilt** — `main.rs` wires 3 checks; integration suite specifies more
-| Issue #124
-
-| Oblíbený reference language
-| **Specification stage**
-| Not yet in tree
-
-| Specification documents
-| **Pending upload** (ROADMAP Phase 1)
-| `docs/` (partial)
-|===
-
-== Known gaps
-
-[NOTE]
-====
-**Aletheia CLI rebuilt 2026-09-21 (was: unbuilt, #124).** The CLI now implements the RSR v2 offline file-presence subset (26 checks: 13 Bronze, 12 Silver, 1 Gold) with human/JSON/SARIF/HTML/badge/quiet/verbose output; 68 unit + 47 integration tests pass. The hypatia `rsr-conformance` oracle stays normative — aletheia evaluates only the offline subset and says so in verbose output.
-====
-
-[NOTE]
-====
-**Clippy clean and blocking since 2026-09-21 (was: 23 findings, #125).** The findings were wired into real code, not silenced; `cargo clippy --all-targets -- -D warnings` gates in `rust-ci.yml` and `just lint`.
-====
-
-[CAUTION]
-====
-**`aletheia/.github/workflows/` is inert.** GitHub Actions reads `.github/workflows/` at the repository root only, and `aletheia/` is vendored as plain tracked files (not a submodule). Those 16 workflow files have never executed. Gates must be added at the root, not inside `aletheia/`.
-====
-
-[CAUTION]
-====
-**Specification uploads are pending.** ROADMAP Phase 1 (specification publication) is not complete. The project scope is stated; the formal specifications backing it are not yet in-tree.
-====
-
-== What is standard and what is ours
-
-[cols="1,2,2", options="header"]
-|===
-| Concept | Status | Home
-
-| Microkernel architecture (Rust)
-| Standard
-| `aletheia/`
-
-| Hub-and-spoke repo mirroring
-| Standard
-| `.github/workflows/` (mirror sync)
-
-| SHA-pinned GitHub Actions
-| Standard supply-chain hygiene
-| `.github/workflows/`
-
-| Mutually Assured Accountability paradigm
-| **Novel governance concept**
-| This repository
-
-| Symmetric accountability enforcement
-| **Novel** (paradigm definition)
-| Specifications (pending)
-
-| Oblíbený reference language
-| **Novel** (specification stage)
-| Not yet in tree
-|===
-
-== Project scope
-
-The framework addresses these domains. Where an implementation exists, it is noted; where it does not, the domain is a stated intention:
-
-[cols="1,2", options="header"]
-|===
-| Domain | Current status
-
-| Security & Formal Verification
-| CNO submodule pinned; Aletheia builds
-
-| AI Ethics & Axiology
-| Specification pending
-
-| Dependability
-| Specification pending
-
-| Language Design & Compilers
-| Oblíbený at specification stage
-
-| Microkernel Architecture
-| Aletheia: builds, 29 unit tests, zero dependencies
-
-| RISC-V
-| Specification pending
-
-| Sustainability
-| Specification pending
-
-| Economics-as-Code
-| Specification pending
-
-| Distributed Computing
-| Specification pending
-
-| Reversibility
-| CNO submodule (upstream: `absolute-zero`)
-
-| Web Protocols
-| Specification pending
-|===
-
-== Repository Layout
-
-[cols="1,3", options="header"]
-|===
-| Path | Purpose
-
-| `aletheia/`
-| Microkernel implementation (Rust, vendored in-tree)
-
-| `absolute-zero/`
-| CNO formalisation (git submodule, developed upstream)
-
-| `tests/`
-| E2E, property, aspect tests (CRG Tier-C)
-
-| `.github/workflows/`
-| CI gates and mirror synchronization (root level only)
-
-| `docs/`
-| Specifications and state-of-play documents
-
-| `.machine_readable/`
-| 6a2 metadata, contractiles, bot directives
-|===
-
-== Build
+== Quick Start
 
 [source,bash]
 ----
-# Aletheia microkernel
-cd aletheia/
-cargo build
-cargo test
+# Build (offline — nothing is downloaded)
+just build
 
-# Full CI (from repository root)
+# Test
+just test
+
+# Verify RSR compliance
 just verify
 ----
 
+This project is *standalone by construction*: the scaffold fetches nothing,
+the build has no external dependencies, and the licence texts ship in-tree
+under `+LICENSES/+`.
+
+== RSR Compliance
+
+[cols="1,3"]
+|===
+|Bronze |Documentation, security policy, SPDX headers, CI, licence classification
+|Silver |`.editorconfig`, `.tool-versions`, machine-readable manifests, SHA-pinned CI, `+LICENSES/+`
+|Gold |No silent-skip recipes
+|===
+
+Verify with the estate's own checker:
+
+[source,bash]
+----
+aletheia .
+----
+
+== Language: Ada/SPARK
+
+Ada here is *Ada/SPARK*: the core package declares `+pragma SPARK_Mode (On);+` and its contracts are statically proved by `gnatprove` at proof level 2, not merely checked at run time. The project builds with GNAT and plain GPR projects — no Alire, no crate index, nothing to fetch.
+
+== Verification: SPARK
+
+The core package (`+src/proofada.ads+`, `+src/proofada.adb+`) is in the
+SPARK subset — it declares `+pragma SPARK_Mode (On);+` — and its contracts are
+*statically proved*, not merely checked at run time:
+
+[source,ada]
+----
+function Clamp (Value, Lo, Hi : U32) return U32
+  with Pre  => Lo <= Hi,
+       Post => Clamp'Result in Lo .. Hi;
+
+function Midpoint (A, B : U32) return U32
+  with Pre  => A <= B,
+       Post => Midpoint'Result in A .. B
+               and then BI (Midpoint'Result) = (BI (A) + BI (B)) / 2;
+----
+
+`+just proof+` runs `gnatprove` at proof level 2 (contracts *and* absence of
+run-time errors) and passes `--checks-as-errors`, so an unproved check fails
+the recipe. Without that switch `gnatprove` still exits `0` on an unproved
+check, which would make the gate decorative.
+
+[source,bash]
+----
+just proof        # prove every SPARK unit; non-zero exit on anything unproved
+just proof-clean  # remove gnatprove artefacts
+----
+
+The command-line entry point (`+src/main.adb+`) is deliberately
+`+pragma SPARK_Mode (Off);+`: `Ada.Text_IO`, exceptions and `'Value`/`'Image`
+are outside the SPARK subset. gnatprove skips it rather than pretending to
+verify it. The logic it calls is the part that is proved.
+
+== Documentation
 == Documentation
 
-* link:EXPLAINME.adoc[EXPLAINME] — claim-by-claim receipts and known gaps
-* link:Glossary.adoc[Glossary] — terminology reference
-* `docs/STATE-OF-PLAY-2026-07-29.adoc` — CI status, gated checks, proof state, open questions
-* `ROADMAP.adoc` — development phases
-* `GOVERNANCE.adoc` — project governance
-* link:https://github.com/hyperpolymath/absolute-zero[absolute-zero] — CNO formalisation (upstream)
+* link:SECURITY.adoc[Security Policy] — vulnerability disclosure
+* link:CONTRIBUTING.adoc[Contributing Guide] — how to contribute
+* link:CODE_OF_CONDUCT.adoc[Code of Conduct] — community standards
+* link:MAINTAINERS.adoc[Maintainers] — ownership and decisions
+* link:CHANGELOG.adoc[Changelog] — version history
+
+== Layout
+
+....
+.
+├── Justfile              # build automation (capital J — v2 shape)
+├── LICENSE               # licence statement
+├── LICENSES/             # full licence texts (REUSE style)
+├── src/                  # source (layout follows the language's conventions)
+├── .github/workflows/    # CI + estate gates
+├── .machine_readable/    # machine-readable metadata
+└── .well-known/          # security.txt, ai.txt, humans.txt
+....
+
+== Contributing
+
+See link:CONTRIBUTING.adoc[CONTRIBUTING.adoc].
 
 == License
 
-SPDX-License-Identifier: MPL-2.0 — see link:LICENSE[LICENSE].
+Code is licensed under the Mozilla Public License, version 2.0
+(`+MPL-2.0+`). Documentation is licensed under Creative Commons
+Attribution-ShareAlike 4.0 International (`+CC-BY-SA-4.0+`).
 
-Prose documentation is licensed under CC-BY-SA-4.0; see `LICENSES/`.
+See link:LICENSE[LICENSE] and the `+LICENSES/+` directory for full texts.
+
+'''''
+
+_Created from the aletheia v2 Bronze template._

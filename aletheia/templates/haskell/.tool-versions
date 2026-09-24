@@ -1,3 +1,0 @@
-# Toolchain pins, asdf/mise compatible.
-ghc 9.6.6
-cabal 3.10.3.0

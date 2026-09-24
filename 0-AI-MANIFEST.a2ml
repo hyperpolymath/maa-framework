@@ -1,116 +1,52 @@
-# ⚠️ STOP - CRITICAL READING REQUIRED
+# SPDX-License-Identifier: MPL-2.0
+# proofada — universal AI agent entry point.
 
-**THIS FILE MUST BE READ FIRST BY ALL AI AGENTS**
+# THIS FILE MUST BE READ FIRST BY ALL AI AGENTS
 
-## WHAT IS THIS?
+## What Is This?
 
-This is the AI manifest for **maa-framework**. It declares:
-- Canonical file locations (where things MUST be, and nowhere else)
-- Critical invariants (rules that must NEVER be violated)
-- Repository structure and organization
+The AI manifest for **proofada**. It declares canonical file
+locations and the invariants an agent must not violate.
 
-## CANONICAL LOCATIONS (UNIVERSAL RULE)
+## Canonical Locations
 
 ### Machine-Readable Metadata: `.machine_readable/` ONLY
 
-These 6 SCM files MUST exist in `.machine_readable/` directory ONLY:
-1. **.machine_readable/6a2/STATE.a2ml** - Project state, progress, blockers
-2. **.machine_readable/6a2/META.a2ml** - Architecture decisions, governance
-3. **.machine_readable/6a2/ECOSYSTEM.a2ml** - Position in ecosystem, relationships
-4. **.machine_readable/6a2/AGENTIC.a2ml** - AI agent interaction patterns
-5. **.machine_readable/6a2/NEUROSYM.a2ml** - Neurosymbolic integration config
-6. **.machine_readable/6a2/PLAYBOOK.a2ml** - Operational runbook
+* `.machine_readable/rsr-profile.a2ml` — capability declaration driving the
+  applicable RSR criterion set
 
-**CRITICAL:** If ANY of these files exist in the root directory, this is an ERROR.
-
-### Bot Directives: `.bot_directives/` ONLY
-
-Bot-specific instructions for:
-- rhodibot - Git operations
-- echidnabot - Code quality
-- sustainabot - Dependency updates
-- glambot - Documentation
-- seambot - Integration
-- finishbot - Task completion
+If any machine-readable metadata appears in the repository root, that is an
+error: the root must contain only the agent front door
+(`0-AI-MANIFEST.a2ml`).
 
 ### Agent Instructions
 
-- `.claude/CLAUDE.md` - Claude-specific patterns (if exists)
-- `0-AI-MANIFEST.a2ml` - THIS FILE (universal entry point)
+* `0-AI-MANIFEST.a2ml` — THIS FILE (universal entry point)
+* `.claude/CLAUDE.md` — Claude-specific patterns (if present)
 
-## CORE INVARIANTS
+## Core Invariants
 
-1. **No SCM duplication** - Root must NOT contain .machine_readable/6a2/STATE.a2ml, .machine_readable/6a2/META.a2ml, etc.
-2. **Single source of truth** - `.machine_readable/` is authoritative
-3. **No stale metadata** - If root SCMs exist, they are OUT OF DATE
-4. **License consistency** - All code MPL-2.0 unless platform requires MPL-2.0
-5. **Author attribution** - Always "Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>"
+1. *No metadata duplication* — `.machine_readable/` is the single source of truth.
+2. *Standalone by construction* — the build fetches nothing. Do not add network calls to the build, test, or scaffolding path.
+3. *Dependency budget* — the GPR projects reference no external crates and do not use Alire, so nothing is fetched at build time.
+4. *Language policy* — Ada here means GNAT + GPR projects, with `-gnatwa -gnatwe` (all warnings, warnings as errors) as the build gate and `gnatprove --level=2 --checks-as-errors` as the proof gate. `--checks-as-errors` matters: without it gnatprove exits 0 on an unproved check.
+5. *No fake gates* — a recipe that echoes a message and exits 0 is a
+   violation. Fail loudly.
+6. *SPDX headers* — every source file carries an `SPDX-License-Identifier`
+   within its first ten lines. Code is `MPL-2.0`; docs are `CC-BY-SA-4.0`.
+7. *Licence consistency* — MPL-2.0 across the repository.
 
-## REPOSITORY STRUCTURE
+## Session Startup Checklist
 
-<!-- CUSTOMIZE THIS SECTION FOR YOUR REPO -->
+* Read THIS file first.
+* Read `.machine_readable/rsr-profile.a2ml` for declared capabilities.
+* Run `just check` to confirm the tree is green before changing anything.
+* State understanding of canonical locations before writing files.
 
-This repo contains:
+## Attestation
 
-```
-maa-framework/
-├── 0-AI-MANIFEST.a2ml         # THIS FILE (start here)
-├── README.md                   # Project overview
-├── [your source files]         # Main code
-├── .machine_readable/          # SCM files (6 files)
-│   ├── .machine_readable/6a2/STATE.a2ml
-│   ├── .machine_readable/6a2/META.a2ml
-│   ├── .machine_readable/6a2/ECOSYSTEM.a2ml
-│   ├── .machine_readable/6a2/AGENTIC.a2ml
-│   ├── .machine_readable/6a2/NEUROSYM.a2ml
-│   └── .machine_readable/6a2/PLAYBOOK.a2ml
-└── .bot_directives/            # Bot instructions
-```
+After reading this file, state:
 
-## SESSION STARTUP CHECKLIST
-
-✅ Read THIS file (0-AI-MANIFEST.a2ml) first
-✅ Understand canonical locations (.machine_readable/, .bot_directives/)
-✅ Know the invariants (no SCM duplication, etc.)
-✅ Check for MCP enforcement (if applicable)
-✅ Read `.machine_readable/6a2/STATE.a2ml` for current status
-✅ Read `.machine_readable/6a2/AGENTIC.a2ml` for interaction patterns
-
-## LIFECYCLE HOOKS
-
-### on-enter (Session Start)
-
-When starting a new session:
-
-1. Read and acknowledge this manifest
-2. Log session start (optional but recommended)
-   - Format: `[YYYY-MM-DD HH:MM:SS] Session started: [agent-name]`
-   - Location: `.machine_readable/session-log.txt`
-3. Read `.machine_readable/6a2/STATE.a2ml`
-4. Check for blockers
-5. State understanding of canonical locations
-
-### on-exit (Session End)
-
-When ending a session:
-
-1. Update `.machine_readable/6a2/STATE.a2ml` if changes made
-2. Log session end (optional but recommended)
-   - Format: `[YYYY-MM-DD HH:MM:SS] Session ended: [summary]`
-   - Location: `.machine_readable/session-log.txt`
-3. Document new blockers
-4. Summarize outcomes
-
-## ATTESTATION PROOF
-
-After reading this file, demonstrate understanding by stating:
-
-**"I have read the AI manifest. SCM files are located in `.machine_readable/` ONLY, bot directives in `.bot_directives/`, and I will not create duplicate files in the root directory."**
-
-## META
-
-- **Format Version:** 1.0.0
-- **Created:** [DATE]
-- **Maintained By:** [YOUR-NAME/ORG]
-- **License:** MPL-2.0
-- **Protocol:** https://github.com/hyperpolymath/0-ai-gatekeeper-protocol
+**"I have read the AI manifest. Machine-readable metadata lives in
+`.machine_readable/` only, the build is standalone, and Ada/SPARK
+means what the estate language policy says it means."**

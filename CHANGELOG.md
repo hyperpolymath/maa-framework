@@ -133,6 +133,7 @@ and the project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 
 ### Documentation
 
+- Remove a token prefix that should not have been recorded (ab53573)
 - Record measured state of play, for humans and for machines (#148) (de054c2)
 - Convert README.adoc -> Markdown (renders on Glama/profile/community-health) (#110) (307d672)
 - Flip ReScript→AffineScript per 2026-05-25 estate language policy (#88) (9dbf56b)

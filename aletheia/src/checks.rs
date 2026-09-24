@@ -14,11 +14,11 @@
 //! explicitly out of scope and deferred to the hypatia oracle; see
 //! [`LOCAL_SUBSET_NOTE`]. Aletheia is non-normative by design.
 
-use std::cell::Cell;
+use std::cell::{Cell, OnceCell};
 use std::fs;
 use std::path::{Path, PathBuf};
 
-use crate::config::{Config, IgnoreConfig};
+use crate::config::{Config, GitIgnore, IgnoreConfig};
 use crate::types::*;
 
 /// Provenance of the check inventory: the upstream single source of
@@ -368,6 +368,72 @@ fn read_head(path: &Path, max_bytes: u64) -> Option<String> {
     Some(content)
 }
 
+/// One traversal's results, bucketed by the extension filters the checks
+/// need (issue #197).
+///
+/// WHY BUCKETS: each check used to run its own `walk_files`, so a single
+/// `verify` performed seven full directory traversals. All seven walked the
+/// same tree in the same order and differed only in which files they
+/// collected, so a single traversal can fill every bucket at once. The
+/// saving is in the traversal itself — `read_dir` plus `file_type` per
+/// entry — not in the cheap extension filter applied afterwards.
+///
+/// BUDGET SEMANTICS ARE UNCHANGED. A bucket accepts at most
+/// `MAX_SCAN_FILES` *matches of its own*, exactly as
+/// `walk_files(Some(exts))` counted only files passing its filter rather
+/// than every file seen. When a bucket is full it stops growing, and the
+/// traversal continues so the remaining buckets still receive their own
+/// first `MAX_SCAN_FILES` matches — which is what the separate walks gave
+/// them.
+#[derive(Default)]
+struct ScanSet {
+    /// Every file (checks with no extension filter).
+    all: Vec<PathBuf>,
+    /// `SPDX_EXTENSIONS` matches.
+    spdx: Vec<PathBuf>,
+    /// `SECRET_SCAN_EXTENSIONS` matches.
+    secret: Vec<PathBuf>,
+    /// `BANNED_LANGUAGE_EXTENSIONS` matches.
+    banned: Vec<PathBuf>,
+    /// Set once a file was refused because its bucket was full — i.e. the
+    /// results really are partial. Drives the truncation warning.
+    capped: bool,
+    /// `.gitignore` rules covering the directories walked so far. Maintained
+    /// as a stack: rules are pushed when the walk enters a directory and
+    /// truncated on the way out, so a nested file only governs its own
+    /// subtree. Filled during the single traversal, which is why this lives
+    /// here rather than in a second pass over the tree (issue #197).
+    ignores: GitIgnore,
+}
+
+impl ScanSet {
+    /// Offer one file to every bucket whose filter accepts it.
+    ///
+    /// Extensionless files (empty `ext`) land only in `all`, matching the
+    /// old filtered walks, which skipped them.
+    fn offer(&mut self, path: &Path, ext: &str) {
+        Self::push(&mut self.all, path, &mut self.capped);
+        if SPDX_EXTENSIONS.contains(&ext) {
+            Self::push(&mut self.spdx, path, &mut self.capped);
+        }
+        if SECRET_SCAN_EXTENSIONS.contains(&ext) {
+            Self::push(&mut self.secret, path, &mut self.capped);
+        }
+        if BANNED_LANGUAGE_EXTENSIONS.contains(&ext) {
+            Self::push(&mut self.banned, path, &mut self.capped);
+        }
+    }
+
+    /// Push into one bucket unless it has reached its per-check budget.
+    fn push(bucket: &mut Vec<PathBuf>, path: &Path, capped: &mut bool) {
+        if bucket.len() < MAX_SCAN_FILES {
+            bucket.push(path.to_path_buf());
+        } else {
+            *capped = true;
+        }
+    }
+}
+
 /// Filesystem scanner: bounded recursive walks honouring skip dirs,
 /// submodule boundaries and `[ignore]` globs. Never follows symlinks.
 struct Scanner<'a> {
@@ -375,6 +441,9 @@ struct Scanner<'a> {
     ignore: &'a IgnoreConfig,
     submodules: &'a [String],
     truncated: Cell<bool>,
+    /// Memoised single-traversal file buckets (issue #197). Filled on first
+    /// use; every check then reads from it instead of re-walking the tree.
+    files: OnceCell<ScanSet>,
 }
 
 impl<'a> Scanner<'a> {
@@ -395,24 +464,26 @@ impl<'a> Scanner<'a> {
         rel.is_empty() || self.under_submodule(rel) || self.ignore.is_ignored(rel)
     }
 
-    /// Recursive walk collecting files. `exts`, when `Some`, restricts
-    /// to those (lowercased) extensions; `None` collects every file.
-    fn walk_into(&self, dir: &Path, depth: u32, exts: Option<&[&str]>, out: &mut Vec<PathBuf>) {
-        if depth > MAX_SCAN_DEPTH || out.len() >= MAX_SCAN_FILES {
-            if out.len() >= MAX_SCAN_FILES {
-                self.truncated.set(true);
-            }
+    /// Recursive walk filling every bucket in one pass. Depth, skip-dir,
+    /// submodule and ignore rules are identical to the former per-check
+    /// walks, so each bucket receives exactly the files its own walk saw.
+    fn walk_into_set(&self, dir: &Path, depth: u32, set: &mut ScanSet) {
+        if depth > MAX_SCAN_DEPTH {
             return;
         }
         let entries = match fs::read_dir(dir) {
             Ok(entries) => entries,
             Err(_) => return,
         };
+        // Rules from this directory's `.gitignore` apply to everything at or
+        // below it, so load them before visiting any entry. Popping on the way
+        // out keeps a nested file scoped to its own subtree.
+        let mark = set.ignores.len();
+        if let Ok(text) = fs::read_to_string(dir.join(".gitignore")) {
+            let base = self.rel(dir);
+            set.ignores.push_file(&base, &text);
+        }
         for entry in entries.flatten() {
-            if out.len() >= MAX_SCAN_FILES {
-                self.truncated.set(true);
-                return;
-            }
             let path = entry.path();
             let rel = self.rel(&path);
             if self.skipped(&rel) {
@@ -426,44 +497,81 @@ impl<'a> Scanner<'a> {
             if file_type.is_symlink() {
                 continue;
             }
+            // Ask the type-aware question: a directory-only rule such as
+            // `obj/` must match the directory `obj` but not a file of the
+            // same name.
+            let ignored = if file_type.is_dir() {
+                set.ignores.is_ignored_dir(&rel)
+            } else {
+                set.ignores.is_ignored(&rel)
+            };
+            if ignored {
+                continue;
+            }
             if file_type.is_dir() {
                 let skip = path
                     .file_name()
                     .and_then(|name| name.to_str())
                     .is_some_and(|name| SKIP_DIR_NAMES.contains(&name));
                 if !skip {
-                    self.walk_into(&path, depth + 1, exts, out);
+                    self.walk_into_set(&path, depth + 1, set);
                 }
             } else if file_type.is_file() {
-                if let Some(wanted) = exts {
-                    let ext = path
-                        .extension()
-                        .and_then(|e| e.to_str())
-                        .unwrap_or_default()
-                        .to_ascii_lowercase();
-                    if !wanted.iter().any(|w| *w == ext) {
-                        continue;
-                    }
-                }
-                out.push(path);
+                let ext = path
+                    .extension()
+                    .and_then(|e| e.to_str())
+                    .unwrap_or_default()
+                    .to_ascii_lowercase();
+                set.offer(&path, &ext);
             }
         }
+        set.ignores.truncate(mark);
     }
 
-    fn walk_files(&self, exts: Option<&[&str]>) -> Vec<PathBuf> {
-        let mut out = Vec::new();
-        self.walk_into(self.root, 0, exts, &mut out);
-        out
+    /// The repository's files, bucketed. Computed once per `Scanner`, so
+    /// the seven checks that need file lists share one traversal.
+    fn files(&self) -> &ScanSet {
+        self.files.get_or_init(|| {
+            let mut set = ScanSet::default();
+            self.walk_into_set(self.root, 0, &mut set);
+            if set.capped {
+                self.truncated.set(true);
+            }
+            set
+        })
+    }
+
+    /// Every file (checks with no extension filter).
+    fn all_files(&self) -> &[PathBuf] {
+        &self.files().all
+    }
+
+    /// Files with an extension scanned for SPDX headers.
+    fn spdx_files(&self) -> &[PathBuf] {
+        &self.files().spdx
+    }
+
+    /// Files with an extension additionally scanned for secrets.
+    fn secret_files(&self) -> &[PathBuf] {
+        &self.files().secret
+    }
+
+    /// Files with an estate-banned language extension.
+    fn banned_files(&self) -> &[PathBuf] {
+        &self.files().banned
     }
 
     /// Look up a file under several candidate relative paths.
     fn presence(&self, candidates: &[&str]) -> Presence {
+        // Forces the (memoised) traversal so the `.gitignore` rules are loaded;
+        // this is a no-op once the scan has run.
+        let ignores = &self.files().ignores;
         let mut saw_ignored = false;
         for candidate in candidates {
             if file_exists(self.root, candidate) {
                 return Presence::Found;
             }
-            if self.ignore.is_ignored(candidate) {
+            if self.ignore.is_ignored(candidate) || ignores.is_ignored(candidate) {
                 saw_ignored = true;
             }
         }
@@ -660,13 +768,13 @@ fn check_justfile(scanner: &Scanner) -> Outcome {
 /// 1.1.3 no-makefile (+ Mustfile: no Dockerfiles).
 fn check_no_makefile(scanner: &Scanner) -> Outcome {
     let mut offenders = Vec::new();
-    for path in scanner.walk_files(None) {
+    for path in scanner.all_files() {
         if path
             .file_name()
             .and_then(|name| name.to_str())
             .is_some_and(|name| BANNED_BUILD_FILES.contains(&name))
         {
-            offenders.push(scanner.rel(&path));
+            offenders.push(scanner.rel(path));
         }
     }
     if offenders.is_empty() {
@@ -750,8 +858,8 @@ fn check_gitignore(scanner: &Scanner) -> Outcome {
 /// 4.1.1 spdx-headers: SPDX headers on all scanned source files.
 fn check_spdx_headers(scanner: &Scanner) -> Outcome {
     let mut missing = Vec::new();
-    for path in scanner.walk_files(Some(SPDX_EXTENSIONS)) {
-        let headed = read_head(&path, SPDX_HEAD_BYTES)
+    for path in scanner.spdx_files() {
+        let headed = read_head(path, SPDX_HEAD_BYTES)
             .map(|content| {
                 content
                     .lines()
@@ -760,7 +868,7 @@ fn check_spdx_headers(scanner: &Scanner) -> Outcome {
             })
             .unwrap_or(false);
         if !headed {
-            missing.push(scanner.rel(&path));
+            missing.push(scanner.rel(path));
         }
     }
     if missing.is_empty() {
@@ -784,20 +892,20 @@ fn check_spdx_headers(scanner: &Scanner) -> Outcome {
 /// 4.1.2 no-secrets: no committed secret files or key material.
 fn check_no_secrets(scanner: &Scanner) -> Outcome {
     let mut offenders = Vec::new();
-    for path in scanner.walk_files(None) {
+    for path in scanner.all_files() {
         if path
             .file_name()
             .and_then(|name| name.to_str())
             .is_some_and(|name| SECRET_FILENAMES.contains(&name))
         {
-            offenders.push(scanner.rel(&path));
+            offenders.push(scanner.rel(path));
         }
     }
     let markers = secret_markers();
-    for path in scanner.walk_files(Some(SECRET_SCAN_EXTENSIONS)) {
-        if let Some(content) = read_head(&path, MAX_CONTENT_BYTES) {
+    for path in scanner.secret_files() {
+        if let Some(content) = read_head(path, MAX_CONTENT_BYTES) {
             if markers.iter().any(|m| content.contains(m)) {
-                offenders.push(scanner.rel(&path));
+                offenders.push(scanner.rel(path));
             }
         }
     }
@@ -817,7 +925,7 @@ fn check_no_secrets(scanner: &Scanner) -> Outcome {
 /// 5.1.1–5.1.5 language bans: no Python/TS/ReScript/Go/V sources.
 fn check_language_policy(scanner: &Scanner) -> Outcome {
     let mut offenders = Vec::new();
-    for path in scanner.walk_files(Some(BANNED_LANGUAGE_EXTENSIONS)) {
+    for path in scanner.banned_files() {
         let ext = path
             .extension()
             .and_then(|e| e.to_str())
@@ -825,14 +933,14 @@ fn check_language_policy(scanner: &Scanner) -> Outcome {
             .to_ascii_lowercase();
         if ext == "v" {
             // `.v` is shared with Coq: only flag likely V-lang.
-            let suspect = read_head(&path, MAX_CONTENT_BYTES)
+            let suspect = read_head(path, MAX_CONTENT_BYTES)
                 .is_some_and(|content| v_file_is_suspect(&content));
             if suspect {
-                offenders.push(scanner.rel(&path));
+                offenders.push(scanner.rel(path));
             }
             continue;
         }
-        offenders.push(scanner.rel(&path));
+        offenders.push(scanner.rel(path));
     }
     if offenders.is_empty() {
         Outcome::pass()
@@ -852,15 +960,15 @@ fn check_language_policy(scanner: &Scanner) -> Outcome {
 /// governance): runtime deps accompanied by a Bun lockfile pass.
 fn check_no_node_runtime(scanner: &Scanner) -> Outcome {
     let mut offenders = Vec::new();
-    for path in scanner.walk_files(None) {
+    for path in scanner.all_files() {
         if path
             .file_name()
             .and_then(|name| name.to_str())
             .is_some_and(|name| name == "package.json")
         {
-            if let Some(content) = read_head(&path, MAX_CONTENT_BYTES) {
-                if package_json_has_runtime_deps(&content) && !has_bun_lockfile(&path) {
-                    offenders.push(scanner.rel(&path));
+            if let Some(content) = read_head(path, MAX_CONTENT_BYTES) {
+                if package_json_has_runtime_deps(&content) && !has_bun_lockfile(path) {
+                    offenders.push(scanner.rel(path));
                 }
             }
         }
@@ -1249,7 +1357,7 @@ fn check_reuse(scanner: &Scanner) -> Outcome {
 /// 6.1.5 no-silent-skip (Gold): no `|| echo SKIP` silent-green recipes.
 fn check_no_silent_skip(scanner: &Scanner) -> Outcome {
     let mut offenders = Vec::new();
-    for path in scanner.walk_files(None) {
+    for path in scanner.all_files() {
         let is_recipe = path
             .file_name()
             .and_then(|name| name.to_str())
@@ -1260,9 +1368,9 @@ fn check_no_silent_skip(scanner: &Scanner) -> Outcome {
         if !(is_recipe || is_script) {
             continue;
         }
-        if let Some(content) = read_head(&path, MAX_CONTENT_BYTES) {
+        if let Some(content) = read_head(path, MAX_CONTENT_BYTES) {
             if content.lines().any(silent_skip_line) {
-                offenders.push(scanner.rel(&path));
+                offenders.push(scanner.rel(path));
             }
         }
     }
@@ -1347,6 +1455,7 @@ pub fn verify_repository(repo_path: &Path, config: &Config) -> ComplianceReport 
         ignore: &config.ignore,
         submodules: &submodules,
         truncated: Cell::new(false),
+        files: OnceCell::new(),
     };
 
     // (id, category, item, tier, check). Display order follows this table.
@@ -1926,6 +2035,66 @@ mod tests {
         assert_eq!(parse_gitmodules_content(content), vec!["absolute-zero"]);
         assert!(parse_gitmodules_content("").is_empty());
         assert!(parse_gitmodules_content("path =\n").is_empty());
+    }
+
+    #[test]
+    fn test_scan_set_cap_is_per_bucket() {
+        // Filling `all` to its cap must not consume the budget of the
+        // extension-filtered buckets: each check keeps its own allowance,
+        // exactly as the per-check walks did (issue #197).
+        let mut set = ScanSet::default();
+        for _ in 0..(MAX_SCAN_FILES + 25) {
+            set.offer(Path::new("/repo/extensionless"), "");
+        }
+        assert_eq!(set.all.len(), MAX_SCAN_FILES);
+        assert_eq!(set.spdx.len(), 0);
+        assert_eq!(set.secret.len(), 0);
+        assert_eq!(set.banned.len(), 0);
+        assert!(set.capped, "refusing a file must flag truncation");
+    }
+
+    #[test]
+    fn test_scan_set_filtered_buckets_cap_independently() {
+        // `.rs` matches the SPDX and secret buckets; `.go` matches only the
+        // banned bucket. Each fills to its own cap, and one reaching the
+        // limit does not shorten another's list.
+        let mut set = ScanSet::default();
+        for _ in 0..(MAX_SCAN_FILES + 25) {
+            set.offer(Path::new("/repo/main.rs"), "rs");
+            set.offer(Path::new("/repo/app.go"), "go");
+        }
+        assert_eq!(set.all.len(), MAX_SCAN_FILES);
+        assert_eq!(set.spdx.len(), MAX_SCAN_FILES);
+        assert_eq!(set.secret.len(), MAX_SCAN_FILES);
+        assert_eq!(set.banned.len(), MAX_SCAN_FILES);
+        assert!(set.capped);
+    }
+
+    #[test]
+    fn test_scan_set_extensionless_files_only_reach_all() {
+        let mut set = ScanSet::default();
+        set.offer(Path::new("/repo/Makefile"), "");
+        set.offer(Path::new("/repo/Justfile"), "");
+        assert_eq!(set.all.len(), 2);
+        assert!(set.spdx.is_empty() && set.secret.is_empty() && set.banned.is_empty());
+    }
+
+    #[test]
+    fn test_scan_set_routes_each_extension_to_its_buckets() {
+        // One file can serve several buckets. `py` is an SPDX-header,
+        // secret-scan *and* banned extension; `rs` is SPDX + secret;
+        // `txt` is in no filtered set, so it reaches `all` alone. This is
+        // the sharing that makes one traversal cheaper than three.
+        let mut set = ScanSet::default();
+        set.offer(Path::new("/repo/main.rs"), "rs");
+        set.offer(Path::new("/repo/app.py"), "py");
+        set.offer(Path::new("/repo/data.txt"), "txt");
+        let rs = PathBuf::from("/repo/main.rs");
+        let py = PathBuf::from("/repo/app.py");
+        assert_eq!(set.all.len(), 3);
+        assert_eq!(set.spdx, vec![rs.clone(), py.clone()]);
+        assert_eq!(set.secret, vec![rs, py.clone()]);
+        assert_eq!(set.banned, vec![py]);
     }
 
     #[test]

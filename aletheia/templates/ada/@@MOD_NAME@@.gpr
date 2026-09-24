@@ -1,0 +1,37 @@
+-- SPDX-License-Identifier: MPL-2.0
+-- GPR project for @@PROJECT_NAME@@.
+--
+-- Plain GPR rather than Alire: no crate index, nothing to fetch, so the
+-- build works with no network at all.
+--
+-- The switches are the static-analysis gate for this language:
+--   -gnatwa  all warnings on
+--   -gnatwe  warnings are errors (a warning fails the build)
+--   -gnata   assertions and preconditions checked at run time
+project @@MOD_ADA@@ is
+   for Source_Dirs use ("src");
+   for Object_Dir use "obj";
+   for Exec_Dir use "obj";
+   for Main use ("main.adb");
+
+   --  -gnat2022  Big_Integers (used by the contracts) is an Ada 2022 unit
+   package Compiler is
+      for Default_Switches ("Ada") use ("-gnat2022", "-gnatwa", "-gnatwe", "-gnata");
+   end Compiler;
+
+   package Builder is
+      --  Name the artefact after the project, not after main.adb.
+      for Executable ("main.adb") use "@@PROJECT_NAME@@";
+   end Builder;
+
+   --  Default proof settings, so a bare `gnatprove -P @@MOD_NAME@@.gpr`
+   --  already means "prove everything, and treat unproved checks as
+   --  failure". `just proof` relies on this.
+   package Prove is
+      --  --level=2          prove absence of run-time errors as well
+      --  --checks-as-errors without this gnatprove still exits 0 when a
+      --                     check is unproved, which would make the gate
+      --                     decorative. It is what makes `just proof` fail.
+      for Proof_Switches ("Ada") use ("--level=2", "--checks-as-errors");
+   end Prove;
+end @@MOD_ADA@@;

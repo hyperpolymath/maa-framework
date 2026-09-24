@@ -1,0 +1,36 @@
+# SPDX-License-Identifier: MPL-2.0
+# Justfile — build automation for @@PROJECT_NAME@@.
+# See: https://github.com/casey/just
+#
+# Every recipe here is offline: this project has no external dependencies,
+# so nothing is fetched at build time. Recipes fail loudly — a recipe that
+# echoes a message and exits 0 would be a fake gate (RSR v2 6.1.5, Gold).
+
+# Agda source is written in Unicode (≡, ∀, ×, ˡ). Without a UTF-8 locale
+# the checker cannot read its own files and fails with a locale error
+# rather than a type error, so pin it here rather than leave it to the
+# ambient environment.
+export LC_ALL := "C.UTF-8"
+
+default:
+    @just --list
+
+# Typecheck the main module. In Agda, typechecking IS the build.
+build:
+    agda src/@@MOD_CAMEL@@.agda
+
+# NOTE: there is no `run` recipe. This is a proof library, not a program:
+# there is no executable to run, and inventing one would be a fake gate.
+# Add a `main : IO ⊤` module and a compile recipe if you need one.
+
+# Typecheck the proof suite. There is no separate test runner: a proof
+# that does not typecheck fails, which is the strongest form of "test".
+test:
+    agda src/Properties.agda
+
+# Verify RSR compliance using the estate checker
+verify:
+    aletheia .
+
+# Everything the CI gate runs, in the same order
+check: build test

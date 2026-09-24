@@ -1,0 +1,37 @@
+# SPDX-License-Identifier: MPL-2.0
+# Justfile — build automation for @@PROJECT_NAME@@.
+# See: https://github.com/casey/just
+#
+# Every recipe here is offline: this project has no external dependencies,
+# so nothing is fetched at build time. Recipes fail loudly — a recipe that
+# echoes a message and exits 0 would be a fake gate (RSR v2 6.1.5, Gold).
+
+default:
+    @just --list
+
+# Build the executable into zig-out/bin/
+build:
+    zig build
+
+# Run the program; pass arguments after the recipe name
+run *ARGS:
+    zig build run -- {{ARGS}}
+
+# Run unit and integration tests
+test:
+    zig build test
+
+# Check formatting (does not modify files)
+fmt:
+    zig fmt --check build.zig src test
+
+# Apply formatting
+fmt-fix:
+    zig fmt build.zig src test
+
+# Verify RSR compliance using the estate checker
+verify:
+    aletheia .
+
+# Everything the CI gate runs, in the same order
+check: build test fmt

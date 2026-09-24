@@ -1,0 +1,23 @@
+# SPDX-License-Identifier: MPL-2.0
+# Build artefacts
+/target/
+**/target/
+Cargo.lock
+
+# Creusot/Why3 proof artefacts
+*.coma
+*.mlcfg
+verification/verif/
+verification/target/
+.why3find/
+
+# Editors and OS
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*~
+
+# Local environment
+.env
+.env.local

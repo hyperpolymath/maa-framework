@@ -732,25 +732,37 @@ weaker claim than a green run, and the templates are not claiming the stronger o
 
 Everything heavy is installed under `/usr/local/` (Rust at `/usr/local/cargo` + `/usr/local/rustup`,
 Zig at `/usr/local/zig`, `just` at `/usr/local/bin`; the language packages come from apt). Nothing
-in the repo depends on any of it — the templates need a prover only to run `just proof`.
+in the repo depends on any of it — the templates need a prover only to run `just proof`, and that is
+the point of the standalone requirement.
 
-That location is deliberate. The first pass kept the toolchains under `/home/user/build/`, which is
-excluded from the workspace snapshot; between sessions the directory was reclaimed and the whole
-toolchain went with it. Reinstalling outside `/home/user` means the install survives, and — more to
-the point — that a toolchain can no longer be lost in a way that looks like a repo problem.
+**Correction, recorded because the first version of this section was wrong.** It said that installing
+outside `/home/user` meant the toolchain would survive between sessions. That was tested by the
+sandbox resetting, and it is false: everything outside the workspace was reclaimed — Rust, Cargo,
+`just`, Zig, opam, Creusot, `gnatprove` — leaving only the workspace itself. The practical position
+is that **no toolchain location is durable here**, so the recipes below are written to be re-run, not
+to be relied on. What makes that survivable is the repo's own property: nothing in it needs any of
+this until you ask for a proof or a real-language build.
 
-`gnatprove` lives at `/usr/local/gnatprove` (13.2.0-1, from `alire-project/GNAT-FSF-builds` — it is
-not an Alire toolchain component and `alr install` does not exist, so the release archive is the
-only route). The CI workflow installs that same asset by URL **and verifies its SHA-256**
-(`28fc3583…f4017`, checked against the real download).
+For the record, the layout the rebuild scripts create, so a re-run lands in the same place:
 
-Creusot is the one that needs care. It is at `/usr/local/creusot` (source) with the pinned nightly
-in `/usr/local/rustup`, an opam switch at `/usr/local/opam`, and its runtime layout under
-`/usr/local/share/creusot` (`bin/{why3,why3find,alt-ergo,z3,cvc4,cvc5}`, `toolchains/<channel>/`,
-`share/why3find/packages/creusot`). That last part matters: `XDG_DATA_HOME` decides where
-`cargo-creusot` looks, and the default (`~/.local/share`) is *excluded from this sandbox's workspace
-snapshot*, so a toolchain installed there evaporates between sessions. Pointing `XDG_DATA_HOME` at
-`/usr/local/share` makes it survive.
+| Piece | Location |
+|---|---|
+| Rust stable + pinned nightly | `/usr/local/rustup`, `/usr/local/cargo` |
+| `just`, Zig | `/usr/local/bin`, `/usr/local/zig` |
+| gnatprove 13.2.0-1 | `/usr/local/gnatprove` (release archive; it is not an Alire component and `alr install` does not exist) |
+| Creusot source | `/usr/local/creusot` |
+| Creusot's opam switch | `/usr/local/opam` (switch `creusot`) |
+| Creusot runtime layout | `/usr/local/share/creusot` — `bin/{why3,why3find,alt-ergo,z3,cvc4,cvc5}`, `toolchains/<channel>/bin/creusot-rustc`, `share/why3find/packages/creusot` |
+
+Two settings in that layout are load-bearing and easy to miss. `XDG_DATA_HOME` decides where
+`cargo-creusot` looks for *everything* — `why3`, `why3find`, the prover binaries and `creusot-rustc`
+itself — and the default (`~/.local/share`) is excluded from the workspace snapshot, so a Creusot
+runtime installed there is doubly lost. Point it at `/usr/local/share` (or anywhere you control) and
+`cargo creusot version` can be made to resolve all four provers. The second is `RUSTUP_TOOLCHAIN`:
+`creusot-rustc` and `cargo creusot` must both run under Creusot's pinned nightly, not the default one.
+
+`gnatprove`'s CI asset is pinned by URL **and verifies its SHA-256** (`28fc3583…f4017`, checked
+against the real download).
 
 ## Follow-on verification log
 

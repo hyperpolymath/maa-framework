@@ -1,3 +1,0 @@
-# Toolchain pins, asdf/mise compatible.
-gnat 14.2.0
-gprbuild 2025.0.0

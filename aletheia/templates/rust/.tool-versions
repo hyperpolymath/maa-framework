@@ -1,5 +1,0 @@
-# Toolchain pins, asdf/mise compatible.
-# The main crate builds on stable with zero dependencies; verification/
-# additionally needs the Creusot toolchain (nightly Rust + Why3), which is
-# pinned separately in verification/README.adoc.
-rust 1.98.1

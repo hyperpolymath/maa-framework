@@ -1665,6 +1665,47 @@ fn test_every_language_template_reaches_bronze_and_silver() {
             "[{lang}] unresolved template placeholders in: {stragglers:?}"
         );
 
+        // `.gitattributes` carries exactly one pattern per line. Git rejects a
+        // line holding two (`*.ads is not a valid attribute name`) and then
+        // ignores *both* patterns on it, so the language silently loses
+        // `text`/`eol=lf` on precisely the files the template exists for. Two of
+        // the six languages have two extensions each, which is where this broke.
+        let attrs = fs::read_to_string(project.join(".gitattributes"))
+            .unwrap_or_else(|e| panic!("[{lang}] no .gitattributes in the scaffold: {e}"));
+        for (n, line) in attrs.lines().enumerate() {
+            let line = line.trim();
+            if line.is_empty() || line.starts_with('#') {
+                continue;
+            }
+            let patterns = line.split_whitespace().filter(|t| t.contains('*')).count();
+            assert!(
+                patterns <= 1,
+                "[{lang}] .gitattributes:{} puts {patterns} patterns on one line; git rejects the \
+                 whole line and drops every pattern on it: {line}",
+                n + 1
+            );
+        }
+
+        let expected_attrs: &[&str] = match *lang {
+            "rust" => &["*.rs"],
+            "zig" => &["*.zig"],
+            "elixir" => &["*.ex", "*.exs"],
+            "haskell" => &["*.hs"],
+            "ada" => &["*.adb", "*.ads"],
+            "agda" => &["*.agda"],
+            other => panic!("language {other} has no expected attribute list in this test"),
+        };
+        for ext in expected_attrs {
+            let covered = attrs.lines().any(|l| {
+                let toks: Vec<&str> = l.split_whitespace().collect();
+                toks.first() == Some(ext) && toks.contains(&"text") && toks.contains(&"eol=lf")
+            });
+            assert!(
+                covered,
+                "[{lang}] .gitattributes must give {ext} `text eol=lf` on a line of its own:\n{attrs}"
+            );
+        }
+
         let output = aletheia()
             .arg(project.to_str().unwrap())
             .output()

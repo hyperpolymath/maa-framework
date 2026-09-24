@@ -90,13 +90,19 @@ lang_dep_invariant() {
     esac
 }
 
+# Git's gitattributes grammar is exactly one pattern per line, followed by the
+# attributes for it. A line holding two patterns is rejected as a whole --
+# `git check-attr` reports `*.ads is not a valid attribute name` and then treats
+# BOTH patterns as unset, so the file silently loses `text`/`eol=lf` for the
+# very language it was written for. Languages with more than one extension
+# therefore emit a multi-line block, which subst() inserts verbatim.
 lang_gitattr() {
     case "$1" in
         rust)    echo '*.rs    text eol=lf diff=rust' ;;
         zig)     echo '*.zig   text eol=lf' ;;
-        elixir)  echo '*.ex *.exs text eol=lf' ;;
+        elixir)  printf '%s\n%s' '*.ex   text eol=lf' '*.exs  text eol=lf' ;;
         haskell) echo '*.hs    text eol=lf' ;;
-        ada)     echo '*.adb *.ads text eol=lf' ;;
+        ada)     printf '%s\n%s' '*.adb  text eol=lf' '*.ads  text eol=lf' ;;
         agda)    echo '*.agda  text eol=lf' ;;
     esac
 }
@@ -297,7 +303,10 @@ validate() {
 # values containing '&', '|' or '\' cannot corrupt the output.
 sed_escape() { printf '%s' "$1" | sed -e 's/[\\&|]/\\&/g'; }
 
-# Substitute every placeholder in stdin -> stdout.
+# Substitute every placeholder in stdin -> stdout. Every value but the language
+# attribute block is a single line, so sed can carry it; the attribute block can
+# be two lines (see lang_gitattr) and sed's replacement text cannot hold a
+# newline portably, so that one placeholder is replaced literally by awk.
 subst() {
     sed \
         -e "s|@@PROJECT_NAME@@|$E_PROJECT_NAME|g" \
@@ -319,7 +328,14 @@ subst() {
         -e "s|@@LANG_INVARIANT@@|$E_LANG_INVARIANT|g" \
         -e "s|@@DEP_INVARIANT@@|$E_DEP_INVARIANT|g" \
         -e "s|@@STANDALONE_INVARIANT@@|$E_STANDALONE|g" \
-        -e "s|@@LANG_GITATTR_LINE@@|$E_LANG_GITATTR|g"
+    | awk -v block="$LANG_GITATTR_BLOCK" '
+        BEGIN { ph = "@@LANG_GITATTR_LINE@@"; n = length(ph) }
+        {
+            line = $0
+            while ((i = index(line, ph)) > 0)
+                line = substr(line, 1, i - 1) block substr(line, i + n)
+            print line
+        }'
 }
 
 # Copy one template layer into the target, then render every file. Called
@@ -443,7 +459,9 @@ main() {
     E_LANG_INVARIANT="$(sed_escape "$(lang_invariant "$LANGUAGE")")"
     E_DEP_INVARIANT="$(sed_escape "$(lang_dep_invariant "$LANGUAGE")")"
     E_STANDALONE="$(sed_escape 'the build fetches nothing. Do not add network calls to the build, test, or scaffolding path.')"
-    E_LANG_GITATTR="$(sed_escape "$(lang_gitattr "$LANGUAGE")")"
+    # Deliberately NOT sed-escaped: this value may be two lines and is inserted
+    # literally by awk in subst(). Nothing in it is a sed metacharacter.
+    LANG_GITATTR_BLOCK="$(lang_gitattr "$LANGUAGE")"
 
     log_info "Creating RSR v2 project: $PROJECT_NAME ($LANGUAGE — $(lang_display "$LANGUAGE"))"
     log_info "Template: v2 Bronze (standalone — no downloads)"

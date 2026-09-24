@@ -200,6 +200,7 @@ and the project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 
 ### Other
 
+- Exercise the generated Rust proof gate on a runner (do not merge) (#231) (5014068)
 - Bump the github-actions group with 2 updates (#226) (7b1b3c1)
 - Bump the github-actions group with 2 updates (#200) (3be3969)
 - Close all open issues: aletheia rebuild (#124/#125), rust-ci restore, just shim (#102), changelog (#100), hypatia prune (#98) (#185)
@@ -896,6 +897,11 @@ Co-authored-by: Jonathan D.A. Jewell <6759885+hyperpolymath@users.noreply.github
 - Add STATE.scm
 
 Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com> (4e7183f)
+
+
+### Reverted
+
+- Restore the framework tree replaced by a scratch-branch merge (859b387)
 
 
 ### Security

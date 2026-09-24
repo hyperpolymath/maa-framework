@@ -691,6 +691,36 @@ cost time here and will cost time for anyone else running these proofs in a smal
   template defect and is nothing of the sort: a full disk fails whichever step needs to write next.
   Generate and build under a directory on the main filesystem, and check `df` before diagnosing.
 
+**Re-verified on the rebased tree.** Before this was handed over, the commits were rebased onto
+current upstream `main` (upstream had moved on by seven commits, all of them CHANGELOG churn). A
+rebase is a rewrite, so nothing was assumed about it: the whole toolchain was rebuilt from nothing
+and both proofs plus both negative controls were re-run *through the generator*, on the rebased
+tree, rather than in the repo's template directory.
+
+```
+tree under test: a35ef12  (= upstream main + the delivery commits)
+
+rust  positive : "Proved (2 files) ✔"                                  exit 0
+rust  negative : false postcondition (half-sum + 1)                    exit 1
+ada   positive : Total 35 checks, 35 (100%) proved                     exit 0
+ada   negative : false postcondition (Clamp'Result in Lo .. Hi - 1)    exit 1
+
+aletheia       : 83 + 52 = 135 tests pass, fmt clean, clippy -D warnings clean
+estate         : just check exit 0; just self-verify 26/26, Bronze + Silver ACHIEVED
+```
+
+That also closes the gap this document previously carried about the rebased tree not having been
+tested. Two things the rebuild taught, both now in `toolchain-rebuild/rebuild-toolchain.sh`:
+
+- `cargo creusot` resolves `creusot-rustc` at
+  `$XDG_DATA_HOME/creusot/toolchains/<channel>/bin/creusot-rustc` and refuses to run without it,
+  even when the binary is installed and on `PATH`. Installing Creusot's own binaries is not enough
+  on its own; the toolchain-dir placement is part of the contract.
+- `rustup toolchain install stable --component rustfmt clippy` fails with "invalid toolchain name:
+  'clippy'" — the second value is read as a toolchain, not a component. Several components need one
+  comma-separated value. This is the same failure mode as the `rust-toolchain` parsing bug in the CI
+  job, in a different disguise: a tool argument silently reinterpreted.
+
 **Still unproven.** Neither workflow has run on a GitHub runner. That caveat stays until it does:
 the commands are known-good, but "known-good commands in the right order in a YAML file" is a
 weaker claim than a green run, and the templates are not claiming the stronger one.

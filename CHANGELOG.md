@@ -133,6 +133,7 @@ and the project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 
 ### Documentation
 
+- Record the runner runs of both proof gates (58e98dd)
 - Remove a token prefix that should not have been recorded (ab53573)
 - Record measured state of play, for humans and for machines (#148) (de054c2)
 - Convert README.adoc -> Markdown (renders on Glama/profile/community-health) (#110) (307d672)
@@ -152,6 +153,7 @@ and the project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- One .gitattributes pattern per line, not two (e51ae7c)
 - Break infinite changelog-regenerate loop (#221) (ad34228)
 - Codeql-action v4.38.1 -> v4.38.0 SHA pin + dependabot hold (estate-wide startup_failure) (#198) (918f434)
 - Strip reintroduced ZWSP + exclude generated CHANGELOG.md from empty-lint (#194) (9730f65)

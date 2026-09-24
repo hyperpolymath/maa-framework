@@ -217,12 +217,13 @@ Say the word and I'll align it.
 
 ### 2. That GitHub token
 
-`github_pat_11ABTSLTI0QYB…` — you pasted it mid-conversation. I did not use it, write it to any file,
-or add it to any remote: everything I needed (your repo, MaaXYZ, `standards`) was readable
+You pasted a token mid-conversation, and I did not use it or add it to any remote: everything I needed (your repo, MaaXYZ, `standards`) was readable
 anonymously, and the repo path you gave turned out to be redundant once you supplied the URL.
 **Please revoke it at github.com/settings/tokens and issue a fresh one.** It lives in this
 transcript now, and fine-grained PATs are exactly the credential the estate's own secret-scanner
-workflow exists to catch.
+workflow exists to catch. An earlier revision of this document also recorded the token's
+visible prefix — the part GitHub itself shows in your token list — which was a mistake even
+though that half is not usable as a credential. It has been removed.
 
 ---
 

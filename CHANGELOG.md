@@ -10,6 +10,7 @@ and the project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 
 ### Added
 
+- V2 six-language templates and a single-pass scanner (#186, #197) (#228) (e477b40)
 - Close Silver gaps — toolchain, guix manifest, well-known, profile, quickstart (#189) (6620744)
 - Estate label tooling + auto-triage for new issues (#166) (3913c4d)
 - Add crg-grade and crg-badge justfile recipes (23a38ac)

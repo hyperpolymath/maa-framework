@@ -6,11 +6,12 @@
 # This is a real gate — `cargo creusot` exits non-zero when any obligation is
 # unproved. It is deliberately *not* part of `just check`.
 #
-# It has not yet run on a GitHub runner: treat the first green run as the
-# moment it becomes load-bearing. It is not blind, though — every step below
-# was executed by hand against a from-scratch toolchain, and three defects it
-# used to have (a bad rust-toolchain parse, a stale hard-coded Why3 pin, and a
-# setup that could never find creusot-rustc) were found that way.
+  # It has run green on a GitHub runner: run 35946679306 (2026-09-24) executed
+  # every step below and finished `Proved (2 files)` in five minutes. It is not
+  # blind, either — every step was executed by hand against a from-scratch
+  # toolchain first, and three defects it used to have (a bad rust-toolchain
+  # parse, a stale hard-coded Why3 pin, and a setup that could never find
+  # creusot-rustc) were found that way.
 name: Proof (Creusot)
 
 on:

@@ -3,6 +3,24 @@
 **Status:** both delivered and verified in the working tree. **Nothing is committed yet.**
 **Date:** 2026-09-22 · **Repo:** `hyperpolymath/maa-framework` (commit `939b8c3`)
 
+> **Status update — 2026-09-24.** This document is kept as the record of the point in time it was
+> written at. Everything it listed as outstanding has since happened:
+>
+> - The work was pushed and merged as PR #228 (squash `e477b40`), and **#186 and #197 are both
+>   closed**. A follow-up commit on `main` (`ab53573`) removed a token *prefix* this document had
+>   quoted back when describing it.
+> - **Both proof gates have now executed on a GitHub runner** — the step "What is left" calls
+>   outstanding below. `Proof (Creusot)` run **`35946679306`** finished green (`Proved (2 files)` in
+>   five minutes); `Proof (SPARK)` run **`35947307833`** proved **35 of 35 checks (100%)**.
+> - Exercising them needed a scratch branch whose tree was a generated project, so the gate's
+>   `proof.yml` had a repository root to resolve from. That branch was opened as a draft PR for that
+>   purpose alone; it was merged by accident, replaced the repository tree, and was **reverted one
+>   commit later** (`859b387`, tree byte-identical to `b5535f1`). Both gates ship a
+>   `workflow_dispatch:` trigger, which is what the Ada run used — no PR is needed, and none was used.
+> - A defect found while doing this is fixed alongside this update: `.gitattributes` emitted two
+>   patterns on one line for `elixir` and `ada`, and git rejects such a line wholesale, so *neither*
+>   pattern applied. The generator now emits one pattern per line, with a regression test.
+
 Your two additions to the brief — *make it standalone* and *Rust here is always Rust/Creusot* — are both built in.
 One correction I need to flag on the licence, in the last section.
 
@@ -173,16 +191,20 @@ estate root `just check` exit 0; `just self-verify` 26/26.
 
 1. **Push the branch and open the PR.** Everything is committed locally — three commits, messages
    below — but I have no push credentials, so nothing is on the remote yet. See "Commits".
+   *(Update 2026-09-24: pushed and merged — PR #228, squash `e477b40`.)*
 2. **Rotate the GitHub token you pasted into chat.** Please treat it as compromised — see the note below.
 3. **Decide on the remaining Tier-1 language templates.** The v1 generator offered `python`,
    `typescript` and `go`. Those extensions are *banned* by the v2 estate language policy, so those
    paths could never pass Bronze — I removed them rather than port them. Zig, Elixir, Haskell, Ada,
    Agda and AffineScript are Tier-1 per your `standards` canon and are reasonable follow-on templates.
-4. **Wire the proof gates into CI.** **Partly done in this pass.** Both templates ship an opt-in
+4. **Wire the proof gates into CI.** **Done.** Both templates ship an opt-in
    `.github/workflows/proof.yml`. Attempting to execute them from scratch (below) found one real
-   defect in the Rust one, now fixed. Neither has run on a GitHub runner yet, so the templates
-   still do not claim CI-verified proofs — the first green run is what makes them load-bearing.
+   defect in the Rust one, now fixed. *(As of 2026-09-24 both have run green on a GitHub runner —
+   runs `35946679306` and `35947307833` — so the templates' headers now state that, and the
+   "first green run" caveat is discharged rather than pending.)*
 5. **Close #186 and #197** with the acceptance evidence above.
+   *(Update 2026-09-24: both closed; #197 was closed by hand because GitHub pairs a closing keyword
+   with the first issue named in a PR body only.)*
 
 ---
 
@@ -722,9 +744,11 @@ tested. Two things the rebuild taught, both now in `toolchain-rebuild/rebuild-to
   comma-separated value. This is the same failure mode as the `rust-toolchain` parsing bug in the CI
   job, in a different disguise: a tool argument silently reinterpreted.
 
-**Still unproven.** Neither workflow has run on a GitHub runner. That caveat stays until it does:
-the commands are known-good, but "known-good commands in the right order in a YAML file" is a
-weaker claim than a green run, and the templates are not claiming the stronger one.
+**Resolved 2026-09-24 — both workflows have now run on a GitHub runner.** `Proof (Creusot)` run
+`35946679306` (`Proved (2 files)`, five minutes) and `Proof (SPARK)` run `35947307833`
+(35/35 checks, 100%). The reasoning above still holds as the record of why the caveat was there: the
+commands were known-good first, and the green runs are what upgraded the claim from "known-good
+commands in the right order in a YAML file" to a demonstrated one.
 
 
 ---
@@ -850,5 +874,91 @@ python3 -c "import yaml; yaml.safe_load(open('.../proof.yml'))"   # valid YAML f
 # rust-toolchain channel parsed from the clone → nightly-2026-08-03
 # why3/why3find pins derived from creusot-deps.opam (the hard-coded one had gone stale)
 # gnatprove asset sha256 verified against the workflow's pinned value
-# four defects found (three Rust, one Ada) — all fixed; neither job has run on a runner yet
+# four defects found (three Rust, one Ada) — all fixed
+# both jobs have since run green on a GitHub runner: 35946679306 (Creusot), 35947307833 (SPARK)
 ```
+
+---
+
+## Post-merge log — 2026-09-24
+
+Everything above describes the delivery as it was handed over. This section records what happened
+afterwards, including the parts that went wrong.
+
+### Both proof gates ran on a GitHub runner
+
+| Gate | Run | Result |
+|---|---|---|
+| `Proof (Creusot)` | [`35946679306`](https://github.com/hyperpolymath/maa-framework/actions/runs/35946679306) | `completed/success`, 02:18:23Z → 02:24:13Z, `Proved (2 files) ✔` |
+| `Proof (SPARK)` | [`35947307833`](https://github.com/hyperpolymath/maa-framework/actions/runs/35947307833) | `completed/success`, 02:27:16Z → 02:28:30Z, **35/35 checks (100%)** |
+
+The Creusot run resolved its own toolchain from scratch on the runner (cargo-creusot 0.14.0-dev,
+Why3 1.8.2+git, why3find v1.3.0+dev, alt-ergo 2.6.2, z3 4.15.3, cvc4 1.8, cvc5 1.3.1) and compiled the
+crate in 29 s. The SPARK run's summary, per subprogram:
+
+```
+Total                            35         .                     35 (100%)           .          .
+  Proofada.Clamp at proofada.ads:34 ... proved (1 checks)
+  Proofada.Midpoint at proofada.ads:45 ... proved (34 checks)
+```
+
+Two `Proofada.U32_Big` bodies are reported `skipped; body is SPARK_Mode => Off` — those are
+instantiations of the GNAT big-integer standard library, not project code. The counts above are
+project obligations.
+
+### A scratch branch was merged by accident, and reverted
+
+Exercising a gate needs a repository root where the generated `proof.yml` resolves. I used a scratch
+branch whose tree was a scaffolded project and opened a **draft** PR — but a draft can still be
+merged, and it was, ~100 s later. That squash (`50140689`) replaced the entire repository tree with
+the sample project. It was reverted one commit later:
+
+```
+859b387  revert: restore the framework tree replaced by a scratch-branch merge
+         tree identical to b5535f1 ✔
+```
+
+Force-pushing `main` is blocked by a repository rule, so the revert is a forward commit, not a
+rewind — `main`'s history keeps both the accident and its correction, visible. **Both gates ship a
+`workflow_dispatch:` trigger**, which is what the Ada run used; the correct route for this kind of
+exercise is to dispatch the workflow on a scratch branch and open no PR at all.
+
+### A `.gitattributes` defect, found by doing that
+
+`aletheia/templates/common/.gitattributes` held one `@@LANG_GITATTR_LINE@@` placeholder, and two of
+the six languages filled it with two patterns. Git's gitattributes grammar is one pattern per line;
+a line with two is rejected outright and *both* patterns on it are then ignored:
+
+```
+# before, elixir and ada
+*.adb *.ads text eol=lf
+$ git check-attr text eol -- probe.ads
+*.ads is not a valid attribute name: .gitattributes:4
+probe.ads: text: auto          # the language rule never applied
+$ git add -A
+*.ads is not a valid attribute name: .gitattributes:4    # printed on every push
+
+# after
+*.adb  text eol=lf
+*.ads  text eol=lf
+$ git check-attr text eol -- probe.ads probe.adb
+probe.ads: text: set
+probe.ads: eol: lf
+probe.adb: text: set
+probe.adb: eol: lf
+```
+
+`lang_gitattr` now emits one pattern per line, `subst` inserts that block with `awk` (sed cannot
+carry a newline in a replacement portably), and
+`test_every_language_template_reaches_bronze_and_silver` asserts both the one-pattern-per-line rule
+and that each language's extensions are covered. Negative control: with the old generator restored,
+that assertion fails —
+
+```
+[elixir] .gitattributes:4 puts 2 patterns on one line; git rejects the whole
+line and drops every pattern on it: *.ex *.exs text eol=lf
+```
+
+Suite after the fix: **83 + 52 = 135 tests**, 0 failures; `cargo fmt --check` clean;
+`cargo clippy --all-targets -- -D warnings` clean; regenerated `elixir` and `ada` scaffolds still
+**26/26, Bronze + Silver ACHIEVED**.

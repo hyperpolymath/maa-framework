@@ -2,9 +2,12 @@
 # SPARK proof gate. Separate from ci.yml on purpose: the offline Bronze job
 # must stay fast and dependency-free, while proving needs gnatprove.
 #
-# This workflow is a real gate — `gnatprove` runs with --checks-as-errors (set
-# in the project's Prove package), so an unproved check fails the job instead
-# of exiting 0. It is deliberately *not* part of `just check`.
+  # This workflow is a real gate — `gnatprove` runs with --checks-as-errors (set
+  # in the project's Prove package), so an unproved check fails the job instead
+  # of exiting 0. It is deliberately *not* part of `just check`.
+  #
+  # It has run green on a GitHub runner: run 35947307833 (2026-09-24) proved all
+  # 35 checks (100%).
 name: Proof (SPARK)
 
 on:

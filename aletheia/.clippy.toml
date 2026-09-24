@@ -1,0 +1,26 @@
+# Clippy configuration for Aletheia
+# This configures Rust's linter for our specific needs
+
+# Cognitive complexity threshold
+cognitive-complexity-threshold = 30
+
+# Array size threshold for passing by reference
+array-size-threshold = 64
+
+# Maximum number of lines in a function
+too-large-for-stack = 200
+
+# Maximum number of single char bindings in a scope
+single-char-binding-names-threshold = 5
+
+# Maximum number of bool parameters
+max-fn-params-bools = 2
+
+# Minimum number of lines for doc comments
+doc-valid-idents = ["RSR", "TPCF", "CADRE", "Aletheia", "GitLab", "GitHub"]
+
+# Disallowed names (variable names to avoid)
+disallowed-names = ["foo", "bar", "baz", "quux"]
+
+# Allowed identifiers in docs
+# This prevents clippy from complaining about our Greek term and acronyms

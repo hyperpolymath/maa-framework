@@ -1,0 +1,18 @@
+# AI Training Policy for Rhodibot
+# https://site.spawning.ai/spawning-ai-txt
+
+User-Agent: *
+
+# Training Policy
+# This code may be used for AI training with attribution
+ai-training: allowed-with-attribution
+
+# Data Usage
+ai-data-usage: allowed-for-research, allowed-for-training
+
+# Attribution Required
+attribution-required: yes
+attribution-format: "Rhodibot by Hyperpolymath - https://github.com/hyperpolymath/rhodibot"
+
+# License
+license: MIT OR Apache-2.0

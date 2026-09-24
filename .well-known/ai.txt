@@ -1,15 +1,1 @@
-# SPDX-License-Identifier: MPL-2.0
-# ai.txt - AI interaction policy
-
-User-Agent: *
-Disallow-Training: yes
-Disallow-Summarization: no
-Disallow-Generation: yes
-
-# This project's code is licensed under MPL-2.0.
-# AI agents may read and analyse this code to assist contributors.
-# AI agents must NOT use this code for model training without explicit consent.
-#
-# Agent integration instructions:
-#   0-AI-MANIFEST.a2ml (universal AI entry point)
-#   .machine_readable/ (structured project state)
+../www/.well-known/ai.txt

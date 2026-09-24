@@ -1,0 +1,17 @@
+/* TEAM */
+Project: Rhodibot
+Role: RSR Compliance Bot
+Organization: Hyperpolymath
+Repository: https://github.com/hyperpolymath/rhodibot
+
+/* THANKS */
+Rust Community - For an exceptional language
+RSR Standard Authors - For the compliance framework
+Dependabot Team - For the inspiration
+
+/* SITE */
+Last update: 2025-12-26
+Standards: RSR Bronze
+Language: Rust
+Dependencies: Zero (std only)
+Unsafe Code: Zero

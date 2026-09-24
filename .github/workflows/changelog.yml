@@ -1,0 +1,47 @@
+# SPDX-License-Identifier: MPL-2.0
+# CHANGELOG automation (issue #100): regenerates CHANGELOG.md from
+# conventional commits on every push to main and opens a PR with the result
+# (pr-back). Two hard lessons baked in: (1) main is guarded by the
+# Optimus-Branch ruleset (PR-required, signed commits, zero bypass actors —
+# see the optimus-branch-ruleset landmine in STATE.a2ml), which rejects a
+# commit-back direct push; (2) the reusable's `generate` job requests
+# `contents: write` + `pull-requests: write`, and empirically GitHub checks
+# those against the CALLER's TOP-LEVEL permissions only: every working
+# caller in this repo (governance, secret-scanner) requests nothing above
+# top-level read, while every changelog run with top-level `contents: read`
+# died startup_failure with zero jobs and no log. So the write grants live
+# HERE at top level — do NOT "tidy" them into a job-level block (a job
+# block replaces top-level for that job and does not merge). Saga: #188
+# added top-level actions:read (still failed); #190 was comment-only (the
+# job-block edit was lost to a tooling race); this PR grants write at top.
+# Merge the changelog PRs it opens (squash keeps required_signatures
+# satisfied — GitHub signs the squash commit). Uses the canonical cliff.toml
+# from standards (no local cliff.toml by design — one config for the
+# estate). CHANGELOG.adoc is retained as a frozen pointer.
+name: changelog
+on:
+  push:
+    branches: [main]
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+permissions:
+  actions: read
+  contents: write
+  pull-requests: write
+jobs:
+  changelog:
+    # Pinned to standards@main as of 2026-09-21 (commits/changelog: #886).
+    # NOTE: the reusable checks out cliff.toml from standards@main at
+    # runtime (not from the pinned SHA), so cliff.toml fixes propagate to
+    # this caller immediately without a SHA bump — only changes to the
+    # reusable workflow YAML itself require re-pinning here.
+    uses: hyperpolymath/standards/.github/workflows/changelog-reusable.yml@b77c53c85e5734756a793497845735485c9dc933
+    with:
+      mode: pr-back
+    # Loop-prevention defense-in-depth (maa-framework#219 / standards#988):
+    # don't even invoke the reusable if the push's head commit already
+    # carries [skip changelog]. The reusable itself has an internal guard
+    # job and cliff.toml has a subject-matcher skip rule; this is a third
+    # layer that saves spinning up a runner at all.
+    if: ${{ !contains(github.event.head_commit.message, '[skip changelog]') }}

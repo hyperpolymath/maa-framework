@@ -1,0 +1,33 @@
+// SPDX-License-Identifier: CC-BY-SA-4.0
+= Security Policy
+:toc:
+
+== Reporting a Vulnerability
+
+Report vulnerabilities privately to **@@SECURITY_CONTACT@@**.
+
+**Do not** open a public issue for a security vulnerability.
+
+== Response Timeline
+
+[cols="1,2"]
+|===
+|Acknowledgment |within 48 hours
+|Assessment |within 7 days
+|Fix (critical) |within 30 days
+|Fix (other) |within 90 days
+|===
+
+== Scope
+
+This policy covers the source code in this repository and the artefacts it
+publishes. It does not cover third-party dependencies, which are governed
+by their own policies.
+
+== Supported Versions
+
+The latest release on the default branch receives security fixes.
+
+== Machine-Readable Form
+
+An RFC 9116 `+security.txt+` is published at link:.well-known/security.txt[.well-known/security.txt].

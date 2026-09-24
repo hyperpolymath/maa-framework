@@ -1,0 +1,12 @@
+# SPDX-License-Identifier: MPL-2.0
+# RSR capability profile for @@PROJECT_NAME@@. Declares what this repo
+# carries so the capability gates compute the applicable criterion set.
+[profile]
+capabilities = ["zig", "cli", "docs"]
+
+[rationale]
+zig = "true: build.zig targets Zig 0.16 (see .tool-versions)"
+cli = "true: src/main.zig produces an executable"
+docs = "true: README + SECURITY + CONTRIBUTING + CODE_OF_CONDUCT + CHANGELOG"
+no-library = "shared: src/root.zig is an importable module, but not published as a package"
+no-container = "true: no Containerfile in the scaffold"

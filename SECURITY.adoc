@@ -1,33 +1,65 @@
-// SPDX-License-Identifier: CC-BY-SA-4.0
-= Security Policy
-:toc:
+== Security Policy
 
-== Reporting a Vulnerability
+=== Supported Versions
 
-Report vulnerabilities privately to **j.d.a.jewell@open.ac.uk**.
-
-**Do not** open a public issue for a security vulnerability.
-
-== Response Timeline
-
-[cols="1,2"]
+[cols=",",options="header",]
 |===
-|Acknowledgment |within 48 hours
-|Assessment |within 7 days
-|Fix (critical) |within 30 days
-|Fix (other) |within 90 days
+|Version |Supported
+|main |:white_check_mark:
 |===
 
-== Scope
+=== Reporting a Vulnerability
 
-This policy covers the source code in this repository and the artefacts it
-publishes. It does not cover third-party dependencies, which are governed
-by their own policies.
+If you discover a security vulnerability in this project, please report
+it responsibly:
 
-== Supported Versions
+[arabic]
+. *Do NOT* create a public GitHub issue for security vulnerabilities
+. Send a private report to the repository maintainers via GitHub’s
+private vulnerability reporting feature
+. Include as much detail as possible:
+* Description of the vulnerability
+* Steps to reproduce
+* Potential impact
+* Suggested fix (if any)
 
-The latest release on the default branch receives security fixes.
+=== Security Measures
 
-== Machine-Readable Form
+This repository implements the following security practices:
 
-An RFC 9116 `+security.txt+` is published at link:.well-known/security.txt[.well-known/security.txt].
+==== GitHub Actions Security
+
+* *SHA-pinned actions*: All GitHub Actions are pinned to specific commit
+SHAs to prevent supply chain attacks
+* *Minimal permissions*: Workflows use the least privilege principle
+with `+contents: read+` permission
+* *SSH host key verification*: Known hosts are verified to prevent MITM
+attacks during mirroring
+* *Concurrency controls*: Prevents race conditions during parallel
+workflow runs
+* *Timeout limits*: All jobs have timeout limits to prevent resource
+exhaustion
+
+==== Secret Management
+
+* SSH keys for mirror targets are stored as GitHub encrypted secrets
+* Mirror operations are conditionally enabled via repository variables
+* No secrets are logged or exposed in workflow outputs
+
+==== Force Push Warning
+
+This repository uses `+--force+` push for mirroring operations. This is
+intentional for maintaining exact mirrors but means: - History on mirror
+targets will be overwritten - Tags on mirror targets will be
+force-updated - Only trusted maintainers should have push access to the
+main branch
+
+=== Dependency Updates
+
+This project monitors for security updates in: - GitHub Actions
+(checkout, ssh-agent) - SSH host keys for mirror targets
+
+=== Contact
+
+For security concerns, use GitHub’s private security advisory feature or
+contact the repository maintainers directly.

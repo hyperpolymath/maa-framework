@@ -1,16 +1,31 @@
 # SPDX-License-Identifier: MPL-2.0
-# RSR capability profile for proofgateway. Declares what this repo
-# carries so the capability gates compute the applicable criterion set.
+# RSR capability profile for maa-framework. Declares what this repo
+# carries so the capability gates (template-capability-gates.toml v0.3.0)
+# compute the applicable criterion set. Direct declaration (the policy's
+# primary form) — no preset fits exactly (rust-cli would add `library`,
+# and aletheia is binary-only). [canon] omitted: only canon-bearing repos
+# declare it, and none of the four canon criteria pass here. Role
+# omitted: this repo is neither spine nor canon.
 [profile]
-capabilities = ["rust", "cli", "docs"]
+capabilities = ["rust", "bash", "cli", "docs-site"]
 
 [rationale]
-rust = "true: a Rust 2021 crate (MSRV 1.80) with zero dependencies"
-cli = "true: src/main.rs produces a binary"
-docs = "true: README.adoc + SECURITY.adoc + CONTRIBUTING.adoc + CODE_OF_CONDUCT.adoc + CHANGELOG.adoc"
-no-library = "DECLINED unless a lib target is added; src/lib.rs currently backs the binary's tests"
-no-bash = "true: no tracked *.sh; all automation is in the Justfile"
-no-container = "true: no Containerfile in the scaffold"
-no-reproducible-build = "true: no guix.scm; the zero-dependency crate is offline-buildable via `cargo build --offline`"
-no-formal-proofs = "PARTIAL: verification/ carries Creusot proof obligations, but they are not wired into CI until the Creusot toolchain is pinned (see verification/README.adoc)"
-no-docs-site = "true: no pages workflow"
+# One line per declared capability and per declined module (policy shape).
+rust = "FORCED + true: rust-ci.yml fires the rust gate; aletheia is a Rust 2021 crate (MSRV 1.80)"
+bash = "true: 6 tracked *.sh (setup.sh, .github/hooks/, aletheia/scripts/) + bash-shebang Just recipes; no criterion gates on bash today"
+cli = "true: aletheia is a binary-only CLI"
+docs-site = "true: pages.yml Ddraig pipeline present (builds a stub index; docs/ not wired in); DEPLOYMENT DISABLED (see STATE) so gold 9.1.4 is carried-but-not-served"
+no-library = "binary-only; no lib target, no published crate"
+no-governance-tier = "PARTIAL QUAD: MAINTAINERS.adoc + root GOVERNANCE.adoc only; AUDIT.adoc + AFFIRMATION.adoc absent and 2.1.8 wants 0-canon/GOVERNANCE.adoc — declaring would fail Silver/Gold criteria it cannot pass"
+no-reproducible-build = "manifest.scm (+ stapeln.toml) ship, but gates v0.3.0 + criterion 1.2.1 only recognise guix.scm — filed upstream"
+no-container = "stapeln.toml is a build manifest, not a Containerfile; container/ absent"
+no-benchmarks = "criterion benches are nested in aletheia/, the gate is root-anchored"
+no-formal-proofs = "Coq proofs live in the absolute-zero submodule (proofs/coq/), not in-tree verification/"
+
+# NOTE: the reference checker (check-rsr-profile.sh @ gates v0.3.0)
+# reports 3 MISSING + 1 VESTIGIAL (exit 1) against this profile, both
+# understood: the MISSINGs are the root-anchored rust rows (the aletheia
+# crate is nested under aletheia/, a legitimate multi-concern-root layout
+# the gate format cannot express), and the VESTIGIAL is MAINTAINERS.adoc
+# (partial governance quad — also unrepresentable). Both tracked as
+# upstream standards gaps; the checker stays unwired in CI until then.

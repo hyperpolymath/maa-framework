@@ -1,0 +1,140 @@
+// SPDX-License-Identifier: MPL-2.0
+= MAA Framework — EXPLAINME
+:toc: preamble
+:toc-title: Contents
+:icons: font
+:doctype: article
+
+This file backs every factual claim in link:README.adoc[README.adoc] with code paths and honest caveats. Read it if you are doing due diligence on whether the story matches the code.
+
+== Claim-to-implementation map
+
+=== Aletheia builds, passes 68 unit + 47 integration tests, has zero dependencies
+
+[quote, README.adoc]
+____
+Aletheia microkernel (Rust): Builds, 68 unit + 47 integration tests passing, zero dependencies.____
+
+How this is implemented::
+`link:aletheia/[]` contains the Rust microkernel. `link:.github/workflows/rust-ci.yml[]` gates `cargo build` (debug + release), the full `cargo test` suite, formatting, `clippy -- -D warnings`, and the zero-dependency assertion — each mirrored by a root Justfile recipe (`just check`). CI is green. The `Cargo.toml` has zero external dependencies (enforced by CI).
+
+Caveat::
+68 unit + 47 integration tests pass. The integration suite *was* a specification for an unbuilt CLI (27 of 29 failing by design, #124); the CLI has since been built to the upstream RSR criteria and the suite is in the CI gate.
+
+=== CI is green across every enabled workflow and each gate has been shown capable of failing
+
+[quote, README.adoc]
+____CI is green across every enabled workflow, and each gate has been shown capable of failing.____
+
+How this is implemented::
+`.github/workflows/` at the repository root contains the CI gates. Each gate was verified to fail before being merged (standard CI hygiene).
+
+Caveat::
+The `aletheia/.github/workflows/` directory contains 16 workflow files that **have never executed**. GitHub Actions reads workflows at the repository root only. Those files are inert. See <<_aletheia_workflows_are_inert>>.
+
+=== CRG Tier-C test suite landed 2026-04-04
+
+[quote, README.adoc]
+____A CRG Tier-C test suite (unit, E2E, property, aspect, benchmarks) landed 2026-04-04.____
+
+How this is implemented::
+`link:tests/[]` contains the test suite. The tier classification (CRG Tier-C) is documented in the estate standards.
+
+Caveat::
+The test suite exists and runs. The "E2E, property, aspect, benchmarks" categories describe the *structure* of the suite, not all passing results. The integration (E2E) tests pass: 45/45 since the CLI rebuild closed #124.
+
+=== absolute-zero is a git submodule pinned here
+
+[quote, README.adoc]
+____The Certified Null Operation is developed in the standalone hyperpolymath/absolute-zero repository and pinned here as a git submodule.____
+
+How this is implemented::
+`link:absolute-zero/[]` is a git submodule (PR #89). Development happens upstream; this pointer is bumped deliberately.
+
+Caveat::
+The submodule points to a specific commit in `absolute-zero`. Changes to CNO proofs happen upstream first, then the submodule pointer is updated here. There is no automated synchronisation.
+
+=== The MAA paradigm is symmetric accountability
+
+[quote, README.adoc]
+____Mutually Assured Accountability (MAA) is a paradigm where accountability between system participants is symmetric.____
+
+How this is implemented::
+The paradigm is defined in the governance and specification documents. Aletheia is the microkernel intended to enforce it. The paradigm definition exists; the enforcement mechanism is under construction.
+
+Caveat::
+**The paradigm is stated; the enforcement covers the offline file-presence subset.** Aletheia's CLI surface exists since #124 closed (26 checks, machine-readable output), so invocation is no longer the gap — depth of checking (proofs, containers, Scorecard) still lives with the hypatia oracle, not here.
+
+== Dogfooded Across The Account
+
+[cols="1,2,2", options="header"]
+|===
+| Technology / Pattern | Used here | Also used in
+
+| Rust microkernel
+| `aletheia/`
+| link:https://github.com/hyperpolymath/typell[Typell] (kernel)
+
+| CNO formalisation
+| `absolute-zero/` submodule
+| link:https://github.com/hyperpolymath/absolute-zero[absolute-zero] (upstream)
+
+| Hub-and-spoke mirroring
+| Root CI workflows
+| Estate-wide pattern
+|===
+
+== Known gaps
+
+[[_aletheia_workflows_are_inert]]
+[CAUTION]
+====
+**`aletheia/.github/workflows/` is inert.** 16 workflow files exist inside `aletheia/` but GitHub Actions only reads `.github/workflows/` at the repository root. Since `aletheia/` is vendored as plain tracked files (not a submodule), these workflows have never executed. Gates must be added at the root level.
+====
+
+[CAUTION]
+====
+**CLI surface rebuilt 2026-09-21 (was: unbuilt, #124).** 26 checks over the RSR v2 offline subset; 68 unit + 47 integration tests pass; hypatia oracle stays normative.
+====
+
+[CAUTION]
+====
+**Clippy clean and blocking since 2026-09-21 (was: 23 findings, #125).** Findings wired into real code; `-D warnings` in CI and `just lint`.
+====
+
+[CAUTION]
+====
+**Specifications are pending.** ROADMAP Phase 1 (specification publication) is incomplete. The project scope (11 domains) is stated; the formal specifications for most domains are not yet in-tree.
+====
+
+[CAUTION]
+====
+**Oblíbený is at specification stage.** The reference language has no implementation in this repository.
+====
+
+[CAUTION]
+====
+**Scope-to-implementation gap is large.** The stated scope covers 11 domains (security, AI ethics, dependability, language design, microkernel, RISC-V, sustainability, economics-as-code, distributed computing, reversibility, web protocols). Only the microkernel domain has running code. The remaining 10 domains are at specification or intention stage.
+====
+
+== Evidence Index
+
+[cols="2,3", options="header"]
+|===
+| Path | Proves / Implements
+
+| `aletheia/`
+| Rust microkernel (builds, 68 unit + 47 integration tests, zero dependencies)
+
+| `absolute-zero/`
+| CNO formalisation (git submodule, upstream pointer)
+
+| `tests/`
+| CRG Tier-C test suite (unit, E2E, property, aspect, benchmarks)
+
+| `.github/workflows/rust-ci.yml`
+| Aletheia CI gate
+
+| `docs/STATE-OF-PLAY-2026-07-29.adoc`
+| Full measured snapshot: CI, proof state, open questions
+|===

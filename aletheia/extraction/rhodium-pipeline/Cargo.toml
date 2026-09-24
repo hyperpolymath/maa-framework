@@ -1,0 +1,30 @@
+[package]
+name = "rhodium-pipeline"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.70"
+description = "RSR-compliant CI/CD pipeline generator and templates"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/hyperpolymath/rhodium-pipeline"
+keywords = ["rsr", "ci-cd", "pipeline", "devops", "security"]
+categories = ["development-tools", "command-line-utilities"]
+
+[lib]
+name = "rhodium_pipeline"
+path = "src/lib.rs"
+
+[[bin]]
+name = "rhodium-pipeline"
+path = "src/main.rs"
+
+[dependencies]
+# Zero dependencies - RSR Bronze compliant
+
+[dev-dependencies]
+# Testing only
+
+[profile.release]
+lto = true
+codegen-units = 1
+strip = true
+opt-level = "z"

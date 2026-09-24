@@ -1,0 +1,113 @@
+// SPDX-License-Identifier: CC-BY-SA-4.0
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+= QUICKSTART-DEV — maa-framework contributor setup
+:toc:
+
+// What a working dev loop looks like here, in one page. End users start
+// at QUICKSTART-USER.adoc, maintainers at QUICKSTART-MAINTAINER.adoc.
+
+== The stack
+
+* **Rust 1.98.1** (pinned in `mise.toml` / `.tool-versions`): the
+  `aletheia/` crate, edition 2021, MSRV 1.80, **zero dependencies** by
+  RSR Bronze rule (`just deps-check` enforces it).
+* **Just** (any recent release; `cargo install just`): every task in
+  this file is a Just recipe. Run from the repo root.
+* **GitHub Actions**: `just check` mirrors the CI gate exactly, same
+  recipes in the same order — if it passes locally, CI passes.
+* **absolute-zero/** is a submodule (the Certified Null Operation
+  reference, developed upstream; bump the pointer deliberately, never
+  develop in place). Its `proofs/coq/` tree is where the Coq proofs
+  live — there is no in-tree `verification/` directory.
+
+== Option A: Guix (reproducible)
+
+[source,shell]
+----
+guix shell     # auto-discovers manifest.scm at the root
+just check
+----
+
+`manifest.scm` provides rust + just + git (specs verified 2026-09-21).
+It is new: if `guix shell` fails on a spec, file an issue rather than
+working around it. There is no `flake.nix` — Guix is primary by design
+(RSR 1.2.1), Nix was retired, so there is no Option B for it.
+
+== Option B: rustup (recommended for most)
+
+[source,shell]
+----
+rustup toolchain install stable   # 1.98.1 at time of writing; MSRV is 1.80
+cargo install just
+just check
+----
+
+System rustc from your distro also works if it meets MSRV — the gate is
+`just check`, not how the toolchain arrived.
+
+== Build, test, MUST
+
+[source,shell]
+----
+just build   # debug + release, locked
+just test    # full aletheia suite (unit + integration; green since #124)
+just check   # the whole CI gate: build test fmt lint deps-check
+----
+
+`Mustfile` is the MUST contract: `security` → `just lint`,
+`tests` → `just test`, `format` → `just fmt`. The generated
+`contractile.just` adds `must-check` (license/readme/SPDX/no-banned-files)
+and `trust-verify` (license-content/no-secrets-committed/pinned-images).
+Run `just must-check trust-verify` before pushing anything structural.
+
+Landmines (each bought with a real incident):
+
+* Workflows run **only** from `.github/workflows/` — a workflow file
+  anywhere else is silently dead (#98).
+* Clippy denies **all warnings including dead code**; keep the tree
+  warning-free or CI fails (#125).
+* A recipe that echoes and exits 0 is a fake gate. Recipes MUST fail
+  loudly (#99).
+* `main` takes **squash-merges on PRs only**, commits signed
+  (Optimus-Branch ruleset, zero bypass actors) — direct pushes fail.
+
+== Recipes you will actually use
+
+`just --list` is authoritative; the daily set is `build`, `test`,
+`check`, `lint`, `fmt` (`fmt-fix` applies), `deps-check`,
+`self-verify` (runs aletheia against this repo), `doctor` (setup
+self-diagnostic), `assail` (panic-attack pre-commit scan — needs the
+external `panic-attack` binary), `tour`, and `help-me`.
+
+== Wiring a new agent / LLM session in
+
+Start it on `llm-warmup-dev.adoc` (repo root), then this file. For
+deep background: `docs/usage.adoc`, `docs/architecture.adoc`,
+`docs/troubleshooting.adoc`, `EXPLAINME.adoc`, and the normative
+`STATE.a2ml` under `.machine_readable/6a2/`.
+
+== Layout (trimmed)
+
+[source]
+----
+maa-framework/
+├── .github/            # workflows, hooks, agents, funding
+├── .machine_readable/  # STATE, MUST schemas, gates, rsr-profile
+├── .well-known/        # symlinks → www/.well-known (canonical bundle)
+├── aletheia/           # the Rust crate: src/, tests/, benches/
+├── absolute-zero/      # submodule: CNO reference + Coq proofs
+├── docs/               # usage, architecture, troubleshooting, decisions
+├── tests/              # aspect/, e2e/, fuzz/ suites
+├── www/                # the canonical .well-known/ bundle
+├── manifest.scm        # Guix dev environment (Option A)
+├── mise.toml / .tool-versions  # toolchain pins
+├── Justfile / contractile.just / Mustfile
+└── *.adoc              # README, EXPLAINME, STATE pointers, this file
+----
+
+== Stuck?
+
+* `just doctor`, then `just help-me` (paste both into your issue).
+* `docs/troubleshooting.adoc` for the known-good fixes.
+* Issues: https://github.com/hyperpolymath/maa-framework/issues/new
+* Wiki: https://github.com/hyperpolymath/maa-framework/wiki

@@ -1,0 +1,35 @@
+# SPDX-License-Identifier: MPL-2.0
+# Justfile — build automation for @@PROJECT_NAME@@.
+# See: https://github.com/casey/just
+#
+# Every recipe here is offline: this project has no external dependencies,
+# so nothing is fetched at build time. Recipes fail loudly — a recipe that
+# echoes a message and exits 0 would be a fake gate (RSR v2 6.1.5, Gold).
+
+default:
+    @just --list
+
+# Build the package (offline: only `base` from GHC is needed)
+build:
+    cabal build --offline
+
+# Run the program; pass arguments after the recipe name
+run *ARGS:
+    cabal run --offline @@PROJECT_NAME@@ -- {{ARGS}}
+
+# Run the test suite
+test:
+    cabal test --offline --test-show-details=direct
+
+# Build with all warnings enabled and promoted to errors. This is the
+# static-analysis gate for this language: GHC's own warning set, no extra
+# tooling to install.
+lint:
+    cabal build --offline --ghc-options="-Wall -Wcompat -Werror"
+
+# Verify RSR compliance using the estate checker
+verify:
+    aletheia .
+
+# Everything the CI gate runs, in the same order
+check: build test

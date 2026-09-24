@@ -1,0 +1,16 @@
+# SPDX-License-Identifier: MPL-2.0
+# RSR capability profile for @@PROJECT_NAME@@. Declares what this repo
+# carries so the capability gates compute the applicable criterion set.
+[profile]
+capabilities = ["rust", "cli", "docs"]
+
+[rationale]
+rust = "true: a Rust 2021 crate (MSRV 1.80) with zero dependencies"
+cli = "true: src/main.rs produces a binary"
+docs = "true: README.adoc + SECURITY.adoc + CONTRIBUTING.adoc + CODE_OF_CONDUCT.adoc + CHANGELOG.adoc"
+no-library = "DECLINED unless a lib target is added; src/lib.rs currently backs the binary's tests"
+no-bash = "true: no tracked *.sh; all automation is in the Justfile"
+no-container = "true: no Containerfile in the scaffold"
+no-reproducible-build = "true: no guix.scm; the zero-dependency crate is offline-buildable via `cargo build --offline`"
+no-formal-proofs = "PARTIAL: verification/ carries Creusot proof obligations, but they are not wired into CI until the Creusot toolchain is pinned (see verification/README.adoc)"
+no-docs-site = "true: no pages workflow"

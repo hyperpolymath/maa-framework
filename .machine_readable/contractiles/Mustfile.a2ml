@@ -1,0 +1,94 @@
+# SPDX-License-Identifier: MPL-2.0
+# Mustfile — Physical-state contract for maa-framework
+# Author: Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+#
+# What MUST be true about this repository. Hard requirements — violating
+# a MUST is always a bug; there are no "soft" MUSTs. CI and pre-commit
+# hooks fail if any check fails.
+#
+# Provenance: written 2026-06-12 from repo reality, porting the universal
+# invariants of the former root .machine_readable/MUST.contractile
+# (S-expression form, removed by the estate-standardization merge) into
+# the flat estate contractile layout. Relationship to the other
+# contractiles is unchanged: TRUST never overrides MUST; ADJUST invariants
+# are implicitly MUST; DUST-deprecated features keep their MUSTs until
+# fully removed.
+
+[metadata]
+repo = "maa-framework"
+version = "2.0.0"
+format = "a2ml"
+last-updated = "2026-06-12"
+
+[file-presence]
+# Each check: shell command that must exit 0. severity: critical | warning
+license-present = { description = "LICENSE file must exist", run = "test -f LICENSE", severity = "critical" }
+readme-present = { description = "README.adoc must exist", run = "test -f README.adoc", severity = "critical" }
+security-policy = { description = "SECURITY.md must exist", run = "test -f SECURITY.md", severity = "critical" }
+ai-manifest = { description = "root 0-AI-MANIFEST.a2ml must exist", run = "test -f 0-AI-MANIFEST.a2ml", severity = "critical" }
+governance-docs = { description = "GOVERNANCE.adoc, MAINTAINERS.adoc, CODEOWNERS must exist", run = "test -f GOVERNANCE.adoc && test -f MAINTAINERS.adoc && test -f .github/CODEOWNERS", severity = "critical" }
+machine-readable-dir = { description = ".machine_readable/ directory must exist", run = "test -d .machine_readable", severity = "critical" }
+
+[directory-structure]
+contractiles-flat = { description = "flat contractile files exist (estate layout)", run = "test -f .machine_readable/contractiles/Intentfile.a2ml && test -f .machine_readable/contractiles/Mustfile.a2ml && test -f .machine_readable/contractiles/Trustfile.a2ml && test -f .machine_readable/contractiles/Adjustfile.a2ml && test -f .machine_readable/contractiles/Dustfile.a2ml && test -f .machine_readable/contractiles/Bustfile.a2ml", severity = "critical" }
+six-directory-present = { description = "6a2 directory exists with all six files", run = "test -d .machine_readable/6a2 && test -f .machine_readable/6a2/META.a2ml && test -f .machine_readable/6a2/ECOSYSTEM.a2ml && test -f .machine_readable/6a2/STATE.a2ml && test -f .machine_readable/6a2/PLAYBOOK.a2ml && test -f .machine_readable/6a2/AGENTIC.a2ml && test -f .machine_readable/6a2/NEUROSYM.a2ml", severity = "critical" }
+anchor-directory = { description = "anchor directory exists in 6a2 (estate layout)", run = "test -d .machine_readable/6a2/anchor", severity = "warning" }
+self-validating-structure = { description = "self-validating directory has templates and examples", run = "test -d .machine_readable/self-validating && test -d .machine_readable/self-validating/examples", severity = "warning" }
+bot-directives-present = { description = "bot_directives directory with hypatia/gitbot-fleet/git-private-farm directives", run = "test -f .machine_readable/bot_directives/hypatia.a2ml && test -f .machine_readable/bot_directives/gitbot-fleet.a2ml && test -f .machine_readable/bot_directives/git-private-farm.a2ml", severity = "warning" }
+submodule-recorded = { description = "absolute-zero/ stays a recorded git submodule (PR #89)", run = "git config -f .gitmodules submodule.absolute-zero.url", severity = "critical" }
+
+[universal-invariants]
+# Ported from the former root MUST.contractile. Statement-form invariants
+# enforced by review, hypatia scan, and the estate CI bundle.
+paths = [
+  "no hardcoded absolute paths (/home/*, /mnt/*, /var/mnt/*)",
+  "all paths use env vars, XDG dirs, or relative references",
+]
+language-policy = [
+  "no new TypeScript files",
+  "no new Python files",
+  "no new Go files",
+  "no npm/bun/yarn/pnpm dependencies — Deno only",
+]
+dangerous-patterns = [
+  "no believe_me (Idris2)",
+  "no assert_total (Idris2)",
+  "no Admitted (Coq)",
+  "no sorry (Lean)",
+  "no unsafeCoerce (Haskell)",
+  "no Obj.magic (OCaml)",
+  "no unsafe {} blocks without safety comment (Rust)",
+]
+license = [
+  "SPDX-License-Identifier header on every source file",
+  "no removal or modification of LICENSE file",
+]
+structure = [
+  ".machine_readable/ directory preserved",
+  "0-AI-MANIFEST.a2ml preserved",
+  "no SCM files in repo root — only in .machine_readable/",
+]
+ci = [
+  "no removal of CI workflows without explicit approval",
+  "all GitHub Actions SHA-pinned",
+]
+code-quality = [
+  "tests must not be deleted or weakened",
+  "generated code in generated/ directory only",
+  "no introduction of OWASP top 10 vulnerabilities",
+]
+abi-ffi = [
+  "no modification of ABI contracts without proof update",
+  "no removal of formal verification proofs",
+]
+
+[project-specific-invariants]
+submodule = "absolute-zero/ is a pinned submodule — never re-inline it as a subtree; bump the pointer instead"
+proof-debt = "docs/proof-debt.md entries may shrink but must not silently grow (standards#203 schema)"
+
+[git-state]
+no-untracked-contractiles = { description = "all contractile files are tracked in git", run = "test -z \"$(git ls-files -o --exclude-standard .machine_readable/contractiles/ 2>/dev/null)\"", severity = "critical" }
+
+[enforcement]
+ci = "estate CI bundle (governance.yml, dogfood-gate.yml) + hypatia-scan.yml run on every PR"
+hooks = "pre-commit hooks fail on MUST violations where configured"

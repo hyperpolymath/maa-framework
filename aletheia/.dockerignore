@@ -1,0 +1,46 @@
+# Docker ignore file - exclude unnecessary files from Docker context
+
+# Git
+.git/
+.gitignore
+
+# Build artifacts
+target/
+*.rs.bk
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Documentation (not needed in container)
+docs/
+examples/
+*.md
+!README.md
+
+# CI/CD
+.gitlab-ci.yml
+.github/
+
+# Development tools
+justfile
+flake.nix
+.editorconfig
+.rustfmt.toml
+.clippy.toml
+
+# Tests and benchmarks
+tests/
+benches/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db

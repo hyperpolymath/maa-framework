@@ -1,0 +1,69 @@
+# SPDX-License-Identifier: MPL-2.0
+# Justfile — build automation for @@PROJECT_NAME@@.
+# See: https://github.com/casey/just
+#
+# Every recipe here is offline: the crate has zero dependencies, so
+# `--offline` always succeeds. Recipes fail loudly — a recipe that echoes a
+# message and exits 0 would be a fake gate (RSR v2 6.1.5, Gold).
+
+default:
+    @just --list
+
+# Build the crate (debug)
+build:
+    cargo build --offline
+
+# Build the crate in release mode
+build-release:
+    cargo build --offline --release
+
+# Run the binary; pass arguments after the recipe name
+run *ARGS:
+    cargo run --offline --quiet -- {{ARGS}}
+
+# Run the full test suite (unit + integration)
+test:
+    cargo test --offline
+
+# Check formatting without modifying files
+fmt:
+    cargo fmt --check
+
+# Apply formatting
+fmt-fix:
+    cargo fmt
+
+# Lint with warnings denied
+lint:
+    cargo clippy --offline --all-targets -- -D warnings
+
+# Enforce the zero-dependency guarantee (RSR Bronze, air-gapped build)
+deps-check:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    if cargo tree --offline --depth 1 | tail -n +2 | grep -q '[a-z]'; then
+      echo "ERROR: dependencies detected — this crate must stay zero-dependency."
+      cargo tree --offline --depth 1
+      exit 1
+    fi
+    echo "OK: zero dependencies"
+
+# Verify RSR compliance using the estate checker
+verify:
+    aletheia .
+
+# --- Rust/Creusot deductive verification (opt-in) ---------------------
+# These recipes need the Creusot toolchain (nightly Rust + Why3 + SMT
+# solvers). The default build never needs it — see verification/README.adoc.
+
+# Translate the annotated source to Coma and discharge every obligation
+# with Why3. Fails loudly on any unproved goal — this is a real gate.
+proof:
+    cd verification && cargo creusot
+
+# Remove generated Creusot/Why3 artefacts
+proof-clean:
+    cd verification && cargo creusot clean
+
+# Everything the CI gate runs, in the same order
+check: build test fmt lint deps-check

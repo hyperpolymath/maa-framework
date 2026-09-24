@@ -1,43 +1,17 @@
 // SPDX-License-Identifier: CC-BY-SA-4.0
-= Contributing
-:toc:
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+= Contributing to maa-framework
 
-== Getting Started
+New contributors start at `QUICKSTART-DEV.adoc` (setup, build, test, and
+the repo layout in one page). The long-form guide is
+`.github/CONTRIBUTING.md` — note it still carries template placeholders
+in places; treat it as an outline, not gospel.
 
-[source,bash]
-----
-git clone https://github.com/hyperpolymath/proofgateway
-cd proofgateway
-just check
-----
+The rules that will block your PR if you miss them:
 
-`just check` is the same gate CI runs. It must pass before you open a pull
-request.
-
-== Workflow
-
-. Fork the repository.
-. Create a branch: `+git checkout -b feat/my-feature+`.
-. Make your change, with tests.
-. Run `+just check+`.
-. Commit using Conventional Commits (`+feat:+`, `+fix:+`, `+docs:+`, `+chore:+`).
-. Open a pull request.
-
-== Standards
-
-This project follows the RSR (Rhodium Standard Repository) criteria. Two
-rules bite most often:
-
-* *No silent skips.* A recipe that echoes a message and exits 0 is a fake
-  gate. Fail loudly.
-* *SPDX headers.* Every source file carries an `+SPDX-License-Identifier+`
-  in its first ten lines.
-
-== Language Policy
-
-Rust here is always *Rust/Creusot*: Rust plus the Creusot deductive verifier. `just proof` translates `+src/impl.rs+` and discharges every obligation with Why3/Z3/CVC5, exiting non-zero on any unproved goal; the main crate stays zero-dependency because the specifications are gated behind `+cfg(creusot)+`.
-
-== Review
-
-Pull requests require review before merge. See link:MAINTAINERS.adoc[MAINTAINERS.adoc]
-for decision-making.
+* `main` merges squash-only, on PRs only, with signed commits
+  (Optimus-Branch ruleset, zero bypass actors — direct pushes fail).
+* `just check` must pass locally: it mirrors the CI gate exactly
+  (build, test, fmt, clippy with warnings denied, zero-dependency).
+* Normative state lives in `.machine_readable/6a2/STATE.a2ml` — read the
+  `[landmines]` section before touching CI, workflows, or contracts.

@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: MPL-2.0
+/dist-newstyle/
+dist-newstyle/
+*.hi
+*.o
+*.hie
+.ghc.environment.*

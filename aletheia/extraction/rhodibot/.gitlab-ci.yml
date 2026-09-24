@@ -1,0 +1,104 @@
+# Rhodibot GitLab CI/CD Pipeline
+# RSR Bronze compliant: zero dependencies, zero unsafe code
+
+stages:
+  - check
+  - test
+  - build
+  - verify
+
+variables:
+  CARGO_HOME: ${CI_PROJECT_DIR}/.cargo
+  RUSTFLAGS: "-Dwarnings"
+
+.rust-template:
+  image: rust:latest
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}
+    paths:
+      - .cargo/
+      - target/
+
+# Check stage
+fmt:
+  extends: .rust-template
+  stage: check
+  script:
+    - cargo fmt --check
+
+clippy:
+  extends: .rust-template
+  stage: check
+  script:
+    - rustup component add clippy
+    - cargo clippy -- -D warnings
+
+unsafe-check:
+  extends: .rust-template
+  stage: check
+  script:
+    - |
+      if grep -r "unsafe" src/; then
+        echo "Unsafe code detected!"
+        exit 1
+      fi
+
+deps-check:
+  extends: .rust-template
+  stage: check
+  script:
+    - |
+      deps=$(cargo tree --depth 0 | grep -c "^")
+      if [ "$deps" -gt 1 ]; then
+        echo "External dependencies detected!"
+        exit 1
+      fi
+
+# Test stage
+test:
+  extends: .rust-template
+  stage: test
+  script:
+    - cargo test --verbose
+
+test-release:
+  extends: .rust-template
+  stage: test
+  script:
+    - cargo test --release --verbose
+
+# Build stage
+build-debug:
+  extends: .rust-template
+  stage: build
+  script:
+    - cargo build
+  artifacts:
+    paths:
+      - target/debug/rhodibot
+    expire_in: 1 week
+
+build-release:
+  extends: .rust-template
+  stage: build
+  script:
+    - cargo build --release
+  artifacts:
+    paths:
+      - target/release/rhodibot
+    expire_in: 1 month
+
+# Verify stage
+self-verify:
+  extends: .rust-template
+  stage: verify
+  dependencies:
+    - build-release
+  script:
+    - ./target/release/rhodibot check .
+    - ./target/release/rhodibot badge
+    - ./target/release/rhodibot conformity > RSR-CONFORMITY.md
+  artifacts:
+    paths:
+      - RSR-CONFORMITY.md
+    expire_in: 1 month

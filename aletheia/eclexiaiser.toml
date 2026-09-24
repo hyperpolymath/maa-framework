@@ -1,0 +1,26 @@
+# eclexiaiser manifest — energy/carbon resource budgets
+# SPDX-License-Identifier: MPL-2.0
+
+[project]
+name = "aletheia"
+
+[[functions]]
+name = "check_spdx_headers"
+source = "src/checks.rs"
+energy-budget-mj = 25.0
+carbon-budget-mg = 5.0
+
+[[functions]]
+name = "check_documentation"
+source = "src/checks.rs"
+energy-budget-mj = 15.0
+carbon-budget-mg = 3.0
+
+[carbon]
+provider = "static"
+region = "GB"
+static-intensity = 200.0
+
+[report]
+format = "text"
+include-recommendations = true

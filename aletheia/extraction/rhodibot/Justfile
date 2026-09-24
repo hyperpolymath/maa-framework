@@ -1,0 +1,85 @@
+# Rhodibot - RSR Compliance Bot
+# Build automation with just (https://just.systems)
+
+# Default recipe
+default: check
+
+# Build in debug mode
+build:
+    cargo build
+
+# Build in release mode
+release:
+    cargo build --release
+
+# Run all checks
+check: fmt-check clippy test
+    @echo "All checks passed!"
+
+# Run tests
+test:
+    cargo test
+
+# Run clippy linter
+clippy:
+    cargo clippy -- -D warnings
+
+# Check formatting
+fmt-check:
+    cargo fmt --check
+
+# Format code
+fmt:
+    cargo fmt
+
+# Run rhodibot on itself (self-verification)
+self-check:
+    cargo run -- check .
+
+# Generate badge
+badge:
+    cargo run -- badge
+
+# Generate conformity document
+conformity:
+    cargo run -- conformity
+
+# Clean build artifacts
+clean:
+    cargo clean
+
+# Install locally
+install:
+    cargo install --path .
+
+# Run with JSON output
+json:
+    cargo run -- check . --format json
+
+# Run in quiet mode
+quiet:
+    cargo run -- check . --quiet
+
+# Run in verbose mode
+verbose:
+    cargo run -- check . --verbose
+
+# Show help
+help:
+    cargo run -- --help
+
+# Generate documentation
+docs:
+    cargo doc --no-deps --open
+
+# Check for unsafe code
+unsafe-check:
+    @! grep -r "unsafe" src/ || echo "No unsafe code found"
+
+# Check for dependencies
+deps-check:
+    @cargo tree --depth 0 | grep -c "^" | xargs -I {} test {} -eq 1 && echo "Zero dependencies verified"
+
+# Full CI pipeline
+ci: check self-check
+    @echo "CI pipeline complete"

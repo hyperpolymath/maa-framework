@@ -1,112 +1,215 @@
-// SPDX-License-Identifier: CC-BY-SA-4.0
-= proofgateway
-:toc:
+// SPDX-License-Identifier: MPL-2.0
+= MAA Framework — Mutually Assured Accountability
+:toc: preamble
+:toc-title: Contents
 :icons: font
+:doctype: article
 
-____
-An RSR v2-compliant Rust/Creusot project.
-____
+image:https://img.shields.io/badge/OpenSSF-BestPractices-green[link="https://www.bestpractices.dev/projects/XXXX"]
 
-== Quick Start
+Governance hub and microkernel for the Mutually Assured Accountability paradigm: building verifiably-compliant, secure, and sustainable systems where accountability is symmetric and enforceable.
+
+== Overview
+
+Mutually Assured Accountability (MAA) is a paradigm where accountability between system participants is symmetric—each party can verify the other's compliance, and no party is above audit. This repository is the governance hub and implementation centre for the MAA ecosystem.
+
+The ecosystem has three components:
+
+[cols="1,2", options="header"]
+|===
+| Component | Role
+
+| MAA Framework
+| Governance hub, specifications, CI, and integration layer
+
+| Oblíbený
+| Reference language designed for the framework (specification stage)
+
+| Aletheia
+| Microkernel implementation (Rust, in-tree)
+|===
+
+The Certified Null Operation (CNO) formalisation is developed upstream in `link:https://github.com/hyperpolymath/absolute-zero[absolute-zero]` and pinned here as a git submodule.
+
+== What is built and what is planned
+
+[cols="1,2,2", options="header"]
+|===
+| Artefact | Status | Evidence
+
+| Aletheia microkernel (Rust)
+| Builds, 29 unit tests passing, zero dependencies
+| `aletheia/`, CI gate `rust-ci.yml`
+
+| CRG Tier-C test suite
+| Landed 2026-04-04 (unit, E2E, property, aspect, benchmarks)
+| `tests/`
+
+| CI gates at repository root
+| Green across every enabled workflow; each shown capable of failing
+| `.github/workflows/`
+
+| Hub-and-spoke mirroring
+| GitHub → GitLab, Codeberg, Bitbucket (automated)
+| Mirror workflows
+
+| CLI surface for Aletheia
+| **Unbuilt** — `main.rs` wires 3 checks; integration suite specifies more
+| Issue #124
+
+| Oblíbený reference language
+| **Specification stage**
+| Not yet in tree
+
+| Specification documents
+| **Pending upload** (ROADMAP Phase 1)
+| `docs/` (partial)
+|===
+
+== Known gaps
+
+[NOTE]
+====
+**Aletheia CLI rebuilt 2026-09-21 (was: unbuilt, #124).** The CLI now implements the RSR v2 offline file-presence subset (26 checks: 13 Bronze, 12 Silver, 1 Gold) with human/JSON/SARIF/HTML/badge/quiet/verbose output; 68 unit + 47 integration tests pass. The hypatia `rsr-conformance` oracle stays normative — aletheia evaluates only the offline subset and says so in verbose output.
+====
+
+[NOTE]
+====
+**Clippy clean and blocking since 2026-09-21 (was: 23 findings, #125).** The findings were wired into real code, not silenced; `cargo clippy --all-targets -- -D warnings` gates in `rust-ci.yml` and `just lint`.
+====
+
+[CAUTION]
+====
+**`aletheia/.github/workflows/` is inert.** GitHub Actions reads `.github/workflows/` at the repository root only, and `aletheia/` is vendored as plain tracked files (not a submodule). Those 16 workflow files have never executed. Gates must be added at the root, not inside `aletheia/`.
+====
+
+[CAUTION]
+====
+**Specification uploads are pending.** ROADMAP Phase 1 (specification publication) is not complete. The project scope is stated; the formal specifications backing it are not yet in-tree.
+====
+
+== What is standard and what is ours
+
+[cols="1,2,2", options="header"]
+|===
+| Concept | Status | Home
+
+| Microkernel architecture (Rust)
+| Standard
+| `aletheia/`
+
+| Hub-and-spoke repo mirroring
+| Standard
+| `.github/workflows/` (mirror sync)
+
+| SHA-pinned GitHub Actions
+| Standard supply-chain hygiene
+| `.github/workflows/`
+
+| Mutually Assured Accountability paradigm
+| **Novel governance concept**
+| This repository
+
+| Symmetric accountability enforcement
+| **Novel** (paradigm definition)
+| Specifications (pending)
+
+| Oblíbený reference language
+| **Novel** (specification stage)
+| Not yet in tree
+|===
+
+== Project scope
+
+The framework addresses these domains. Where an implementation exists, it is noted; where it does not, the domain is a stated intention:
+
+[cols="1,2", options="header"]
+|===
+| Domain | Current status
+
+| Security & Formal Verification
+| CNO submodule pinned; Aletheia builds
+
+| AI Ethics & Axiology
+| Specification pending
+
+| Dependability
+| Specification pending
+
+| Language Design & Compilers
+| Oblíbený at specification stage
+
+| Microkernel Architecture
+| Aletheia: builds, 29 unit tests, zero dependencies
+
+| RISC-V
+| Specification pending
+
+| Sustainability
+| Specification pending
+
+| Economics-as-Code
+| Specification pending
+
+| Distributed Computing
+| Specification pending
+
+| Reversibility
+| CNO submodule (upstream: `absolute-zero`)
+
+| Web Protocols
+| Specification pending
+|===
+
+== Repository Layout
+
+[cols="1,3", options="header"]
+|===
+| Path | Purpose
+
+| `aletheia/`
+| Microkernel implementation (Rust, vendored in-tree)
+
+| `absolute-zero/`
+| CNO formalisation (git submodule, developed upstream)
+
+| `tests/`
+| E2E, property, aspect tests (CRG Tier-C)
+
+| `.github/workflows/`
+| CI gates and mirror synchronization (root level only)
+
+| `docs/`
+| Specifications and state-of-play documents
+
+| `.machine_readable/`
+| 6a2 metadata, contractiles, bot directives
+|===
+
+== Build
 
 [source,bash]
 ----
-# Build (offline, zero dependencies)
-just build
+# Aletheia microkernel
+cd aletheia/
+cargo build
+cargo test
 
-# Test
-just test
-
-# Verify RSR compliance
+# Full CI (from repository root)
 just verify
 ----
 
-This project is *standalone by construction*: the scaffold fetches nothing.
-`cargo build --offline` works on a machine with no network, because the
-crate has zero dependencies and the licence texts ship in-tree under
-`+LICENSES/+`.
-
-== RSR Compliance
-
-[cols="1,3"]
-|===
-|Bronze |Documentation, security policy, SPDX headers, CI, licence classification
-|Silver |`.editorconfig`, `.tool-versions`, machine-readable manifests, SHA-pinned CI, `+LICENSES/+`
-|Gold |No silent-skip recipes
-|===
-
-Verify with the estate's own checker:
-
-[source,bash]
-----
-aletheia .
-----
-
-== Language: Rust/Creusot
-
-Per the estate language policy, Rust in this estate is always *Rust/Creusot*
-— Rust plus https://github.com/creusot-rs/creusot[Creusot], the deductive
-verifier that translates annotated Rust to Why3 and discharges proof
-obligations with SMT solvers.
-
-The verification crate lives in `+verification/+` and is *deliberately
-detached from the default Cargo workspace*, so the main crate stays
-zero-dependency and air-gapped. Only `just proof` needs the Creusot
-toolchain (nightly Rust + Why3 + SMT solvers), and only when you actually
-run it.
-
-`+src/impl.rs+` is a single source of truth: both `+src/lib.rs+` and
-`+verification/src/lib.rs+` `include!` it, so what Creusot verifies is the
-code that ships. The specifications are gated behind `+cfg(creusot)+`, which
-only `+creusot-rustc+` sets:
-
-[source,rust]
-----
-#[cfg_attr(creusot, requires(lo@ <= hi@))]
-#[cfg_attr(creusot, ensures(lo@ <= result@ && result@ <= hi@))]
-pub fn clamp(value: u32, lo: u32, hi: u32) -> u32 { ... }
-----
-
-`+just proof+` translates and discharges both obligations; it exits non-zero
-if any goal is unproved.
-
-See link:verification/README.adoc[verification/README.adoc] for setup.
-
 == Documentation
 
-* link:SECURITY.adoc[Security Policy] — vulnerability disclosure
-* link:CONTRIBUTING.adoc[Contributing Guide] — how to contribute
-* link:CODE_OF_CONDUCT.adoc[Code of Conduct] — community standards
-* link:MAINTAINERS.adoc[Maintainers] — ownership and decisions
-* link:CHANGELOG.adoc[Changelog] — version history
-
-== Layout
-
-....
-.
-├── Justfile              # build automation (capital J — v2 shape)
-├── LICENSE               # licence statement
-├── LICENSES/             # full licence texts (REUSE style)
-├── src/                  # crate source
-├── tests/                # integration tests
-├── verification/         # Rust/Creusot proof crate (detached from workspace)
-├── .github/workflows/    # CI + estate gates
-├── .machine_readable/    # machine-readable metadata
-└── .well-known/          # security.txt, ai.txt, humans.txt
-....
-
-== Contributing
-
-See link:CONTRIBUTING.adoc[CONTRIBUTING.adoc].
+* link:EXPLAINME.adoc[EXPLAINME] — claim-by-claim receipts and known gaps
+* link:Glossary.adoc[Glossary] — terminology reference
+* `docs/STATE-OF-PLAY-2026-07-29.adoc` — CI status, gated checks, proof state, open questions
+* `ROADMAP.adoc` — development phases
+* `GOVERNANCE.adoc` — project governance
+* link:https://github.com/hyperpolymath/absolute-zero[absolute-zero] — CNO formalisation (upstream)
 
 == License
 
-Code is licensed under the Mozilla Public License, version 2.0
-(`+MPL-2.0+`). Documentation is licensed under Creative Commons
-Attribution-ShareAlike 4.0 International (`+CC-BY-SA-4.0+`).
+SPDX-License-Identifier: MPL-2.0 — see link:LICENSE[LICENSE].
 
-See link:LICENSE[LICENSE] and the `+LICENSES/+` directory for full texts.
-
-'''''
-
-_Created from the aletheia v2 Bronze template._
+Prose documentation is licensed under CC-BY-SA-4.0; see `LICENSES/`.

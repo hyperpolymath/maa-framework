@@ -1,23 +1,136 @@
-# SPDX-License-Identifier: MPL-2.0
-# Build artefacts
-/target/
-**/target/
-Cargo.lock
-
-# Creusot/Why3 proof artefacts
-*.coma
-*.mlcfg
-verification/verif/
-verification/target/
-.why3find/
-
-# Editors and OS
+# RSR-compliant .gitignore
+# OS generated files
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE and editor files
 .idea/
 .vscode/
 *.swp
+*.swo
 *~
 
-# Local environment
+# Secrets and credentials (never commit these)
+*.pem
+*.key
 .env
-.env.local
+.env.*
+!.env.example
+credentials.json
+secrets.yaml
+
+# Rust
+/target/
+
+# Logs
+*.log
+logs/
+
+
+# OS & Editor
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+
+
+# Build
+/target/
+/_build/
+/build/
+/dist/
+/out/
+/zig-out/
+/zig-cache/
+
+
+# Dependencies
+/node_modules/
+/vendor/
+/deps/
+/.elixir_ls/
+
+
+# Cargo.lock  # Keep for binaries
+
+
+# Elixir
+/cover/
+/doc/
+*.ez
+erl_crash.dump
+
+
+# Julia
+*.jl.cov
+*.jl.mem
+/Manifest.toml
+
+
+# ReScript
+/lib/bs/
+/.bsb.lock
+
+
+# Python (SaltStack only)
+__pycache__/
+*.py[cod]
+.venv/
+
+
+# Ada/SPARK
+*.ali
+/obj/
+/bin/
+
+
+# Haskell
+/.stack-work/
+/dist-newstyle/
+
+
+# Chapel
+*.chpl.tmp.*
+
+
+# Secrets
+.env
+.env.*
+*.pem
+*.key
+secrets/
+
+
+# Test/Coverage
+/coverage/
+htmlcov/
+
+
+# Machine-readable locks
+.machine_readable/.locks/
+
+
+# Temp
+/tmp/
+*.tmp
+*.baktarget/
+node_modules/
+_build/
+deps/
+.elixir_ls/
+.cache/
+build/
+dist/
+
+# Claude Code worktrees — local scratch, never tracked.
+# A worktree committed as a gitlink has no .gitmodules entry, which breaks
+# every `git submodule update` and recursive checkout (see PR #145).
+.claude/worktrees/

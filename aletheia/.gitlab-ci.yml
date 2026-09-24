@@ -1,0 +1,295 @@
+# GitLab CI/CD Pipeline for Aletheia
+# RSR Bronze-level compliance verification
+
+# Global variables
+variables:
+  CARGO_HOME: $CI_PROJECT_DIR/.cargo
+  RUST_BACKTRACE: "1"
+
+# Cache Cargo dependencies
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - .cargo/
+    - target/
+
+# Pipeline stages
+stages:
+  - check
+  - test
+  - build
+  - verify
+  - deploy
+
+# Job templates
+.rust_job:
+  image: rust:1.75
+  before_script:
+    - rustc --version
+    - cargo --version
+    - rustup component add rustfmt clippy
+
+# ============================================================================
+# CHECK STAGE - Fast feedback on code quality
+# ============================================================================
+
+format:check:
+  extends: .rust_job
+  stage: check
+  script:
+    - cargo fmt -- --check
+  allow_failure: false
+
+clippy:check:
+  extends: .rust_job
+  stage: check
+  script:
+    - cargo clippy --all-targets -- -D warnings
+  allow_failure: false
+
+# Check that we maintain zero dependencies
+dependencies:check:
+  extends: .rust_job
+  stage: check
+  script:
+    - echo "Verifying zero dependencies for RSR Bronze compliance..."
+    - cargo tree --depth 0
+    - |
+      DEPS=$(cargo tree --depth 0 | grep -v "aletheia" | wc -l)
+      if [ "$DEPS" -ne "0" ]; then
+        echo "❌ ERROR: Dependencies detected! RSR Bronze requires zero dependencies."
+        exit 1
+      fi
+    - echo "✅ Zero dependencies verified"
+  allow_failure: false
+
+# Check for unsafe code blocks
+unsafe:check:
+  extends: .rust_job
+  stage: check
+  script:
+    - echo "Checking for unsafe code blocks..."
+    - |
+      if grep -r "unsafe" src/; then
+        echo "❌ ERROR: Unsafe code detected! RSR Bronze requires zero unsafe blocks."
+        exit 1
+      fi
+    - echo "✅ No unsafe code found"
+  allow_failure: false
+
+# ============================================================================
+# TEST STAGE - Run all tests
+# ============================================================================
+
+test:unit:
+  extends: .rust_job
+  stage: test
+  script:
+    - cargo test --verbose
+  coverage: '/^\s*lines:\s*\d+\.\d+%/'
+
+test:release:
+  extends: .rust_job
+  stage: test
+  script:
+    - cargo test --release --verbose
+
+test:doc:
+  extends: .rust_job
+  stage: test
+  script:
+    - cargo test --doc
+
+# Security audit (requires Cargo.lock)
+security:audit:
+  extends: .rust_job
+  stage: test
+  script:
+    - cargo install cargo-audit
+    - cargo audit
+  allow_failure: true  # Don't fail on advisories for now
+
+# ============================================================================
+# BUILD STAGE - Build release binaries
+# ============================================================================
+
+build:debug:
+  extends: .rust_job
+  stage: build
+  script:
+    - cargo build --verbose
+  artifacts:
+    paths:
+      - target/debug/aletheia
+    expire_in: 1 week
+
+build:release:
+  extends: .rust_job
+  stage: build
+  script:
+    - cargo build --release --verbose
+  artifacts:
+    paths:
+      - target/release/aletheia
+    expire_in: 1 month
+
+build:linux-musl:
+  extends: .rust_job
+  stage: build
+  script:
+    - rustup target add x86_64-unknown-linux-musl
+    - cargo build --release --target x86_64-unknown-linux-musl
+  artifacts:
+    paths:
+      - target/x86_64-unknown-linux-musl/release/aletheia
+    expire_in: 1 month
+  only:
+    - tags
+    - main
+
+# ============================================================================
+# VERIFY STAGE - RSR compliance self-verification
+# ============================================================================
+
+verify:rsr-compliance:
+  extends: .rust_job
+  stage: verify
+  dependencies:
+    - build:release
+  script:
+    - echo "Running RSR self-verification..."
+    - cargo run --release
+    - |
+      if cargo run --release; then
+        echo "✅ RSR Bronze compliance verified"
+      else
+        echo "❌ RSR Bronze compliance failed"
+        exit 1
+      fi
+
+verify:documentation:
+  image: alpine:latest
+  stage: verify
+  script:
+    - echo "Verifying required documentation files..."
+    - |
+      DOCS="README.md LICENSE.txt SECURITY.md CONTRIBUTING.md CODE_OF_CONDUCT.md MAINTAINERS.md CHANGELOG.md"
+      for doc in $DOCS; do
+        if [ ! -f "$doc" ]; then
+          echo "❌ Missing: $doc"
+          exit 1
+        fi
+        echo "✅ Found: $doc"
+      done
+    - echo "Verifying .well-known directory..."
+    - |
+      WELL_KNOWN=".well-known/security.txt .well-known/ai.txt .well-known/humans.txt"
+      for file in $WELL_KNOWN; do
+        if [ ! -f "$file" ]; then
+          echo "❌ Missing: $file"
+          exit 1
+        fi
+        echo "✅ Found: $file"
+      done
+    - echo "✅ All documentation verified"
+
+verify:build-system:
+  image: alpine:latest
+  stage: verify
+  script:
+    - echo "Verifying build system files..."
+    - |
+      BUILD_FILES="justfile flake.nix .gitlab-ci.yml Cargo.toml"
+      for file in $BUILD_FILES; do
+        if [ ! -f "$file" ]; then
+          echo "❌ Missing: $file"
+          exit 1
+        fi
+        echo "✅ Found: $file"
+      done
+    - echo "✅ Build system verified"
+
+# ============================================================================
+# DEPLOY STAGE - Release artifacts
+# ============================================================================
+
+# Create GitLab release
+release:gitlab:
+  extends: .rust_job
+  stage: deploy
+  dependencies:
+    - build:release
+    - build:linux-musl
+  script:
+    - echo "Preparing release artifacts..."
+    - mkdir -p release
+    - cp target/release/aletheia release/aletheia-x86_64-unknown-linux-gnu
+    - cp target/x86_64-unknown-linux-musl/release/aletheia release/aletheia-x86_64-unknown-linux-musl
+    - cd release && sha256sum * > SHA256SUMS
+  artifacts:
+    paths:
+      - release/
+    expire_in: never
+  only:
+    - tags
+
+# Publish documentation
+pages:
+  extends: .rust_job
+  stage: deploy
+  script:
+    - cargo doc --no-deps
+    - mv target/doc public
+    - echo '<meta http-equiv="refresh" content="0; url=aletheia">' > public/index.html
+  artifacts:
+    paths:
+      - public
+  only:
+    - main
+
+# ============================================================================
+# SCHEDULED JOBS - Periodic checks
+# ============================================================================
+
+# Weekly security audit
+security:audit:scheduled:
+  extends: .rust_job
+  stage: test
+  script:
+    - cargo install cargo-audit
+    - cargo audit
+  only:
+    - schedules
+
+# ============================================================================
+# MERGE REQUEST PIPELINE - Fast feedback for MRs
+# ============================================================================
+
+# Fast checks for merge requests
+mr:quick-check:
+  extends: .rust_job
+  stage: check
+  script:
+    - cargo fmt -- --check
+    - cargo clippy -- -D warnings
+    - cargo check
+  only:
+    - merge_requests
+
+# ============================================================================
+# RULES AND CONDITIONS
+# ============================================================================
+
+# Default pipeline runs on:
+# - Pushes to any branch
+# - Merge requests
+# - Tags
+# - Scheduled pipelines
+
+workflow:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_TAG'
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+    - if: '$CI_COMMIT_BRANCH'

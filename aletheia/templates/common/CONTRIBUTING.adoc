@@ -1,0 +1,43 @@
+// SPDX-License-Identifier: CC-BY-SA-4.0
+= Contributing
+:toc:
+
+== Getting Started
+
+[source,bash]
+----
+git clone @@REPO_URL@@
+cd @@PROJECT_NAME@@
+just check
+----
+
+`just check` is the same gate CI runs. It must pass before you open a pull
+request.
+
+== Workflow
+
+. Fork the repository.
+. Create a branch: `+git checkout -b feat/my-feature+`.
+. Make your change, with tests.
+. Run `+just check+`.
+. Commit using Conventional Commits (`+feat:+`, `+fix:+`, `+docs:+`, `+chore:+`).
+. Open a pull request.
+
+== Standards
+
+This project follows the RSR (Rhodium Standard Repository) criteria. Two
+rules bite most often:
+
+* *No silent skips.* A recipe that echoes a message and exits 0 is a fake
+  gate. Fail loudly.
+* *SPDX headers.* Every source file carries an `+SPDX-License-Identifier+`
+  in its first ten lines.
+
+== Language Policy
+
+@@LANG_POLICY@@
+
+== Review
+
+Pull requests require review before merge. See link:MAINTAINERS.adoc[MAINTAINERS.adoc]
+for decision-making.

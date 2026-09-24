@@ -1,0 +1,26 @@
+# SPDX-License-Identifier: MPL-2.0
+# hypatia.a2ml — Hypatia scanner directives for maa-framework
+# Per-repo directives for the Hypatia security/policy scanner.
+
+[metadata]
+repo = "maa-framework"
+last-updated = "2026-09-21"
+owner = "hyperpolymath"
+
+[scanner]
+ignore-file = ".hypatia-ignore"  # present at repo root
+workflow = ".github/workflows/hypatia-scan.yml"  # thin wrapper of hyperpolymath/standards hypatia-scan-reusable.yml (standards#191), weekly cron + push/PR
+report-format = "logtalk"  # per 6a2/NEUROSYM.a2ml [hypatia-config]
+
+[accepted-findings]
+# No active exemptions (2026-09-21, issue #98): the 10 mirrored
+# banned_language_file entries were pruned after verifying every path dead
+# at the pinned absolute-zero commit. Upstream residue is tracked in the
+# owning repo (hyperpolymath/absolute-zero#77). standards#180 has merged,
+# so file_pattern globs are available if per-file exemptions ever return.
+
+[prohibited-actions]
+auto-delete-branches = false
+auto-merge = false
+modify-workflows = false
+escalation = "open an issue, do not spam PR comments"

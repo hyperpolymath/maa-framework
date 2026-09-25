@@ -908,6 +908,7 @@ Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com> (4e7183f)
 
 ### Security
 
+- Bump haskell-actions/setup from 2.12.0 to 2.12.1 in the github-actions group (#235) (7ddac54)
 - Bump github/codeql-action from 4.38.0 to 4.38.1 in the github-actions group (#187) (e6d02db)
 - Bump github/codeql-action from 4.37.7 to 4.37.8 in the github-actions group (#162) (8d726d5)
 - Bump dawidd6/action-send-mail from 3.12.0 to 18 in the github-actions group (#160) (6519a5f)

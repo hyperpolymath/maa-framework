@@ -202,6 +202,7 @@ and the project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 
 ### Other
 
+- Bump the github-actions group with 2 updates (#237) (dd233b7)
 - Exercise the generated Rust proof gate on a runner (do not merge) (#231) (5014068)
 - Bump the github-actions group with 2 updates (#226) (7b1b3c1)
 - Bump the github-actions group with 2 updates (#200) (3be3969)

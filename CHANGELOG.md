@@ -131,366 +131,79 @@ and the project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 - Sync template files and configuration (d42b6f7)
 
 
-### Documentation
+### Dependencies
 
-- Record the runner runs of both proof gates (58e98dd)
-- Remove a token prefix that should not have been recorded (ab53573)
-- Record measured state of play, for humans and for machines (#148) (de054c2)
-- Convert README.adoc -> Markdown (renders on Glama/profile/community-health) (#110) (307d672)
-- Flip ReScript→AffineScript per 2026-05-25 estate language policy (#88) (9dbf56b)
-- Seed CHANGELOG.md (Keep-a-Changelog format) (#81) (b80aecf)
-- Adopt docs-template/ skeleton from rsr-template-repo#75 (#79) (2386f0a)
-- Record tech-debt audit findings (2026-05-26) (#75) (d05a500)
-- Seed proof-debt.md per standards#203 schema (all 150 markers §(e) vendored) (#82) (6f66f90)
-- Substantive CRG C annotation (EXPLAINME.adoc) (9917a32)
-- Achieve CRG C — document all test categories passing (b0fa5f1)
-- Add EXPLAINME.adoc — prove-it file backing README claims (58e6ffc)
-- Update SCM files with project information (b38fc35)
-- Add CONTRIBUTING.md (0848205)
-- Add checkpoint files for state tracking (1d70b71)
-- Update license from AGPL to PMPL (b6c9075)
-
-
-### Fixed
-
-- One .gitattributes pattern per line, not two (e51ae7c)
-- Break infinite changelog-regenerate loop (#221) (ad34228)
-- Codeql-action v4.38.1 -> v4.38.0 SHA pin + dependabot hold (estate-wide startup_failure) (#198) (918f434)
-- Strip reintroduced ZWSP + exclude generated CHANGELOG.md from empty-lint (#194) (9730f65)
-- Grant contents+PR write at caller TOP level (5/5 caller evidence) (#191) (270f65d)
-- Changelog caller needs actions:read on the JOB block (top-level is replaced, not merged) (#190) (dc4514e)
-- Restore green main — changelog perms, lock, ZWSP, docs gate, review port (#188) (0f837de)
-- Gate on the DEED grammar, per the template and standards#837 (#183) (93e8625)
-- Reconcile actions.lock so the lockfile validates (#184) (3beb02a)
-- Reconcile the workflows with actions.lock (gh-actions-lock) (#180) (ef7691a)
-- Pin third-party actions to full commit SHAs (#179) (afb63a6)
-- Repoint references to the relocated contributing guide (#177) (45fdcb4)
-- Make the dogfood gate .deed-aware (#174) (8285709)
-- Remove rust-ci.yml as repo has no Cargo.toml (#171) (7d8feda)
-- The invisible-character gate never matched anything (#165) (8ecd4cb)
-- Unbreak workflow YAML and add a complete actions.lock (#164) (2e9b818)
-- Repair workflows that are not valid YAML and have never run (#150) (d682669)
-- Remove stray worktree gitlink that breaks every recursive checkout (#145) (649bd51)
-- Real SHA-pinning check, real Justfile targets, and docs that match the code (#144) (7d964ee)
-- Restore guix.scm identity and licence (squisher-corpus clobber is live on main) (#143) (b61df34)
-- Repoint codeql-action at a SHA that exists (#142) (541f47f)
-- Re-point validate-action references at the ecosystem repos (#140) (c5175f3)
-- Remove the unrunnable SonarCloud step breaking Governance + CodeQL (#139) (f508c03)
-- Close the governance gate — SPDX, permissions, SHA pins, reusable bump (#136) (75ab929)
-- Group Dependabot updates into one PR per ecosystem (#127) (e895aa4)
-- Aletheia has not compiled since June — repair it, then gate it (#123) (0392152)
-- Drop invalid timeout-minutes from reusable-workflow calls (parse-dead) (#120) (85b7a22)
-- Clear OSSF Scorecard startup_failure (#118) (dc4a8b7)
-- Restore missing .gitmodules for absolute-zero submodule (#117) (082f45d)
-- Unblock 2 baseline-rot checks blocking dependabot #69 (#70) (b834329)
-- Pin upload-artifact to valid SHA in hypatia-scan.yml (Refs standards#48) (#57) (5d1a25f)
-- Bump a2ml/k9-validate-action pins to canonical (#55) (9e01cf8)
-- Sync hypatia-scan.yml to canonical (#54) (c701495)
-- Build Hypatia escript from repo root (estate dogfood drift) (1fb5b1c)
-- Adopt canonical hypatia-scan.yml (#52) (721e3ad)
-- Rsr-antipattern.yml duplicate heredoc (#49) (f1c6f5e)
-- Move secret-scanner Cargo.toml gate from job-level if: to step-level (#50) (9699724)
-- Remove eval, quote vars, use mktemp in absolute-zero shell scripts (250311f)
-- Eliminate all 3 sorry in LambdaCNO proofs (29259c0)
-- Enforce granular permissions and add fuzzing placeholder (1fe0a35)
-- Resolve 12 of 19 Lean4 sorry proofs in absolute-zero (4de6387)
-- Correct email jonathan.jewell → j.d.a.jewell (47c4070)
-- SPDX headers (AGPL→PMPL), email, author name (9e7755f)
-- SPDX AGPL-3.0 → PMPL-1.0-or-later in dotfiles (588abe8)
-- Remove duplicate SCM files from root (46a4513)
-
-
-### Other
-
+- Bump hyperpolymath/smtp-notify-action from 0.3.0 to 0.5.0 in the github-actions group (#239) (fdf162f)
 - Bump the github-actions group with 2 updates (#237) (dd233b7)
-- Exercise the generated Rust proof gate on a runner (do not merge) (#231) (5014068)
+- Bump haskell-actions/setup from 2.12.0 to 2.12.1 in the github-actions group (#235) (7ddac54)
 - Bump the github-actions group with 2 updates (#226) (7b1b3c1)
 - Bump the github-actions group with 2 updates (#200) (3be3969)
-- Close all open issues: aletheia rebuild (#124/#125), rust-ci restore, just shim (#102), changelog (#100), hypatia prune (#98) (#185)
-
-Closes all five open issues in one campaign branch (7 focused commits,
-each independently reviewable). Nothing here merges itself — review and
-merge when satisfied.
-
-**#124 — Aletheia CLI rebuilt on the RSR v2 SSOT** (`9323897`)
-- 26-check offline file-presence subset (13 Bronze / 12 Silver / 1
-Gold), every check citing its v2 criterion (`SSOT_PROVENANCE` in
-`checks.rs`)
-- Full CLI: `[repo-path]`, `--format X`/`=X`,
-`--json/--sarif/--html/--badge`, `-v/-q`, `--config`, `--init-hook`;
-exit codes 0/1/2/3/4
-- Real `.aletheia.toml` (level / per-check toggles / ignore globs);
-submodule skipping, symlink-escape criticals, per-check suggestions
-- **111/111 tests green** (66 unit + 45 integration), zero warnings,
-zero dependencies
-- The pin check learned the estate mechanism (`d8a0483`): tags covered
-by `actions.lock` pass (governance *forbids* inline SHAs with a lock —
-verified against governance-reusable); plus the tier-1 Bun carve-out
-
-**#125 — Clippy clean and blocking** (`9323897` + `5aa5041`)
-- Findings wired into real code, not silenced; `clippy --all-targets --
--D warnings` blocks in CI and `just lint`
-
-**rust-ci restored** (`5aa5041`, part of the #125 gate half)
-- The tree-move commit deleted the root gate without re-pointing it —
-main has had no Rust CI since. Restored with 5 jobs mirroring `just
-check`, tags + lock entry, validated YAML
-
-**#102 — Justfile canonicity** (`40b57fa`)
-- Root declared canonical; the contractiles stub (fake gates echoing
-"not configured yet") is now a forwarding shim — verified from three
-working directories (a bare `import` runs recipes in the wrong tree; the
-`working-directory` override fixes it)
-- Drive-by: `crg-grade`/`crg-badge` failed 100% of runs (Make-style
-`$$`); repaired and verified via root and shim
-
-**#100 — Changelog automation** (`12d123c`)
-- `changelog.yml` adopted (commit-back; main has no branch protection,
-verified via API), pinned to standards@b77c53c; no local cliff.toml by
-design
-- `CHANGELOG.md` seeded with the exact reusable recipe (git-cliff 2.6.1
-+ canonical config); `CHANGELOG.adoc` frozen as a pointer with content
-preserved
-
-**#98 — hypatia-ignore pruned** (`a7c768a`)
-- All 10 entries verified dead at the pinned submodule commit; file is
-now a comments-only audit record (history, re-verification commands,
-upstream pointer absolute-zero#77); cross-refs in `hypatia.a2ml` /
-`Dustfile.a2ml` / STATE updated
-
-**Docs sync** (`9ff1e99`)
-- Every doc describing the pre-campaign state re-measured: STATE.a2ml
-(rsr-source-of-truth ANSWERED), TEST-NEEDS, README, both EXPLAINMEs,
-CLAUDE.md, PROJECT_STATUS, full QUICK_REFERENCE v2 rewrite,
-superseded-spec banners, working `install.sh` (tested end to end),
-dead-GitLab contacts repointed
-
-**Deliberately not in this PR**
-- `create-template.sh` still *emits* the v1 shape — that is a generator
-rewrite, filed as a follow-up issue, not a docs touch-up
-- `docs/STATE-OF-PLAY-2026-07-29.adoc` untouched (dated snapshot)
-- Upstream `absolute-zero#77` owns that repo's stale ignore entries
-
-Verification: `just check` green (build + 111 tests + fmt + clippy `-D`
-+ zero-dep); aletheia self-verifies Bronze ACHIEVED (23/26); new
-workflows YAML-validated with no duplicate keys; `install.sh` tested end
-to end.
-
-Closes #98
-Closes #100
-Closes #102
-Closes #124
-Closes #125
-
----------
-
-Co-authored-by: Arena Agent <agent@arena.ai> (900c141)
+- Bump github/codeql-action from 4.38.0 to 4.38.1 in the github-actions group (#187) (e6d02db)
 - Bump the github-actions group with 2 updates (#172) (f00707d)
 - Bump the github-actions group across 1 directory with 2 updates (#170) (9dfe403)
-- Bun is tier 1, Deno is being removed (#163) (f19c544)
-- Expand glossary with core concepts and components
-
-Added glossary entries for core concepts, components, architecture, and pronunciation guide.
-
-Signed-off-by: Jonathan D.A. Jewell <6759885+hyperpolymath@users.noreply.github.com> (b446352)
-- Add EXPLAINME documentation for MAA Framework
-
-This document provides a detailed claim-to-implementation map for the MAA Framework, outlining the implementation status and caveats for various components, including the Rust microkernel and CI workflows.
-
-Signed-off-by: Jonathan D.A. Jewell <6759885+hyperpolymath@users.noreply.github.com> (a9fe4c1)
-- Add README documentation for MAA Framework
-
-Added comprehensive documentation for the MAA Framework, including governance, project scope, known gaps, and build instructions.
-
-Signed-off-by: Jonathan D.A. Jewell <6759885+hyperpolymath@users.noreply.github.com> (13aba6f)
-- Delete README.md
-
-Signed-off-by: Jonathan D.A. Jewell <6759885+hyperpolymath@users.noreply.github.com> (3a9b5d3)
-- Change license to MPL-2.0 and revise project overview
-
-Updated license information and project description in README.
-
-Signed-off-by: Jonathan D.A. Jewell <6759885+hyperpolymath@users.noreply.github.com> (80e3e36)
-- Worktree maa ci repair (#147)
-
-<!--
-SPDX-License-Identifier: CC-BY-SA-4.0
-Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
--->
-## Summary
-
-<!-- What does this PR do, and why? -->
-
-Closes #
-
-## Type of change
-
-- [ ] 🐛 Bug fix (non-breaking change that fixes an issue)
-- [ ] ✨ New feature (non-breaking change that adds functionality)
-- [ ] 💥 Breaking change (would change existing behaviour)
-- [ ] 🕳️ Soundness fix (fixes a checker/proof false-negative)
-- [ ] 📖 Documentation
-- [ ] 🧹 Refactor / tech debt (behaviour-preserving)
-- [ ] ⚡ Performance
-- [ ] 🔧 Build / CI / tooling
-
-## How has this been verified?
-
-<!-- Establish ground truth: which tool did you RUN, and what did it
-report?
-     Don't cite a status doc — cite the command and its output. -->
-
-## Checklist
-
-- [ ] My commits are **signed** (`git commit -S`).
-- [ ] I ran the project's own checks/tests locally and they pass.
-- [ ] New files carry the correct `SPDX-License-Identifier` (code/config
-`MPL-2.0`,
-      prose `CC-BY-SA-4.0`); I did not relicense existing files.
-- [ ] Docs are updated, and no public claim now overstates what the code
-does.
-- [ ] I have not introduced a soundness hole (or I have flagged where I
-might have).
-
-## Notes for reviewers
-
-<!-- Anything that needs special attention, follow-up, or context. -->
-
----------
-
-Co-authored-by: Claude Opus 4.8 <noreply@anthropic.com> (2bf7a13)
+- Bump github/codeql-action from 4.37.7 to 4.37.8 in the github-actions group (#162) (8d726d5)
+- Bump dawidd6/action-send-mail from 3.12.0 to 18 in the github-actions group (#160) (6519a5f)
+- Bump github/codeql-action from 4.37.6 to 4.37.7 in the github-actions group (#159) (827237d)
+- Bump github/codeql-action from 4.37.5 to 4.37.6 in the github-actions group (#154) (8caa296)
+- Bump the github-actions group with 4 updates (#152) (88fa28e)
 - Bump the github-actions group with 2 updates (#138) (7b6a293)
-- Update/licensing to pmpl ccby (#135)
-
-<!--
-SPDX-License-Identifier: CC-BY-SA-4.0
-Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
--->
-## Summary
-
-<!-- What does this PR do, and why? -->
-
-Closes #
-
-## Type of change
-
-- [ ] 🐛 Bug fix (non-breaking change that fixes an issue)
-- [ ] ✨ New feature (non-breaking change that adds functionality)
-- [ ] 💥 Breaking change (would change existing behaviour)
-- [ ] 🕳️ Soundness fix (fixes a checker/proof false-negative)
-- [ ] 📖 Documentation
-- [ ] 🧹 Refactor / tech debt (behaviour-preserving)
-- [ ] ⚡ Performance
-- [ ] 🔧 Build / CI / tooling
-
-## How has this been verified?
-
-<!-- Establish ground truth: which tool did you RUN, and what did it
-report?
-     Don't cite a status doc — cite the command and its output. -->
-
-## Checklist
-
-- [ ] My commits are **signed** (`git commit -S`).
-- [ ] I ran the project's own checks/tests locally and they pass.
-- [ ] New files carry the correct `SPDX-License-Identifier` (code/config
-`MPL-2.0`,
-      prose `CC-BY-SA-4.0`); I did not relicense existing files.
-- [ ] Docs are updated, and no public claim now overstates what the code
-does.
-- [ ] I have not introduced a soundness hole (or I have flagged where I
-might have).
-
-## Notes for reviewers
-
-<!-- Anything that needs special attention, follow-up, or context. -->
-
----------
-
-Co-authored-by: Mistral Vibe <vibe@mistral.ai> (276fa6d)
+- Bump the github-actions group with 4 updates (#137) (54670cc)
 - Bump dawidd6/action-send-mail from c50dc4cc848ade21f848990889906d804fae78c5 to 12335b969ae3fb71bee5f2c6b829744261aec34c (#133) (da60a2a)
-- Re-pin secret scanner onto the real gitleaks gate (#122) (729de3a)
+- Bump github/codeql-action/analyze from 4.36.3 to 4.37.2 (#131) (f7d1b2a)
+- Bump github/codeql-action/init from 4.36.3 to 4.37.2 (#132) (a79e6b2)
+- Bump actions/checkout from 7.0.0 to 7.0.1 (#130) (9ade01f)
+- Bump hyperpolymath/a2ml-validate-action from 59145c7d1039fa3059b3ecacdb50ee23d7505898 to 5468b7ff0f5129a74d25af5f2468df11a706dc70 (#134) (e9f4e08)
+- Bump hyperpolymath/k9-validate-action from 2d96f43c538964b097d159ed3a56ba5b5ceca227 to 08958c9bab64f9941a85938a78122a0d4a3058e8 (#129) (d2e37ac)
+- Bump github/codeql-action/analyze from 4.36.2 to 4.36.3 (#115) (8c13869)
+- Bump github/codeql-action/init from 4.36.2 to 4.36.3 (#116) (60b0b29)
 - Bump dawidd6/action-send-mail from 994f270325d4f7257aff241a35488ef54ba364a4 to c50dc4cc848ade21f848990889906d804fae78c5 (#114) (34ee83b)
+- Bump actions/cache from 6.0.0 to 6.1.0 (#113) (e8630e8)
 - Bump dawidd6/action-send-mail from 6e502825a508b867ab2954ad6343b68787624c01 to 994f270325d4f7257aff241a35488ef54ba364a4 (#111) (8b1eb07)
 - Bump actions/cache from 5.0.5 to 6.0.0 (35efd74)
 - Bump actions/checkout from 6.0.3 to 7.0.0 (5f66c0f)
-- Remediate Track C and Track E findings (b5322c2)
+- Bump github/codeql-action from 4.36.1 to 4.36.2 (#96) (0f0cf2f)
 - Bump actions/checkout from 6.0.2 to 6.0.3 (#95) (34b7301)
-- Re-vendor absolute-zero/ subtree to upstream HEAD (trusted-base + 16-commit catch-up) (#83) (d22378d)
+- Bump actions/upload-artifact from 5.0.0 to 7.0.1 (#94) (bf50a4e)
+- Bump actions/download-artifact from 6.0.0 to 8.0.1 (#93) (0739268)
+- Bump github/codeql-action from 4.34.0 to 4.36.1 (#92) (39b748a)
 - Bump dtolnay/rust-toolchain from efa25f7f19611383d5b0ccf2d1c8914531636bf9 to 3c5f7ea28cd621ae0bf5283f0e981fb97b8a7af9 (#69) (51700e7)
+- Bump haskell-actions/setup from 2.7.5 to 2.11.0 (#68) (2ae2d5a)
+- Bump actions/upload-pages-artifact from 3.0.1 to 5.0.0 (#67) (c902996)
 - Bump actions/checkout from 4.1.1 to 6.0.2 (#66) (83f5afa)
-- Concurrency-cancel guard on canonical check workflows (#56) (7033454)
-- Make CNO echo bridge relation-first (0538283)
-- Add concrete echo bridge model for CNO (e80c5fb)
-- Complete CNO composition proof and fix modulo parsing (1e7d169)
-- Add Agda echo/CNO bridge scaffold and integration pointers (24fae59)
-- Further proofs (56d29c8)
-- Standardize workspace: Capitalize Justfile references in scripts and docs (a417457)
-- Standardize workspace: Justfile migration and A2ML directive cleanup (cce7c4d)
-- Add casket pages workflow (0881573)
-- Remove template-only ABI files that falsely implied formal verification
-
-Template Idris2 ABI files (Types.idr, Layout.idr, Foreign.idr) contained
-only RSR template scaffolding with unresolved placeholders and no
-domain-specific proofs. Removed to prevent false impression of formal
-verification coverage.
-
-Co-Authored-By: Claude Opus 4.6 (1M context) <noreply@anthropic.com> (3c1744f)
+- Bump actions/configure-pages from 5.0.0 to 6.0.0 (#65) (050d936)
+- Bump actions/upload-artifact from 4.6.2 to 7.0.1 (#64) (1401d0b)
+- Bump trufflesecurity/trufflehog from 3.93.8 to 3.95.3 (#63) (0402360)
+- Bump actions/cache from 4.3.0 to 5.0.5 (#62) (1944bd5)
+- Bump github/codeql-action from 4.32.6 to 4.36.0 (#61) (8bd70b7)
+- Bump actions/github-script from 8.0.0 to 9.0.0 (#60) (943568a)
+- Bump actions/deploy-pages from 4.0.5 to 5.0.0 (#59) (d2bbf8a)
+- Bump trufflesecurity/trufflehog from 3.93.8 to 3.94.0 (8cc5a78)
 - Bump github/codeql-action from 4.33.0 to 4.34.0 (b4cfa8c)
 - Bump actions/checkout from 4 to 6 (0456db0)
 - Bump github/codeql-action from 4.32.6 to 4.33.0 (e4547e2)
 - Bump erlef/setup-beam from 1.22.0 to 1.23.0 (f1c26e2)
-- .scm → .a2ml state files in .machine_readable/ (7994051)
-- SHA-pin GitHub Actions and upgrade deprecated checkout versions
-
-- Upgrade actions/checkout from v2/v3 to SHA-pinned v4
-- SHA-pin all unshelled action tags (pages, CodeQL, scorecard,
-  rust-cache, upload/download-artifact, setup-node, cache)
-- Standardise scorecard-action to v2.4.0
-- Fix setup-node@v6 → SHA-pinned v4
-
-Co-Authored-By: Claude Opus 4.6 (1M context) <noreply@anthropic.com> (5668860)
-- Fix SPDX headers: AGPL-3.0-or-later → PMPL-1.0-or-later
-
-Replace legacy AGPL-3.0-or-later SPDX identifiers with the correct
-PMPL-1.0-or-later (Palimpsest License) across justfiles, Mustfiles,
-shell scripts, config files, dotfiles, and source code.
-
-Co-Authored-By: Claude Opus 4.6 (1M context) <noreply@anthropic.com> (7b86dcc)
 - Bump webfactory/ssh-agent from 0.9.1 to 0.10.0 (b538011)
-- Standardise license setup: MPL-2.0 + PMPL-1.0-or-later (REUSE)
-
-- LICENSE: pure MPL-2.0 text for machine detection (GitHub, registries)
-- LICENSES/MPL-2.0.txt: standard MPL-2.0 text
-- LICENSES/PMPL-1.0-or-later.txt: Palimpsest License text
-- NOTICE: explains the dual-license relationship
-- Source SPDX headers remain PMPL-1.0-or-later
-
-This ensures OSI compliance checks pass while preserving PMPL as
-the governing license for source code.
-
-Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com> (d052e8e)
+- Bump trufflesecurity/trufflehog from 3.93.7 to 3.93.8 (0890277)
 - Bump erlef/setup-beam from 1.21.0 to 1.22.0 (a61c7fe)
 - Bump github/codeql-action from 4.32.5 to 4.32.6 (cd98b49)
-- Sync changes [2026-03-05] (3f491d4)
-- Fix stale submodule pointers after repo cleanup
-
-Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com> (25cf219)
+- Bump trufflesecurity/trufflehog from 3.93.6 to 3.93.7 (31292ec)
 - Bump github/codeql-action from 4.32.4 to 4.32.5 (3d95e19)
 - Bump erlef/setup-beam from 1.20.4 to 1.21.0 (80b4802)
-- Sync changes [2026-02-21] (639f389)
+- Bump trufflesecurity/trufflehog from 3.93.4 to 3.93.6 (8f29647)
 - Bump github/codeql-action from 4.32.3 to 4.32.4 (eab8654)
+- Bump trufflesecurity/trufflehog from 3.93.3 to 3.93.4 (bff4326)
 - Bump github/codeql-action from 4.32.2 to 4.32.3 (1c06e68)
 - Bump dtolnay/rust-toolchain from f7ccc83f9ed1e5b9c81d8a67d7ad1a747e22a561 to efa25f7f19611383d5b0ccf2d1c8914531636bf9 (#27) (45efbc9)
-- Update README.adoc
-
-Signed-off-by: Jonathan D.A. Jewell <6759885+hyperpolymath@users.noreply.github.com> (e17936d)
-- Update README.adoc
-
-Signed-off-by: Jonathan D.A. Jewell <6759885+hyperpolymath@users.noreply.github.com> (6733ff2)
-- Merge branch 'main' of github.com:hyperpolymath/maa-framework (972f66d)
-- Add Rhodium dotfiles (173fdfb)
-- Update issue templates (6793698)
+- Bump trufflesecurity/trufflehog from 3.93.1 to 3.93.3 (#24) (7fbab8e)
+- Bump github/codeql-action from 4.32.1 to 4.32.2 (#23) (a36f7e2)
+- Bump trufflesecurity/trufflehog from 3.93.0 to 3.93.1 (#22) (b78abd7)
+- Bump github/codeql-action from 4.32.0 to 4.32.1 (#20) (5195125)
+- Bump trufflesecurity/trufflehog from 3.92.5 to 3.93.0 (#21) (a5aef00)
+- Bump actions/github-script from 7.0.1 to 8.0.0 (#18) (ce93d9b)
+- Bump erlef/setup-beam from 1.17.5 to 1.20.4 (#17) (30d973f)
+- Bump actions/checkout from 4.1.1 to 6.0.2 (#19) (7b00374)
+- Bump github/codeql-action from 4.31.11 to 4.32.0 (#16) (004d691)
+- Bump github/codeql-action from 4.31.10 to 4.31.11 (#15) (28bad6c)
 - Bump trufflesecurity/trufflehog from 3.92.4 to 3.92.5 (#13)
 
 Bumps
@@ -897,6 +610,342 @@ PR or upgrade to it yourself)
 Signed-off-by: dependabot[bot] <support@github.com>
 Co-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>
 Co-authored-by: Jonathan D.A. Jewell <6759885+hyperpolymath@users.noreply.github.com> (cd0a0a4)
+
+
+### Documentation
+
+- Record the runner runs of both proof gates (58e98dd)
+- Remove a token prefix that should not have been recorded (ab53573)
+- Record measured state of play, for humans and for machines (#148) (de054c2)
+- Convert README.adoc -> Markdown (renders on Glama/profile/community-health) (#110) (307d672)
+- Flip ReScript→AffineScript per 2026-05-25 estate language policy (#88) (9dbf56b)
+- Seed CHANGELOG.md (Keep-a-Changelog format) (#81) (b80aecf)
+- Adopt docs-template/ skeleton from rsr-template-repo#75 (#79) (2386f0a)
+- Record tech-debt audit findings (2026-05-26) (#75) (d05a500)
+- Seed proof-debt.md per standards#203 schema (all 150 markers §(e) vendored) (#82) (6f66f90)
+- Substantive CRG C annotation (EXPLAINME.adoc) (9917a32)
+- Achieve CRG C — document all test categories passing (b0fa5f1)
+- Add EXPLAINME.adoc — prove-it file backing README claims (58e6ffc)
+- Update SCM files with project information (b38fc35)
+- Add CONTRIBUTING.md (0848205)
+- Add checkpoint files for state tracking (1d70b71)
+- Update license from AGPL to PMPL (b6c9075)
+
+
+### Fixed
+
+- One .gitattributes pattern per line, not two (e51ae7c)
+- Break infinite changelog-regenerate loop (#221) (ad34228)
+- Codeql-action v4.38.1 -> v4.38.0 SHA pin + dependabot hold (estate-wide startup_failure) (#198) (918f434)
+- Strip reintroduced ZWSP + exclude generated CHANGELOG.md from empty-lint (#194) (9730f65)
+- Grant contents+PR write at caller TOP level (5/5 caller evidence) (#191) (270f65d)
+- Changelog caller needs actions:read on the JOB block (top-level is replaced, not merged) (#190) (dc4514e)
+- Restore green main — changelog perms, lock, ZWSP, docs gate, review port (#188) (0f837de)
+- Gate on the DEED grammar, per the template and standards#837 (#183) (93e8625)
+- Reconcile actions.lock so the lockfile validates (#184) (3beb02a)
+- Reconcile the workflows with actions.lock (gh-actions-lock) (#180) (ef7691a)
+- Pin third-party actions to full commit SHAs (#179) (afb63a6)
+- Repoint references to the relocated contributing guide (#177) (45fdcb4)
+- Make the dogfood gate .deed-aware (#174) (8285709)
+- Remove rust-ci.yml as repo has no Cargo.toml (#171) (7d8feda)
+- The invisible-character gate never matched anything (#165) (8ecd4cb)
+- Unbreak workflow YAML and add a complete actions.lock (#164) (2e9b818)
+- Repair workflows that are not valid YAML and have never run (#150) (d682669)
+- Remove stray worktree gitlink that breaks every recursive checkout (#145) (649bd51)
+- Real SHA-pinning check, real Justfile targets, and docs that match the code (#144) (7d964ee)
+- Restore guix.scm identity and licence (squisher-corpus clobber is live on main) (#143) (b61df34)
+- Repoint codeql-action at a SHA that exists (#142) (541f47f)
+- Re-point validate-action references at the ecosystem repos (#140) (c5175f3)
+- Remove the unrunnable SonarCloud step breaking Governance + CodeQL (#139) (f508c03)
+- Close the governance gate — SPDX, permissions, SHA pins, reusable bump (#136) (75ab929)
+- Group Dependabot updates into one PR per ecosystem (#127) (e895aa4)
+- Aletheia has not compiled since June — repair it, then gate it (#123) (0392152)
+- Drop invalid timeout-minutes from reusable-workflow calls (parse-dead) (#120) (85b7a22)
+- Clear OSSF Scorecard startup_failure (#118) (dc4a8b7)
+- Restore missing .gitmodules for absolute-zero submodule (#117) (082f45d)
+- Unblock 2 baseline-rot checks blocking dependabot #69 (#70) (b834329)
+- Pin upload-artifact to valid SHA in hypatia-scan.yml (Refs standards#48) (#57) (5d1a25f)
+- Bump a2ml/k9-validate-action pins to canonical (#55) (9e01cf8)
+- Sync hypatia-scan.yml to canonical (#54) (c701495)
+- Build Hypatia escript from repo root (estate dogfood drift) (1fb5b1c)
+- Adopt canonical hypatia-scan.yml (#52) (721e3ad)
+- Rsr-antipattern.yml duplicate heredoc (#49) (f1c6f5e)
+- Move secret-scanner Cargo.toml gate from job-level if: to step-level (#50) (9699724)
+- Remove eval, quote vars, use mktemp in absolute-zero shell scripts (250311f)
+- Eliminate all 3 sorry in LambdaCNO proofs (29259c0)
+- Enforce granular permissions and add fuzzing placeholder (1fe0a35)
+- Resolve 12 of 19 Lean4 sorry proofs in absolute-zero (4de6387)
+- Correct email jonathan.jewell → j.d.a.jewell (47c4070)
+- SPDX headers (AGPL→PMPL), email, author name (9e7755f)
+- SPDX AGPL-3.0 → PMPL-1.0-or-later in dotfiles (588abe8)
+- Remove duplicate SCM files from root (46a4513)
+
+
+### Other
+
+- Exercise the generated Rust proof gate on a runner (do not merge) (#231) (5014068)
+- Close all open issues: aletheia rebuild (#124/#125), rust-ci restore, just shim (#102), changelog (#100), hypatia prune (#98) (#185)
+
+Closes all five open issues in one campaign branch (7 focused commits,
+each independently reviewable). Nothing here merges itself — review and
+merge when satisfied.
+
+**#124 — Aletheia CLI rebuilt on the RSR v2 SSOT** (`9323897`)
+- 26-check offline file-presence subset (13 Bronze / 12 Silver / 1
+Gold), every check citing its v2 criterion (`SSOT_PROVENANCE` in
+`checks.rs`)
+- Full CLI: `[repo-path]`, `--format X`/`=X`,
+`--json/--sarif/--html/--badge`, `-v/-q`, `--config`, `--init-hook`;
+exit codes 0/1/2/3/4
+- Real `.aletheia.toml` (level / per-check toggles / ignore globs);
+submodule skipping, symlink-escape criticals, per-check suggestions
+- **111/111 tests green** (66 unit + 45 integration), zero warnings,
+zero dependencies
+- The pin check learned the estate mechanism (`d8a0483`): tags covered
+by `actions.lock` pass (governance *forbids* inline SHAs with a lock —
+verified against governance-reusable); plus the tier-1 Bun carve-out
+
+**#125 — Clippy clean and blocking** (`9323897` + `5aa5041`)
+- Findings wired into real code, not silenced; `clippy --all-targets --
+-D warnings` blocks in CI and `just lint`
+
+**rust-ci restored** (`5aa5041`, part of the #125 gate half)
+- The tree-move commit deleted the root gate without re-pointing it —
+main has had no Rust CI since. Restored with 5 jobs mirroring `just
+check`, tags + lock entry, validated YAML
+
+**#102 — Justfile canonicity** (`40b57fa`)
+- Root declared canonical; the contractiles stub (fake gates echoing
+"not configured yet") is now a forwarding shim — verified from three
+working directories (a bare `import` runs recipes in the wrong tree; the
+`working-directory` override fixes it)
+- Drive-by: `crg-grade`/`crg-badge` failed 100% of runs (Make-style
+`$$`); repaired and verified via root and shim
+
+**#100 — Changelog automation** (`12d123c`)
+- `changelog.yml` adopted (commit-back; main has no branch protection,
+verified via API), pinned to standards@b77c53c; no local cliff.toml by
+design
+- `CHANGELOG.md` seeded with the exact reusable recipe (git-cliff 2.6.1
++ canonical config); `CHANGELOG.adoc` frozen as a pointer with content
+preserved
+
+**#98 — hypatia-ignore pruned** (`a7c768a`)
+- All 10 entries verified dead at the pinned submodule commit; file is
+now a comments-only audit record (history, re-verification commands,
+upstream pointer absolute-zero#77); cross-refs in `hypatia.a2ml` /
+`Dustfile.a2ml` / STATE updated
+
+**Docs sync** (`9ff1e99`)
+- Every doc describing the pre-campaign state re-measured: STATE.a2ml
+(rsr-source-of-truth ANSWERED), TEST-NEEDS, README, both EXPLAINMEs,
+CLAUDE.md, PROJECT_STATUS, full QUICK_REFERENCE v2 rewrite,
+superseded-spec banners, working `install.sh` (tested end to end),
+dead-GitLab contacts repointed
+
+**Deliberately not in this PR**
+- `create-template.sh` still *emits* the v1 shape — that is a generator
+rewrite, filed as a follow-up issue, not a docs touch-up
+- `docs/STATE-OF-PLAY-2026-07-29.adoc` untouched (dated snapshot)
+- Upstream `absolute-zero#77` owns that repo's stale ignore entries
+
+Verification: `just check` green (build + 111 tests + fmt + clippy `-D`
++ zero-dep); aletheia self-verifies Bronze ACHIEVED (23/26); new
+workflows YAML-validated with no duplicate keys; `install.sh` tested end
+to end.
+
+Closes #98
+Closes #100
+Closes #102
+Closes #124
+Closes #125
+
+---------
+
+Co-authored-by: Arena Agent <agent@arena.ai> (900c141)
+- Bun is tier 1, Deno is being removed (#163) (f19c544)
+- Expand glossary with core concepts and components
+
+Added glossary entries for core concepts, components, architecture, and pronunciation guide.
+
+Signed-off-by: Jonathan D.A. Jewell <6759885+hyperpolymath@users.noreply.github.com> (b446352)
+- Add EXPLAINME documentation for MAA Framework
+
+This document provides a detailed claim-to-implementation map for the MAA Framework, outlining the implementation status and caveats for various components, including the Rust microkernel and CI workflows.
+
+Signed-off-by: Jonathan D.A. Jewell <6759885+hyperpolymath@users.noreply.github.com> (a9fe4c1)
+- Add README documentation for MAA Framework
+
+Added comprehensive documentation for the MAA Framework, including governance, project scope, known gaps, and build instructions.
+
+Signed-off-by: Jonathan D.A. Jewell <6759885+hyperpolymath@users.noreply.github.com> (13aba6f)
+- Delete README.md
+
+Signed-off-by: Jonathan D.A. Jewell <6759885+hyperpolymath@users.noreply.github.com> (3a9b5d3)
+- Change license to MPL-2.0 and revise project overview
+
+Updated license information and project description in README.
+
+Signed-off-by: Jonathan D.A. Jewell <6759885+hyperpolymath@users.noreply.github.com> (80e3e36)
+- Worktree maa ci repair (#147)
+
+<!--
+SPDX-License-Identifier: CC-BY-SA-4.0
+Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+-->
+## Summary
+
+<!-- What does this PR do, and why? -->
+
+Closes #
+
+## Type of change
+
+- [ ] 🐛 Bug fix (non-breaking change that fixes an issue)
+- [ ] ✨ New feature (non-breaking change that adds functionality)
+- [ ] 💥 Breaking change (would change existing behaviour)
+- [ ] 🕳️ Soundness fix (fixes a checker/proof false-negative)
+- [ ] 📖 Documentation
+- [ ] 🧹 Refactor / tech debt (behaviour-preserving)
+- [ ] ⚡ Performance
+- [ ] 🔧 Build / CI / tooling
+
+## How has this been verified?
+
+<!-- Establish ground truth: which tool did you RUN, and what did it
+report?
+     Don't cite a status doc — cite the command and its output. -->
+
+## Checklist
+
+- [ ] My commits are **signed** (`git commit -S`).
+- [ ] I ran the project's own checks/tests locally and they pass.
+- [ ] New files carry the correct `SPDX-License-Identifier` (code/config
+`MPL-2.0`,
+      prose `CC-BY-SA-4.0`); I did not relicense existing files.
+- [ ] Docs are updated, and no public claim now overstates what the code
+does.
+- [ ] I have not introduced a soundness hole (or I have flagged where I
+might have).
+
+## Notes for reviewers
+
+<!-- Anything that needs special attention, follow-up, or context. -->
+
+---------
+
+Co-authored-by: Claude Opus 4.8 <noreply@anthropic.com> (2bf7a13)
+- Update/licensing to pmpl ccby (#135)
+
+<!--
+SPDX-License-Identifier: CC-BY-SA-4.0
+Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+-->
+## Summary
+
+<!-- What does this PR do, and why? -->
+
+Closes #
+
+## Type of change
+
+- [ ] 🐛 Bug fix (non-breaking change that fixes an issue)
+- [ ] ✨ New feature (non-breaking change that adds functionality)
+- [ ] 💥 Breaking change (would change existing behaviour)
+- [ ] 🕳️ Soundness fix (fixes a checker/proof false-negative)
+- [ ] 📖 Documentation
+- [ ] 🧹 Refactor / tech debt (behaviour-preserving)
+- [ ] ⚡ Performance
+- [ ] 🔧 Build / CI / tooling
+
+## How has this been verified?
+
+<!-- Establish ground truth: which tool did you RUN, and what did it
+report?
+     Don't cite a status doc — cite the command and its output. -->
+
+## Checklist
+
+- [ ] My commits are **signed** (`git commit -S`).
+- [ ] I ran the project's own checks/tests locally and they pass.
+- [ ] New files carry the correct `SPDX-License-Identifier` (code/config
+`MPL-2.0`,
+      prose `CC-BY-SA-4.0`); I did not relicense existing files.
+- [ ] Docs are updated, and no public claim now overstates what the code
+does.
+- [ ] I have not introduced a soundness hole (or I have flagged where I
+might have).
+
+## Notes for reviewers
+
+<!-- Anything that needs special attention, follow-up, or context. -->
+
+---------
+
+Co-authored-by: Mistral Vibe <vibe@mistral.ai> (276fa6d)
+- Re-pin secret scanner onto the real gitleaks gate (#122) (729de3a)
+- Remediate Track C and Track E findings (b5322c2)
+- Re-vendor absolute-zero/ subtree to upstream HEAD (trusted-base + 16-commit catch-up) (#83) (d22378d)
+- Concurrency-cancel guard on canonical check workflows (#56) (7033454)
+- Make CNO echo bridge relation-first (0538283)
+- Add concrete echo bridge model for CNO (e80c5fb)
+- Complete CNO composition proof and fix modulo parsing (1e7d169)
+- Add Agda echo/CNO bridge scaffold and integration pointers (24fae59)
+- Further proofs (56d29c8)
+- Standardize workspace: Capitalize Justfile references in scripts and docs (a417457)
+- Standardize workspace: Justfile migration and A2ML directive cleanup (cce7c4d)
+- Add casket pages workflow (0881573)
+- Remove template-only ABI files that falsely implied formal verification
+
+Template Idris2 ABI files (Types.idr, Layout.idr, Foreign.idr) contained
+only RSR template scaffolding with unresolved placeholders and no
+domain-specific proofs. Removed to prevent false impression of formal
+verification coverage.
+
+Co-Authored-By: Claude Opus 4.6 (1M context) <noreply@anthropic.com> (3c1744f)
+- .scm → .a2ml state files in .machine_readable/ (7994051)
+- SHA-pin GitHub Actions and upgrade deprecated checkout versions
+
+- Upgrade actions/checkout from v2/v3 to SHA-pinned v4
+- SHA-pin all unshelled action tags (pages, CodeQL, scorecard,
+  rust-cache, upload/download-artifact, setup-node, cache)
+- Standardise scorecard-action to v2.4.0
+- Fix setup-node@v6 → SHA-pinned v4
+
+Co-Authored-By: Claude Opus 4.6 (1M context) <noreply@anthropic.com> (5668860)
+- Fix SPDX headers: AGPL-3.0-or-later → PMPL-1.0-or-later
+
+Replace legacy AGPL-3.0-or-later SPDX identifiers with the correct
+PMPL-1.0-or-later (Palimpsest License) across justfiles, Mustfiles,
+shell scripts, config files, dotfiles, and source code.
+
+Co-Authored-By: Claude Opus 4.6 (1M context) <noreply@anthropic.com> (7b86dcc)
+- Standardise license setup: MPL-2.0 + PMPL-1.0-or-later (REUSE)
+
+- LICENSE: pure MPL-2.0 text for machine detection (GitHub, registries)
+- LICENSES/MPL-2.0.txt: standard MPL-2.0 text
+- LICENSES/PMPL-1.0-or-later.txt: Palimpsest License text
+- NOTICE: explains the dual-license relationship
+- Source SPDX headers remain PMPL-1.0-or-later
+
+This ensures OSI compliance checks pass while preserving PMPL as
+the governing license for source code.
+
+Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com> (d052e8e)
+- Sync changes [2026-03-05] (3f491d4)
+- Fix stale submodule pointers after repo cleanup
+
+Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com> (25cf219)
+- Sync changes [2026-02-21] (639f389)
+- Update README.adoc
+
+Signed-off-by: Jonathan D.A. Jewell <6759885+hyperpolymath@users.noreply.github.com> (e17936d)
+- Update README.adoc
+
+Signed-off-by: Jonathan D.A. Jewell <6759885+hyperpolymath@users.noreply.github.com> (6733ff2)
+- Merge branch 'main' of github.com:hyperpolymath/maa-framework (972f66d)
+- Add Rhodium dotfiles (173fdfb)
+- Update issue templates (6793698)
 - Add STATE.scm
 
 Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com> (4e7183f)
@@ -905,54 +954,6 @@ Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com> (4e7183f)
 ### Reverted
 
 - Restore the framework tree replaced by a scratch-branch merge (859b387)
-
-
-### Security
-
-- Bump haskell-actions/setup from 2.12.0 to 2.12.1 in the github-actions group (#235) (7ddac54)
-- Bump github/codeql-action from 4.38.0 to 4.38.1 in the github-actions group (#187) (e6d02db)
-- Bump github/codeql-action from 4.37.7 to 4.37.8 in the github-actions group (#162) (8d726d5)
-- Bump dawidd6/action-send-mail from 3.12.0 to 18 in the github-actions group (#160) (6519a5f)
-- Bump github/codeql-action from 4.37.6 to 4.37.7 in the github-actions group (#159) (827237d)
-- Bump github/codeql-action from 4.37.5 to 4.37.6 in the github-actions group (#154) (8caa296)
-- Bump the github-actions group with 4 updates (#152) (88fa28e)
-- Bump the github-actions group with 4 updates (#137) (54670cc)
-- Bump github/codeql-action/analyze from 4.36.3 to 4.37.2 (#131) (f7d1b2a)
-- Bump github/codeql-action/init from 4.36.3 to 4.37.2 (#132) (a79e6b2)
-- Bump actions/checkout from 7.0.0 to 7.0.1 (#130) (9ade01f)
-- Bump hyperpolymath/a2ml-validate-action from 59145c7d1039fa3059b3ecacdb50ee23d7505898 to 5468b7ff0f5129a74d25af5f2468df11a706dc70 (#134) (e9f4e08)
-- Bump hyperpolymath/k9-validate-action from 2d96f43c538964b097d159ed3a56ba5b5ceca227 to 08958c9bab64f9941a85938a78122a0d4a3058e8 (#129) (d2e37ac)
-- Bump github/codeql-action/analyze from 4.36.2 to 4.36.3 (#115) (8c13869)
-- Bump github/codeql-action/init from 4.36.2 to 4.36.3 (#116) (60b0b29)
-- Bump actions/cache from 6.0.0 to 6.1.0 (#113) (e8630e8)
-- Bump github/codeql-action from 4.36.1 to 4.36.2 (#96) (0f0cf2f)
-- Bump actions/upload-artifact from 5.0.0 to 7.0.1 (#94) (bf50a4e)
-- Bump actions/download-artifact from 6.0.0 to 8.0.1 (#93) (0739268)
-- Bump github/codeql-action from 4.34.0 to 4.36.1 (#92) (39b748a)
-- Bump haskell-actions/setup from 2.7.5 to 2.11.0 (#68) (2ae2d5a)
-- Bump actions/upload-pages-artifact from 3.0.1 to 5.0.0 (#67) (c902996)
-- Bump actions/configure-pages from 5.0.0 to 6.0.0 (#65) (050d936)
-- Bump actions/upload-artifact from 4.6.2 to 7.0.1 (#64) (1401d0b)
-- Bump trufflesecurity/trufflehog from 3.93.8 to 3.95.3 (#63) (0402360)
-- Bump actions/cache from 4.3.0 to 5.0.5 (#62) (1944bd5)
-- Bump github/codeql-action from 4.32.6 to 4.36.0 (#61) (8bd70b7)
-- Bump actions/github-script from 8.0.0 to 9.0.0 (#60) (943568a)
-- Bump actions/deploy-pages from 4.0.5 to 5.0.0 (#59) (d2bbf8a)
-- Bump trufflesecurity/trufflehog from 3.93.8 to 3.94.0 (8cc5a78)
-- Bump trufflesecurity/trufflehog from 3.93.7 to 3.93.8 (0890277)
-- Bump trufflesecurity/trufflehog from 3.93.6 to 3.93.7 (31292ec)
-- Bump trufflesecurity/trufflehog from 3.93.4 to 3.93.6 (8f29647)
-- Bump trufflesecurity/trufflehog from 3.93.3 to 3.93.4 (bff4326)
-- Bump trufflesecurity/trufflehog from 3.93.1 to 3.93.3 (#24) (7fbab8e)
-- Bump github/codeql-action from 4.32.1 to 4.32.2 (#23) (a36f7e2)
-- Bump trufflesecurity/trufflehog from 3.93.0 to 3.93.1 (#22) (b78abd7)
-- Bump github/codeql-action from 4.32.0 to 4.32.1 (#20) (5195125)
-- Bump trufflesecurity/trufflehog from 3.92.5 to 3.93.0 (#21) (a5aef00)
-- Bump actions/github-script from 7.0.1 to 8.0.0 (#18) (ce93d9b)
-- Bump erlef/setup-beam from 1.17.5 to 1.20.4 (#17) (30d973f)
-- Bump actions/checkout from 4.1.1 to 6.0.2 (#19) (7b00374)
-- Bump github/codeql-action from 4.31.11 to 4.32.0 (#16) (004d691)
-- Bump github/codeql-action from 4.31.10 to 4.31.11 (#15) (28bad6c)
 
 ## [1.0.0] — 2026-01-17
 
@@ -966,16 +967,8 @@ Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com> (4e7183f)
 - Add RSR enforcement workflows (290a0dc)
 
 
-### Fixed
+### Dependencies
 
-- Update editorconfig SHA and CodeQL language (3922b4b)
-
-
-### Other
-
-- Add PMPL-1.0 license
-
-Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com> (65fd94b)
 - Bump github/codeql-action from 4.31.9 to 4.31.10 (#12)
 
 Bumps [github/codeql-action](https://github.com/github/codeql-action)
@@ -1160,8 +1153,6 @@ PR or upgrade to it yourself)
 
 Signed-off-by: dependabot[bot] <support@github.com>
 Co-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com> (359f66b)
-- Remove legacy README.md (primary content is in README.adoc) (89f4d0c)
-- Add MAINTAINERS.adoc (ad0e847)
 - Bump trufflesecurity/trufflehog from 3.92.3 to 3.92.4 (#7)
 
 Bumps
@@ -2344,17 +2335,6 @@ PR or upgrade to it yourself)
 
 Signed-off-by: dependabot[bot] <support@github.com>
 Co-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com> (fa9cd95)
-- Ban Python completely (no exceptions) (3578391)
-- Standardize repo structure (hyperpolymath/mustfile pattern)
-
-- Add .machine_readable/ with 6 SCM files (STATE, META, ECOSYSTEM, AGENTIC, NEUROSYM, PLAYBOOK)
-- Add Mustfile and justfile (replacing any Makefiles)
-- Update .claude/CLAUDE.md with .machine_readable reference
-- Clean up duplicate documentation files
-
-🤖 Generated with [Claude Code](https://claude.com/claude-code)
-
-Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com> (ed73a90)
 - Bump actions/checkout from 4.1.1 to 6.0.1 (#3)
 
 [//]: # (dependabot-start)
@@ -3240,6 +3220,31 @@ PR or upgrade to it yourself)
 
 Signed-off-by: dependabot[bot] <support@github.com>
 Co-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com> (c452393)
+
+
+### Fixed
+
+- Update editorconfig SHA and CodeQL language (3922b4b)
+
+
+### Other
+
+- Add PMPL-1.0 license
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com> (65fd94b)
+- Remove legacy README.md (primary content is in README.adoc) (89f4d0c)
+- Add MAINTAINERS.adoc (ad0e847)
+- Ban Python completely (no exceptions) (3578391)
+- Standardize repo structure (hyperpolymath/mustfile pattern)
+
+- Add .machine_readable/ with 6 SCM files (STATE, META, ECOSYSTEM, AGENTIC, NEUROSYM, PLAYBOOK)
+- Add Mustfile and justfile (replacing any Makefiles)
+- Update .claude/CLAUDE.md with .machine_readable reference
+- Clean up duplicate documentation files
+
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com> (ed73a90)
 - Add license badges to README (6ea7de1)
 - Add code of conduct (9e7b33d)
 - Add contributing guide (a88ebf4)

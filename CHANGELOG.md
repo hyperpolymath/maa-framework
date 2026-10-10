@@ -683,6 +683,15 @@ Co-authored-by: Jonathan D.A. Jewell <6759885+hyperpolymath@users.noreply.github
 
 ### Other
 
+- Rename EXPLAINME-new.adoc to EXPLAINME.adoc
+
+Signed-off-by: Jonathan D.A. Jewell <6759885+hyperpolymath@users.noreply.github.com> (74c0924)
+- Delete EXPLAINME.adoc
+
+Signed-off-by: Jonathan D.A. Jewell <6759885+hyperpolymath@users.noreply.github.com> (46f66b8)
+- Delete MAINTAINERS
+
+Signed-off-by: Jonathan D.A. Jewell <6759885+hyperpolymath@users.noreply.github.com> (f208560)
 - Exercise the generated Rust proof gate on a runner (do not merge) (#231) (5014068)
 - Close all open issues: aletheia rebuild (#124/#125), rust-ci restore, just shim (#102), changelog (#100), hypatia prune (#98) (#185)
 

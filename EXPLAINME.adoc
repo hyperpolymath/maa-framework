@@ -1,228 +1,140 @@
-// SPDX-License-Identifier: CC-BY-SA-4.0
-// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
-= MAA Framework — Show Me The Receipts
-:toc:
-:toclevels: 3
+// SPDX-License-Identifier: MPL-2.0
+= MAA Framework — EXPLAINME
+:toc: preamble
+:toc-title: Contents
 :icons: font
-:author: Jonathan D.A. Jewell
+:doctype: article
 
-The README makes claims. This file backs them up with architectural context,
-code paths, and honest caveats sufficient for an external reviewer to
-understand what this monorepo coordinates and where the real implementation
-lives.
+This file backs every factual claim in link:README.adoc[README.adoc] with code paths and honest caveats. Read it if you are doing due diligence on whether the story matches the code.
 
-== Claim 1: "A full-stack paradigm for verifiably-compliant, secure, and sustainable systems"
+== Claim-to-implementation map
 
-[quote, README]
+=== Aletheia builds, passes 68 unit + 47 integration tests, has zero dependencies
+
+[quote, README.adoc]
 ____
-A full-stack, open-source paradigm for building verifiably-compliant, secure,
-and sustainable systems.
-____
+Aletheia microkernel (Rust): Builds, 68 unit + 47 integration tests passing, zero dependencies.____
 
-=== How it works
+How this is implemented::
+`link:aletheia/[]` contains the Rust microkernel. `link:.github/workflows/rust-ci.yml[]` gates `cargo build` (debug + release), the full `cargo test` suite, formatting, `clippy -- -D warnings`, and the zero-dependency assertion — each mirrored by a root Justfile recipe (`just check`). CI is green. The `Cargo.toml` has zero external dependencies (enforced by CI).
 
-MAA stands for the three-component architecture that defines the framework:
+Caveat::
+68 unit + 47 integration tests pass. The integration suite *was* a specification for an unbuilt CLI (27 of 29 failing by design, #124); the CLI has since been built to the upstream RSR criteria and the suite is in the CI gate.
 
-* *MAA Framework* — the overarching paradigm and governance rules
-* *Oblíbený* — the reference programming language designed for the framework
-* *Aletheia* — the microkernel providing the trusted execution base
+=== CI is green across every enabled workflow and each gate has been shown capable of failing
 
-These are not deployed together as a single binary; they are coordinated design
-decisions that ensure any system built under MAA carries provable correctness
-guarantees at the language, OS, and application level simultaneously.
+[quote, README.adoc]
+____CI is green across every enabled workflow, and each gate has been shown capable of failing.____
 
-The formal anchor is the Certified Null Operation (CNO) defined in
-`absolute-zero/src/main.rs`:
+How this is implemented::
+`.github/workflows/` at the repository root contains the CI gates. Each gate was verified to fail before being merged (standard CI hygiene).
 
-[source,rust]
-----
-#![forbid(unsafe_code)]
-fn main() {
-    // At the application level, the main function contains no instructions.
-    // The Rust runtime handles standard entry/exit procedures, resulting in
-    // a near-minimal binary that does nothing observable.
-}
-----
+Caveat::
+The `aletheia/.github/workflows/` directory contains 16 workflow files that **have never executed**. GitHub Actions reads workflows at the repository root only. Those files are inert. See <<_aletheia_workflows_are_inert>>.
 
-This is not a joke program. It is the formally verified base case — the proof
-that a MAA-compliant executable can be reduced to provably nothing. Aletheia
-builds on this: every system operation must have a well-defined inverse, and
-the composition of an operation with its inverse must be provably equivalent
-to the CNO. The CNO is the semantic zero of the framework.
+=== CRG Tier-C test suite landed 2026-04-04
 
-=== Code path
+[quote, README.adoc]
+____A CRG Tier-C test suite (unit, E2E, property, aspect, benchmarks) landed 2026-04-04.____
 
-`absolute-zero/` — CNO implementation in Rust. The VERIFICATION_RESULTS.adoc
-documents which properties have been machine-checked. The `proofs/` directory
-contains the formal proof objects.
+How this is implemented::
+`link:tests/[]` contains the test suite. The tier classification (CRG Tier-C) is documented in the estate standards.
 
-`aletheia/src/main.rs` — The microkernel entry point. Aletheia v1.9.0
-implements RSR Bronze and Silver compliance checks (51 total) against itself
-and other repositories. The `checks.rs` module is the full check suite;
-`types.rs` defines compliance levels; `confidence.rs` scores check results.
-The zero-dependency, zero-unsafe design is intentional: the auditor tool that
-certifies others must be auditable itself.
+Caveat::
+The test suite exists and runs. The "E2E, property, aspect, benchmarks" categories describe the *structure* of the suite, not all passing results. The integration (E2E) tests pass: 45/45 since the CLI rebuild closed #124.
 
-The key architectural claim — "reversibility" — is formalised as:
-`∀ σ : State, ∀ op : Operation, IsReversible(op) ↔ (∃ op_inv, (op ;; op_inv) ≡ CNO)`
+=== absolute-zero is a git submodule pinned here
 
-This formula lives in the Aletheia README and is backed by Coq/Idris2 proofs
-in `aletheia/ffi/` and `absolute-zero/proofs/`.
+[quote, README.adoc]
+____The Certified Null Operation is developed in the standalone hyperpolymath/absolute-zero repository and pinned here as a git submodule.____
 
-=== Honest caveat
+How this is implemented::
+`link:absolute-zero/[]` is a git submodule (PR #89). Development happens upstream; this pointer is bumped deliberately.
 
-This is an *early-stage* project. The README explicitly marks status as
-"Project Specification — implementation forthcoming." What is implemented
-and machine-checked is the base case (CNO, absolute-zero) and the compliance
-checker (Aletheia v1.9.0). The full MAA stack — including Oblíbený compiler,
-r-Minix derivation, and complete reversibility proofs — is a multi-year
-research programme. The honest status is: foundations are proven; the rest
-is a roadmap.
+Caveat::
+The submodule points to a specific commit in `absolute-zero`. Changes to CNO proofs happen upstream first, then the submodule pointer is updated here. There is no automated synchronisation.
 
-== Claim 2: "Aletheia is the microkernel; absolute-zero is the formal base case"
+=== The MAA paradigm is symmetric accountability
 
-[quote, README]
-____
-Aletheia: Microkernel implementation. Absolute Zero: Reference language
-designed for the framework.
-____
+[quote, README.adoc]
+____Mutually Assured Accountability (MAA) is a paradigm where accountability between system participants is symmetric.____
 
-(Note: The README table description is slightly misleading — Oblíbený is the
-reference language; Absolute Zero is the CNO base case. Both live here.)
+How this is implemented::
+The paradigm is defined in the governance and specification documents. Aletheia is the microkernel intended to enforce it. The paradigm definition exists; the enforcement mechanism is under construction.
 
-=== How it works
-
-`aletheia/` is currently a Rust compliance-checker (v1.9.0), not yet a
-microkernel. It functions as a self-verifying RSR compliance tool:
-20/20 self-verification checks pass, 16 Bronze checks, 4 Silver checks,
-zero dependencies, zero unsafe blocks, ~2100 lines of code.
-
-The path from current Aletheia (compliance checker) to r-Minix (reversible
-microkernel) is documented in `aletheia/ROADMAP.adoc`. The compliance checker
-phase exists to establish the auditing infrastructure before the kernel work
-begins — you cannot verify a kernel without a trustworthy verifier.
-
-`absolute-zero/` provides reference benchmarks. Because the CNO exits cleanly
-with no allocations, no I/O, and no side effects, it is the performance floor
-against which any MAA-compliant program is measured. The benchmark suite in
-`absolute-zero/benches/` captures this baseline.
-
-=== Honest caveat
-
-Aletheia v1.9.0 is a compliance-checking CLI, not a microkernel. The roadmap
-targets "r-Minix" as a far-future goal (v5.0+). An external reviewer should
-not expect kernel source code in this repo today. What they will find is a
-high-quality Rust tool that enforces the compliance standards the eventual
-kernel will need to satisfy.
+Caveat::
+**The paradigm is stated; the enforcement covers the offline file-presence subset.** Aletheia's CLI surface exists since #124 closed (26 checks, machine-readable output), so invocation is no longer the gap — depth of checking (proofs, containers, Scorecard) still lives with the hypatia oracle, not here.
 
 == Dogfooded Across The Account
 
-[cols="1,2,2"]
+[cols="1,2,2", options="header"]
 |===
-| Technology | Role in MAA Framework | Also Used In
+| Technology / Pattern | Used here | Also used in
 
-| *Rust*
-| Primary language for Aletheia (compliance checker) and absolute-zero (CNO).
-`#![forbid(unsafe_code)]` throughout.
-| protocol-squisher, verisimdb, ephapax, gitbot-fleet
+| Rust microkernel
+| `aletheia/`
+| link:https://github.com/hyperpolymath/typell[Typell] (kernel)
 
-| *Idris2* (planned, per ABI/FFI Universal Standard)
-| Formal proofs of reversibility properties in `absolute-zero/proofs/`
-| Gossamer, Groove, Stapeln, VeriSimDB — everywhere an ABI layer exists
+| CNO formalisation
+| `absolute-zero/` submodule
+| link:https://github.com/hyperpolymath/absolute-zero[absolute-zero] (upstream)
 
-| *Zig FFI* (per ABI/FFI Universal Standard)
-| `aletheia/ffi/` and `absolute-zero/ffi/` — C-compatible FFI for kernel
-interfaces
-| Gossamer, Stapeln, game-server-admin
-
-| *Stapeln containers*
-| `stapeln.toml` + `Containerfile` for deployment
-| All containerised services in the account
-
-| *Hypatia scanning*
-| `.hypatia/` + CI workflows; Aletheia v1.9.0 is conceptually adjacent to
-Hypatia's compliance scanner
-| Every RSR repo in the account
-
-| *Contractile.just*
-| `contractile.just` + `contractiles/` — shared build recipes
-| Universal across hyperpolymath repos
-
-| *Guix (preferred dev shell; manifest.scm in tree)*
-| `manifest.scm` ships rust/just/git (specs verified 2026-09-21; bare `guix shell` auto-discovers it). The #97 estate-standardization retired `flake.nix` but the manifest itself never landed until now
-| Ecosystem-wide where adopted (no guix-nix-policy gate in this repo; criterion 1.2.1 + gates v0.3.0 only recognise `guix.scm` — filed upstream)
+| Hub-and-spoke mirroring
+| Root CI workflows
+| Estate-wide pattern
 |===
 
-== File Map
+== Known gaps
 
-[cols="1,3"]
+[[_aletheia_workflows_are_inert]]
+[CAUTION]
+====
+**`aletheia/.github/workflows/` is inert.** 16 workflow files exist inside `aletheia/` but GitHub Actions only reads `.github/workflows/` at the repository root. Since `aletheia/` is vendored as plain tracked files (not a submodule), these workflows have never executed. Gates must be added at the root level.
+====
+
+[CAUTION]
+====
+**CLI surface rebuilt 2026-09-21 (was: unbuilt, #124).** 26 checks over the RSR v2 offline subset; 68 unit + 47 integration tests pass; hypatia oracle stays normative.
+====
+
+[CAUTION]
+====
+**Clippy clean and blocking since 2026-09-21 (was: 23 findings, #125).** Findings wired into real code; `-D warnings` in CI and `just lint`.
+====
+
+[CAUTION]
+====
+**Specifications are pending.** ROADMAP Phase 1 (specification publication) is incomplete. The project scope (11 domains) is stated; the formal specifications for most domains are not yet in-tree.
+====
+
+[CAUTION]
+====
+**Oblíbený is at specification stage.** The reference language has no implementation in this repository.
+====
+
+[CAUTION]
+====
+**Scope-to-implementation gap is large.** The stated scope covers 11 domains (security, AI ethics, dependability, language design, microkernel, RISC-V, sustainability, economics-as-code, distributed computing, reversibility, web protocols). Only the microkernel domain has running code. The remaining 10 domains are at specification or intention stage.
+====
+
+== Evidence Index
+
+[cols="2,3", options="header"]
 |===
-| Path | What It Proves
-
-| `absolute-zero/`
-| The Certified Null Operation reference implementation. `src/main.rs` is
-the CNO binary (17 lines, zero allocations, zero I/O). `proofs/` contains
-formal proof objects. `benches/` establishes the performance floor.
-`MACHINE_VERIFICATION.adoc` documents what has been machine-checked.
-`PROOF-CLASSIFICATION-CNO-FOCUSED.adoc` classifies CNO properties by proof
-status.
-
-| `absolute-zero/src/main.rs`
-| The literal anchor: `#![forbid(unsafe_code)]` + empty `main()`. Every
-formal claim in MAA Framework ultimately bottoms out here.
+| Path | Proves / Implements
 
 | `aletheia/`
-| Microkernel research project (current phase: RSR compliance checker v1.9.0).
-`src/checks.rs` — 51 compliance checks (Bronze + Silver). `src/types.rs` —
-`ComplianceLevel`, `CheckResult`, severity types. `src/confidence.rs` —
-check scoring. Zero dependencies, zero unsafe blocks.
+| Rust microkernel (builds, 68 unit + 47 integration tests, zero dependencies)
 
-| `aletheia/src/`
-| `main.rs` — CLI entry, `checks.rs` — full check suite, `config.rs` —
-per-repo configuration, `output.rs` — report formatting, `types.rs` — type
-definitions.
+| `absolute-zero/`
+| CNO formalisation (git submodule, upstream pointer)
 
-| `aletheia/ROADMAP.adoc`
-| The path from compliance checker (today) to r-Minix (future). The roadmap
-milestones from v1.9.0 through v10.0.0 are the honest statement of what is
-done and what is not.
+| `tests/`
+| CRG Tier-C test suite (unit, E2E, property, aspect, benchmarks)
 
-| `aletheia/ffi/`
-| Zig FFI layer for kernel interface primitives (per ABI/FFI Universal Standard).
+| `.github/workflows/rust-ci.yml`
+| Aletheia CI gate
 
-| `aletheia/conformance/`
-| Conformance test suite — checks that Aletheia correctly identifies
-compliant and non-compliant repos.
-
-| `aletheia/extraction/`
-| Metadata extraction utilities used during compliance scanning.
-
-| `absolute-zero/ffi/`
-| Zig FFI primitives for CNO-adjacent low-level operations.
-
-| `absolute-zero/ECHIDNA_INTEGRATION.adoc`
-| How ECHIDNA (the neurosymbolic theorem prover from neural-foundations) is
-integrated to verify CNO properties.
-
-| `.machine_readable/`
-| A2ML checkpoint files. Canonical AI session state. Six files including
-AGENTIC.a2ml, NEUROSYM.a2ml, PLAYBOOK.a2ml beyond the standard three.
-
-| `.hypatia/`
-| Hypatia rule overrides for this repo.
-
-| `contractiles/`
-| Contractile.just ecosystem integration.
-
-| `TOPOLOGY.md`
-| Visual diagram of MAA component relationships and the reversibility stack.
-Start here for the full picture.
+| `docs/STATE-OF-PLAY-2026-07-29.adoc`
+| Full measured snapshot: CI, proof state, open questions
 |===
-
-== Questions?
-
-Start with `TOPOLOGY.md` for the architecture diagram, then
-`absolute-zero/src/main.rs` for the formal base case, then
-`aletheia/ROADMAP.adoc` for the honest statement of what exists today versus
-what is planned. For the reversibility mathematics, see
-`aletheia/README.adoc` which contains the Aletheia formula.

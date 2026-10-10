@@ -683,6 +683,12 @@ Co-authored-by: Jonathan D.A. Jewell <6759885+hyperpolymath@users.noreply.github
 
 ### Other
 
+- Delete CHANGELOG.md
+
+Signed-off-by: Jonathan D.A. Jewell <6759885+hyperpolymath@users.noreply.github.com> (998f0ea)
+- Rename EXPLAINME-new.adoc to EXPLAINME.adoc
+
+Signed-off-by: Jonathan D.A. Jewell <6759885+hyperpolymath@users.noreply.github.com> (74c0924)
 - Delete EXPLAINME.adoc
 
 Signed-off-by: Jonathan D.A. Jewell <6759885+hyperpolymath@users.noreply.github.com> (46f66b8)

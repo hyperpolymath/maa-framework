@@ -133,6 +133,7 @@ and the project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 
 ### Dependencies
 
+- Bump the github-actions group with 2 updates (#247) (c72fe1a)
 - Bump the github-actions group with 2 updates (#245) (db2bba6)
 - Bump hyperpolymath/smtp-notify-action from 0.3.0 to 0.5.0 in the github-actions group (#239) (fdf162f)
 - Bump the github-actions group with 2 updates (#237) (dd233b7)

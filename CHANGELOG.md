@@ -685,6 +685,9 @@ Co-authored-by: Jonathan D.A. Jewell <6759885+hyperpolymath@users.noreply.github
 
 ### Other
 
+- Delete mpr-handover-complete.zip
+
+Signed-off-by: Jonathan D.A. Jewell <6759885+hyperpolymath@users.noreply.github.com> (8755ad3)
 - Add files via upload
 
 Signed-off-by: Jonathan D.A. Jewell <6759885+hyperpolymath@users.noreply.github.com> (a5a76dc)

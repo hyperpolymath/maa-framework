@@ -685,6 +685,9 @@ Co-authored-by: Jonathan D.A. Jewell <6759885+hyperpolymath@users.noreply.github
 
 ### Other
 
+- Add files via upload
+
+Signed-off-by: Jonathan D.A. Jewell <6759885+hyperpolymath@users.noreply.github.com> (a5a76dc)
 - Delete CHANGELOG.md
 
 Signed-off-by: Jonathan D.A. Jewell <6759885+hyperpolymath@users.noreply.github.com> (998f0ea)

@@ -35,7 +35,7 @@ jobs:
           sudo apt-get install -y --no-install-recommends agda
 
       - name: Typecheck (this is the build)
-        run: agda src/@@MOD_CAMEL@@.agda
+        run: agda --safe --without-K --cubical-compatible src/@@MOD_CAMEL@@.agda
 
       - name: Typecheck the proofs
-        run: agda src/Properties.agda
+        run: agda --safe --without-K --cubical-compatible src/Properties.agda

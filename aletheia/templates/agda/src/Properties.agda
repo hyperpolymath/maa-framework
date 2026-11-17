@@ -4,6 +4,8 @@
 -- This module is a *consumer* of the core library: it proves new facts
 -- from the exported lemmas, so a regression in the core shows up here as
 -- a typecheck failure rather than passing unnoticed.
+{-# OPTIONS --safe --without-K --cubical-compatible #-}
+
 module Properties where
 
 open import Agda.Builtin.Nat using (Nat; zero; suc; _+_)

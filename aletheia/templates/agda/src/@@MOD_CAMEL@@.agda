@@ -4,6 +4,8 @@
 -- Self-contained by design: only Agda.Builtin is imported, so there is no
 -- standard-library dependency to fetch. Replace these with your own
 -- definitions and theorems.
+{-# OPTIONS --safe --without-K --cubical-compatible #-}
+
 module @@MOD_CAMEL@@ where
 
 open import Agda.Builtin.Nat using (Nat; zero; suc; _+_)

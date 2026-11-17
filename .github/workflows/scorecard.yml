@@ -15,8 +15,11 @@ permissions:
 
 jobs:
   scorecard:
-    uses: hyperpolymath/standards/.github/workflows/scorecard-reusable.yml@84355587cb2a1f86e6882de83514a32db2646e7a
+    uses: metadatastician/standards/.github/workflows/scorecard-reusable.yml@ba640e9a57f22608710ffecdca282074eac55a0b
     permissions:
+      # actions: read is repeated here because this job-level block
+      # replaces the workflow-level one, and the callee requests it.
+      actions: read
       contents: read
       security-events: write
       id-token: write

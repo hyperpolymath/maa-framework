@@ -17,4 +17,4 @@ permissions:
 
 jobs:
   governance:
-    uses: metadatastician/standards/.github/workflows/governance-reusable.yml@6b38eb50104901e2fec80f9455a972bc3eced813
+    uses: metadatastician/standards/.github/workflows/governance-reusable.yml@ba640e9a57f22608710ffecdca282074eac55a0b

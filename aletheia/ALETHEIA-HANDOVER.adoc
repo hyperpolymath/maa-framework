@@ -137,7 +137,7 @@ erased)
 |===
 |Allowed |Use Case
 |Rust |Systems, performance-critical
-|ReScript |Application code
+|AffineScript |Application code
 |Deno |Runtime
 |Gleam |Backend services
 |===
@@ -145,7 +145,7 @@ erased)
 [cols=",",options="header",]
 |===
 |Banned |Use Instead
-|TypeScript |ReScript
+|TypeScript |AffineScript
 |Node.js/npm |Deno
 |Go |Rust
 |Python (general) |Rust/AffineScript

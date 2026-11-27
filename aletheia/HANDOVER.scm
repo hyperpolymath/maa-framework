@@ -178,7 +178,7 @@
   '((allowed
      ((language . Rust)
       (use-case . "Systems, performance-critical"))
-     ((language . ReScript)
+     ((language . AffineScript)
       (use-case . "Application code"))
      ((language . Deno)
       (use-case . "Runtime"))
@@ -191,7 +191,7 @@
 
     (banned
      ((language . TypeScript)
-      (replacement . ReScript))
+      (replacement . AffineScript))
      ((language . Node.js)
       (replacement . Deno))
      ((language . npm)

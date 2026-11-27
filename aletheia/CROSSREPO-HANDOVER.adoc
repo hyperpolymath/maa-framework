@@ -373,7 +373,7 @@ These should be transferred to their proper repositories.
 [cols=",",options="header",]
 |===
 |Allowed |Use Case
-|ReScript |Primary application code
+|AffineScript |Primary application code
 |Deno |Runtime & package management
 |Rust |Performance-critical, systems, WASM
 |Gleam |Backend services
@@ -383,10 +383,10 @@ These should be transferred to their proper repositories.
 [cols=",",options="header",]
 |===
 |Banned |Replacement
-|TypeScript |ReScript
+|TypeScript |AffineScript
 |Node.js/npm/bun |Deno
 |Go |Rust
-|Python (general) |ReScript/Rust
+|Python (general) |AffineScript/Rust
 |===
 
 === Value Chain Policy
